@@ -1,0 +1,178 @@
+---
+title: "Summary statistics on SSFA datasets"
+author: "Ivan Calandra"
+date: "`r Sys.time()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+    toc_float: true
+    theme: cerulean
+    highlight: pygments
+    number_sections: true
+  github_document: 
+    toc: true
+    toc_depth: 2
+    html_preview: false
+knit: (function(inputFile, encoding) {
+  rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
+---
+
+
+```{r Knitr Options, include = FALSE}
+	knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE)
+```
+
+
+---
+
+
+# Goal of the script
+This script computes standard descriptive statistics for each group.  
+The groups are based on:
+
+* Diet (Guinea Pigs and Sheeps datasets)  
+* Material and before/after experiment (Lithics dataset)
+
+It computes the following statistics:  
+
+* sample size (n = `length`)  
+* smallest value (`min`)  
+* largest value (`max`)
+* mean  
+* median  
+* standard deviation (`sd`)
+
+```{r}
+dir_in  <- "R_analysis/derived_data"
+dir_out <- "R_analysis/summary_stats"
+```
+
+Input Rbin data file must be located in "`r paste0("~/", dir_in)`".  
+Summary statistics table will be saved in "`r paste0("~/", dir_out)`".
+
+The knit directory for this script is the project directory.
+
+
+---
+
+
+# Load packages
+```{r}
+pack_to_load <- c("openxlsx", "R.utils", "doBy", "tidyverse")
+sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
+```
+
+
+---
+
+
+# Read in data
+## Get name and path of input file 
+```{r}
+info_in <- list.files(dir_in, pattern = "\\.Rbin$", full.names = TRUE)
+info_in
+```
+
+
+## Read in Rbin file
+```{r}
+all_data <- loadObject(info_in)
+str(all_data)
+```
+
+
+---
+
+
+# Summary statistics
+## Create function to compute the statistics at once
+```{r}
+nminmaxmeanmedsd <- function(x){
+	y <- x[!is.na(x)]     # Exclude NAs
+	n_test <- length(y)   # Sample size (n)
+	min_test <- min(y)    # Minimum
+	max_test <- max(y)    # Maximum
+	mean_test <- mean(y)  # Mean
+ 	med_test <- median(y) # Median
+ 	sd_test <- sd(y)      # Standard deviation
+ 	out <- c(n_test, min_test, max_test, mean_test, med_test, sd_test) # Concatenate
+ 	names(out) <- c("n", "min", "max", "mean", "median", "sd")         # Name values
+ 	return(out)                                                        # Object to return
+}
+```
+
+
+## Define grouping and numerical variables to use
+```{r}
+# Define grouping variables
+grp <- c("Dataset", "Diet", "Treatment", "Before.after", "NMP_cat", "Software")
+```
+
+The following grouping variables will be used: 
+```{r, echo = FALSE}
+cat(colnames(select(all_data, all_of(grp))), sep = "\n")
+```
+
+All numerical variables will be used: 
+```{r, echo = FALSE}
+cat(colnames(select(all_data, where(is.numeric))), sep = "\n")
+```
+
+
+## Compute summary statistics
+```{r}
+# All data
+all_stats <- as.formula(paste(".~", paste(grp, collapse = "+"))) %>% 
+             summaryBy(data = all_data, FUN = nminmaxmeanmedsd)
+```
+
+The warnings are due to the missing values for NewEplsar - Toothfrax. NewEplsar can only be computed in ConfoMap.
+```{r}
+str(all_stats)
+```
+
+
+## Add units
+```{r}
+units_stats <- data.frame(variable = names(comment(all_data)), units = comment(all_data))
+```
+
+
+---
+
+
+# Write results to XLSX
+```{r}
+write.xlsx(list(summary_stats = all_stats, units = units_stats), 
+           file = paste0(dir_out, "/SSFA_summary-stats.xlsx"))
+```
+
+
+---
+
+
+# sessionInfo() and RStudio version
+
+```{r}
+sessionInfo()
+```
+
+RStudio version `r readLines("R_analysis/scripts/SSFA_0_RStudioVersion.txt", n = 1)`.
+
+
+---
+
+
+# Cite R packages used
+```{r, echo = FALSE}
+for (i in pack_to_load) {
+  cat(i, "\n")
+  cat(citation(i)$textVersion, "\n", "\n")
+} 
+```
+
+
+---
+
+END OF SCRIPT
