@@ -1,7 +1,7 @@
 Import dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-06-12 17:22:17
+2023-06-13 08:47:11
 
 - <a href="#goal-of-the-script" id="toc-goal-of-the-script">Goal of the
   script</a>
@@ -66,12 +66,19 @@ The knit directory for this script is the project directory.
 # Load packages
 
 ``` r
-pack_to_load <- c("openxlsx", "R.utils", "tidyverse")
+pack_to_load <- c("grateful", "openxlsx", "R.utils", "tidyverse")
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
 ```
 
-     openxlsx   R.utils tidyverse 
-         TRUE      TRUE      TRUE 
+     grateful  openxlsx   R.utils tidyverse 
+         TRUE      TRUE      TRUE      TRUE 
+
+``` r
+#library(grateful)
+#library(openxlsx)
+#library(R.utils)
+#library(tidyverse)
+```
 
 ------------------------------------------------------------------------
 
@@ -97,8 +104,8 @@ sharks <- read.csv(info_in, header = FALSE, na.strings = "*****", fileEncoding =
 ## Select relevant columns and rows
 
 ``` r
-sharks_keep_col  <- c(4, 26, 57:58, 61:63) # Define columns to keep
-sharks_keep_rows <- which(sharks[[1]] != "#") # Define rows to keep
+sharks_keep_col  <- c(4, 26, 57:58, 61:63)                    # Define columns to keep
+sharks_keep_rows <- which(sharks[[1]] != "#")                 # Define rows to keep
 sharks_keep      <- sharks[sharks_keep_rows, sharks_keep_col] # Subset rows and columns
 ```
 
@@ -127,15 +134,21 @@ colnames(sharks_keep)[2] <- "NMP"
 ## Extract units
 
 ``` r
-sharks_units <- unlist(sharks[3, sharks_keep_col[-1]])                           # Extract unit line for considered columns
-names(sharks_units) <- colnames(sharks_keep)[-1]                                 # Get names associated to the units
-units_table <- data.frame(variable = names(sharks_units), units = sharks_units)  # Combine into a data.frame for export
+# Extract unit line for considered columns
+sharks_units <- unlist(sharks[3, sharks_keep_col[-1]])
+
+# Get names associated to the units
+names(sharks_units) <- colnames(sharks_keep)[-1]
+
+# Combine into a data.frame for export
+units_table <- data.frame(variable = names(sharks_units), units = sharks_units)
 ```
 
 ## Split column ‘Name’
 
 ``` r
-sharks_keep[c("Species", "Specimen", "Location", "Objective", "Measurement")] <- str_split_fixed(sharks_keep$Name, "_", n = 5)
+sharks_keep[c("Species", "Specimen", "Location", "Objective", "Measurement")] <- str_split_fixed(sharks_keep$Name, 
+                                                                                                 "_", n = 5)
 ```
 
 ## Convert to numeric
@@ -148,18 +161,18 @@ sharks_keep <- type_convert(sharks_keep)
 
 Here we define 3 ranges of non-measured points (NMP):
 
-- $<$ 10% NMP: “0-10%”  
+- $<$ 10% NMP: “\<10%”  
 - $\ge$ 10% and $<$ 20% NMP: “10-20%”  
-- $\ge$ 20% NMP: “20-100%”
+- $\ge$ 20% NMP: “≥20%”
 
 ``` r
 # Create new column and fill it
-sharks_keep[sharks_keep$NMP < 10                        , "NMP_cat"] <- "< 10%"
+sharks_keep[sharks_keep$NMP < 10                        , "NMP_cat"] <- "<10%"
 sharks_keep[sharks_keep$NMP >= 10 & sharks_keep$NMP < 20, "NMP_cat"] <- "10-20%"
-sharks_keep[sharks_keep$NMP >= 20                       , "NMP_cat"] <- "≥ 20%"
+sharks_keep[sharks_keep$NMP >= 20                       , "NMP_cat"] <- "≥20%"
 
 # Convert to ordered factor
-sharks_keep[["NMP_cat"]] <- factor(sharks_keep[["NMP_cat"]], levels = c("< 10%", "10-20%", "≥ 20%"), ordered = TRUE)
+sharks_keep[["NMP_cat"]] <- factor(sharks_keep[["NMP_cat"]], levels = c("<10%", "10-20%", "≥20%"), ordered = TRUE)
 ```
 
 ## Re-order columns and add units as comment
@@ -183,7 +196,7 @@ str(sharks_final)
      $ Location   : chr  "loc1" "loc1" "loc1" "loc2" ...
      $ Objective  : chr  "100x" "100x" "100x" "100x" ...
      $ Measurement: chr  "meas1" "meas2" "meas3" "meas1" ...
-     $ NMP_cat    : Ord.factor w/ 3 levels "< 10%"<"10-20%"<..: 1 1 1 1 1 1 2 2 2 1 ...
+     $ NMP_cat    : Ord.factor w/ 3 levels "<10%"<"10-20%"<..: 1 1 1 1 1 1 2 2 2 1 ...
      $ NMP        : num  3.03 3.05 3.34 9.84 9.78 ...
      $ epLsar     : num  0.00119 0.00113 0.00124 0.00152 0.0018 ...
      $ NewEplsar  : num  0.0172 0.0172 0.0173 0.0176 0.0177 ...
@@ -198,12 +211,12 @@ head(sharks_final)
 ```
 
       Species Specimen Location Objective Measurement NMP_cat      NMP      epLsar
-    4      CC        A     loc1      100x       meas1   < 10% 3.029439 0.001190735
-    5      CC        A     loc1      100x       meas2   < 10% 3.049307 0.001128928
-    6      CC        A     loc1      100x       meas3   < 10% 3.344563 0.001244379
-    7      CC        A     loc2      100x       meas1   < 10% 9.838464 0.001522344
-    8      CC        A     loc2      100x       meas2   < 10% 9.778688 0.001796346
-    9      CC        A     loc2      100x       meas3   < 10% 9.676411 0.001234300
+    4      CC        A     loc1      100x       meas1    <10% 3.029439 0.001190735
+    5      CC        A     loc1      100x       meas2    <10% 3.049307 0.001128928
+    6      CC        A     loc1      100x       meas3    <10% 3.344563 0.001244379
+    7      CC        A     loc2      100x       meas1    <10% 9.838464 0.001522344
+    8      CC        A     loc2      100x       meas2    <10% 9.778688 0.001796346
+    9      CC        A     loc2      100x       meas3    <10% 9.676411 0.001234300
        NewEplsar     Asfc     Smfc    HAsfc9
     4 0.01718885 1.851713 86.15295 0.2487842
     5 0.01723834 1.787470 48.78199 0.2329559
@@ -266,7 +279,7 @@ sessionInfo()
      [1] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.0      
      [5] purrr_1.0.1       readr_2.1.4       tidyr_1.3.0       tibble_3.1.8     
      [9] ggplot2_3.4.1     tidyverse_2.0.0   R.utils_2.12.2    R.oo_1.25.0      
-    [13] R.methodsS3_1.8.2 openxlsx_4.2.5.2 
+    [13] R.methodsS3_1.8.2 openxlsx_4.2.5.2  grateful_0.2.0   
 
     loaded via a namespace (and not attached):
      [1] tidyselect_1.2.0 xfun_0.37        bslib_0.4.2      colorspace_2.1-0
@@ -287,15 +300,7 @@ RStudio version 2023.3.0.386.
 
 # Cite R packages used
 
-    openxlsx 
-     
-     
-    R.utils 
-     
-     
-    tidyverse 
-     
-     
+Does not work yet
 
 ------------------------------------------------------------------------
 

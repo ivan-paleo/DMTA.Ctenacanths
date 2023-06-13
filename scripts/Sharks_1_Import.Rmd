@@ -16,7 +16,6 @@ output:
     html_preview: false
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
-bibliography: grateful-refs.bib
 ---
 
 
@@ -140,9 +139,9 @@ sharks_keep <- type_convert(sharks_keep)
 ## Add column for NMP categories
 Here we define 3 ranges of non-measured points (NMP):
 
-- $<$ 10% NMP: "< 10%"  
+- $<$ 10% NMP: "<10%"  
 - $\ge$ 10% and $<$ 20% NMP: "10-20%"  
-- $\ge$ 20% NMP: "≥ 20%"
+- $\ge$ 20% NMP: "≥20%"
  
 
 ```{r}
@@ -212,8 +211,9 @@ RStudio version `r readLines("scripts/Sharks_0_RStudioVersion.txt", n = 1)`.
 
 
 # Cite R packages used
+Does not work yet
 ```{r, echo = FALSE}
-cite_packages(pkgs = pack_to_load, output = "paragraph", include.RStudio = TRUE, out.dir = ".")
+#cite_packages(pkgs = pack_to_load, output = "paragraph", include.RStudio = TRUE, out.dir = ".")
 #for (i in pack_to_load) {
 #  cat(i, "\n")
 #  cat(citation(i)$textVersion, "\n", "\n")
