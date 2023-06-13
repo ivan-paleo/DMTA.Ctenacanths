@@ -1,7 +1,7 @@
 Plots of SSFA variables for the dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-06-13 09:55:28
+2023-06-13 10:57:21
 
 - <a href="#goal-of-the-script" id="toc-goal-of-the-script">Goal of the
   script</a>
@@ -85,8 +85,8 @@ str(all_data)
 ```
 
     'data.frame':   80 obs. of  12 variables:
-     $ Species    : chr  "CC" "CC" "CC" "CC" ...
-     $ Specimen   : chr  "A" "A" "A" "A" ...
+     $ Specimen   : chr  "CC" "CC" "CC" "CC" ...
+     $ Tooth      : chr  "A" "A" "A" "A" ...
      $ Location   : chr  "loc1" "loc1" "loc1" "loc2" ...
      $ Objective  : chr  "100x" "100x" "100x" "100x" ...
      $ Measurement: chr  "meas1" "meas2" "meas3" "meas1" ...
@@ -107,18 +107,17 @@ str(all_data)
 Here we define which columns are used for the plots.
 
 ``` r
-# Combine columns species and specimen into one to be used to group on the x-axis
-all_data[, "Species.Specimen"] <- paste(all_data[["Species"]], all_data[["Specimen"]], sep = ".")
-x_var <- "Species.Specimen"
+# Column to be used to group on the x-axis
+x_var <- "Specimen"
 
 # Surface parameters to plot
-y_var <- c("Asfc", "epLsar", "Smfc", "HAsfc9")
+y_var <- c("Asfc", "epLsar", "HAsfc9")
 
 # colors
-grp_colors <- "NMP_cat"
+grp_colors <- "Specimen"
 
 # shapes
-grp_shapes <- "Location"
+grp_shapes <- "NMP_cat"
 ```
 
 The following variables will be used:
@@ -127,25 +126,25 @@ The following variables will be used:
 x_var
 ```
 
-    [1] "Species.Specimen"
+    [1] "Specimen"
 
 ``` r
 y_var
 ```
 
-    [1] "Asfc"   "epLsar" "Smfc"   "HAsfc9"
+    [1] "Asfc"   "epLsar" "HAsfc9"
 
 ``` r
 grp_colors
 ```
 
-    [1] "NMP_cat"
+    [1] "Specimen"
 
 ``` r
 grp_shapes
 ```
 
-    [1] "Location"
+    [1] "NMP_cat"
 
 ------------------------------------------------------------------------
 
@@ -159,20 +158,19 @@ data_nmp0_20$NMP_cat <- factor(data_nmp0_20$NMP_cat)
 str(data_nmp0_20)
 ```
 
-    'data.frame':   75 obs. of  13 variables:
-     $ Species         : chr  "CC" "CC" "CC" "CC" ...
-     $ Specimen        : chr  "A" "A" "A" "A" ...
-     $ Location        : chr  "loc1" "loc1" "loc1" "loc2" ...
-     $ Objective       : chr  "100x" "100x" "100x" "100x" ...
-     $ Measurement     : chr  "meas1" "meas2" "meas3" "meas1" ...
-     $ NMP_cat         : Ord.factor w/ 2 levels "<10%"<"10-20%": 1 1 1 1 1 1 2 2 2 1 ...
-     $ NMP             : num  3.03 3.05 3.34 9.84 9.78 ...
-     $ epLsar          : num  0.00119 0.00113 0.00124 0.00152 0.0018 ...
-     $ NewEplsar       : num  0.0172 0.0172 0.0173 0.0176 0.0177 ...
-     $ Asfc            : num  1.85 1.79 1.82 9.4 7.54 ...
-     $ Smfc            : num  86.2 48.8 52 37.9 62.8 ...
-     $ HAsfc9          : num  0.249 0.233 0.172 3.11 1.59 ...
-     $ Species.Specimen: chr  "CC.A" "CC.A" "CC.A" "CC.A" ...
+    'data.frame':   75 obs. of  12 variables:
+     $ Specimen   : chr  "CC" "CC" "CC" "CC" ...
+     $ Tooth      : chr  "A" "A" "A" "A" ...
+     $ Location   : chr  "loc1" "loc1" "loc1" "loc2" ...
+     $ Objective  : chr  "100x" "100x" "100x" "100x" ...
+     $ Measurement: chr  "meas1" "meas2" "meas3" "meas1" ...
+     $ NMP_cat    : Ord.factor w/ 2 levels "<10%"<"10-20%": 1 1 1 1 1 1 2 2 2 1 ...
+     $ NMP        : num  3.03 3.05 3.34 9.84 9.78 ...
+     $ epLsar     : num  0.00119 0.00113 0.00124 0.00152 0.0018 ...
+     $ NewEplsar  : num  0.0172 0.0172 0.0173 0.0176 0.0177 ...
+     $ Asfc       : num  1.85 1.79 1.82 9.4 7.54 ...
+     $ Smfc       : num  86.2 48.8 52 37.9 62.8 ...
+     $ HAsfc9     : num  0.249 0.233 0.172 3.11 1.59 ...
      - attr(*, "comment")= Named chr [1:6] "%" "<no unit>" "<no unit>" "<no unit>" ...
       ..- attr(*, "names")= chr [1:6] "NMP" "epLsar" "NewEplsar" "Asfc" ...
 
@@ -185,22 +183,43 @@ str(data_nmp0_20)
 ``` r
 data_long <- select(data_nmp0_20, all_of(c(x_var, y_var, grp_colors, grp_shapes))) %>%
              pivot_longer(all_of(y_var), names_to = "parameter", values_to = "value")
+str(data_long)
 ```
+
+    tibble [225 × 4] (S3: tbl_df/tbl/data.frame)
+     $ Specimen : chr [1:225] "CC" "CC" "CC" "CC" ...
+     $ NMP_cat  : Ord.factor w/ 2 levels "<10%"<"10-20%": 1 1 1 1 1 1 1 1 1 1 ...
+     $ parameter: chr [1:225] "Asfc" "epLsar" "HAsfc9" "Asfc" ...
+     $ value    : num [1:225] 1.85171 0.00119 0.24878 1.78747 0.00113 ...
+
+``` r
+head(data_long)
+```
+
+    # A tibble: 6 × 4
+      Specimen NMP_cat parameter   value
+      <chr>    <ord>   <chr>       <dbl>
+    1 CC       <10%    Asfc      1.85   
+    2 CC       <10%    epLsar    0.00119
+    3 CC       <10%    HAsfc9    0.249  
+    4 CC       <10%    Asfc      1.79   
+    5 CC       <10%    epLsar    0.00113
+    6 CC       <10%    HAsfc9    0.233  
 
 ## Plot
 
 ``` r
 # set up plot
-p_box <- ggplot(data_long, aes_string(x = x_var, y = "value")) +
+p_box <- ggplot(data_long, aes_string(x = x_var, y = "value", color = grp_colors)) +
 
          # Boxplots:
          # hide outliers (all points are shown with geom_point() below) 
-         geom_boxplot(outlier.shape = NA) +
+         geom_boxplot(outlier.shape = NA, fill = 'bisque') +
   
          # Points:
          # Add layers of shapes and colors for points 
          # Jitter points
-         geom_point(mapping = aes_string(color = grp_colors, shape = grp_shapes), position = "jitter", size = 2) +
+         geom_point(mapping = aes_string(shape = grp_shapes), position = "jitter", size = 2) +
   
          # Remove y-axis label
          labs(y = NULL) + 
@@ -211,8 +230,15 @@ p_box <- ggplot(data_long, aes_string(x = x_var, y = "value")) +
          # Wrap around parameters with free y-scales
          facet_wrap(~ parameter, scales = "free_y") +
 
-         # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly and has 8 colors
-         scale_color_brewer(palette = 'Set2')
+         # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+         scale_color_brewer(palette = 'Set2') +
+
+         # Change background colors
+         theme(panel.background = element_rect(fill = 'bisque'), 
+               plot.background = element_rect(fill = 'bisque'), 
+               legend.key = element_rect(fill = "bisque"), 
+               legend.background = element_rect(fill = "bisque"),
+               strip.background = element_rect(fill = "bisque"))
 ```
 
     Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
@@ -223,6 +249,8 @@ p_box <- ggplot(data_long, aes_string(x = x_var, y = "value")) +
 print(p_box)
 ```
 
+    Warning: Using shapes for an ordinal variable is not advised
+
 ![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 ## Save plot
@@ -231,6 +259,8 @@ print(p_box)
 ggsave(plot = p_box, filename = "DMTAsharks_EAVP_100x_SSFAboxplots.pdf", 
        path = dir_out, width = 240, height = 190, units = "mm")
 ```
+
+    Warning: Using shapes for an ordinal variable is not advised
 
 ------------------------------------------------------------------------
 
@@ -243,20 +273,28 @@ ggsave(plot = p_box, filename = "DMTAsharks_EAVP_100x_SSFAboxplots.pdf",
 p_bi <- ggplot(data_nmp0_20, aes(x = Asfc, y = epLsar)) +
         
         # Scatterplot
-        geom_point(mapping = aes_string(color = x_var), size = 4) +
+        geom_point(mapping = aes_string(color = grp_colors, shape = grp_shapes), size = 4) +
   
         # Adjust axes labels
         labs(x = "Complexity (Asfc)", y = "Anisotropy (epLsar)") +
   
-        # The qualitative 'Set1' palette of RColorBrewer is colorblind friendly and has 9 colors
-        scale_color_brewer(palette = 'Set1') +
+        # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+        scale_color_brewer(palette = 'Set2') +
   
         # Choose a light theme
-        theme_classic()
+        theme_classic() +
+   
+        # Change background colors
+        theme(panel.background = element_rect(fill = 'bisque'), 
+              plot.background = element_rect(fill = 'bisque'), 
+              legend.key = element_rect(fill = "bisque"), 
+              legend.background = element_rect(fill = "bisque"))
 
 # Print plot
 print(p_bi)
 ```
+
+    Warning: Using shapes for an ordinal variable is not advised
 
 ![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
@@ -266,6 +304,8 @@ print(p_bi)
 ggsave(plot = p_bi, filename = "DMTAsharks_EAVP_100x_epLsar-Asfc.pdf", 
        path = dir_out, width = 240, height = 190, units = "mm")
 ```
+
+    Warning: Using shapes for an ordinal variable is not advised
 
 ------------------------------------------------------------------------
 

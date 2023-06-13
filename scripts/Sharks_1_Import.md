@@ -1,7 +1,7 @@
 Import dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-06-13 08:47:11
+2023-06-13 10:35:11
 
 - <a href="#goal-of-the-script" id="toc-goal-of-the-script">Goal of the
   script</a>
@@ -147,8 +147,8 @@ units_table <- data.frame(variable = names(sharks_units), units = sharks_units)
 ## Split column ‘Name’
 
 ``` r
-sharks_keep[c("Species", "Specimen", "Location", "Objective", "Measurement")] <- str_split_fixed(sharks_keep$Name, 
-                                                                                                 "_", n = 5)
+sharks_keep[c("Specimen", "Tooth", "Location", "Objective", "Measurement")] <- str_split_fixed(sharks_keep$Name, 
+                                                                                               "_", n = 5)
 ```
 
 ## Convert to numeric
@@ -178,7 +178,7 @@ sharks_keep[["NMP_cat"]] <- factor(sharks_keep[["NMP_cat"]], levels = c("<10%", 
 ## Re-order columns and add units as comment
 
 ``` r
-sharks_final <- select(sharks_keep, Species:Measurement, NMP_cat, NMP:HAsfc9)
+sharks_final <- select(sharks_keep, Specimen:Measurement, NMP_cat, NMP:HAsfc9)
 comment(sharks_final) <- sharks_units
 ```
 
@@ -191,8 +191,8 @@ str(sharks_final)
 ```
 
     'data.frame':   80 obs. of  12 variables:
-     $ Species    : chr  "CC" "CC" "CC" "CC" ...
-     $ Specimen   : chr  "A" "A" "A" "A" ...
+     $ Specimen   : chr  "CC" "CC" "CC" "CC" ...
+     $ Tooth      : chr  "A" "A" "A" "A" ...
      $ Location   : chr  "loc1" "loc1" "loc1" "loc2" ...
      $ Objective  : chr  "100x" "100x" "100x" "100x" ...
      $ Measurement: chr  "meas1" "meas2" "meas3" "meas1" ...
@@ -210,13 +210,13 @@ str(sharks_final)
 head(sharks_final)
 ```
 
-      Species Specimen Location Objective Measurement NMP_cat      NMP      epLsar
-    4      CC        A     loc1      100x       meas1    <10% 3.029439 0.001190735
-    5      CC        A     loc1      100x       meas2    <10% 3.049307 0.001128928
-    6      CC        A     loc1      100x       meas3    <10% 3.344563 0.001244379
-    7      CC        A     loc2      100x       meas1    <10% 9.838464 0.001522344
-    8      CC        A     loc2      100x       meas2    <10% 9.778688 0.001796346
-    9      CC        A     loc2      100x       meas3    <10% 9.676411 0.001234300
+      Specimen Tooth Location Objective Measurement NMP_cat      NMP      epLsar
+    4       CC     A     loc1      100x       meas1    <10% 3.029439 0.001190735
+    5       CC     A     loc1      100x       meas2    <10% 3.049307 0.001128928
+    6       CC     A     loc1      100x       meas3    <10% 3.344563 0.001244379
+    7       CC     A     loc2      100x       meas1    <10% 9.838464 0.001522344
+    8       CC     A     loc2      100x       meas2    <10% 9.778688 0.001796346
+    9       CC     A     loc2      100x       meas3    <10% 9.676411 0.001234300
        NewEplsar     Asfc     Smfc    HAsfc9
     4 0.01718885 1.851713 86.15295 0.2487842
     5 0.01723834 1.787470 48.78199 0.2329559

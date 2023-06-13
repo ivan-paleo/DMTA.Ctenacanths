@@ -75,18 +75,17 @@ str(all_data)
 Here we define which columns are used for the plots.  
 
 ```{r}
-# Combine columns species and specimen into one to be used to group on the x-axis
-all_data[, "Species.Specimen"] <- paste(all_data[["Species"]], all_data[["Specimen"]], sep = ".")
-x_var <- "Species.Specimen"
+# Column to be used to group on the x-axis
+x_var <- "Specimen"
 
 # Surface parameters to plot
-y_var <- c("Asfc", "epLsar", "Smfc", "HAsfc9")
+y_var <- c("Asfc", "epLsar", "HAsfc9")
 
 # colors
-grp_colors <- "NMP_cat"
+grp_colors <- "Specimen"
 
 # shapes
-grp_shapes <- "Location"
+grp_shapes <- "NMP_cat"
 ```
 
 The following variables will be used:  
@@ -119,22 +118,24 @@ str(data_nmp0_20)
 ```{r}
 data_long <- select(data_nmp0_20, all_of(c(x_var, y_var, grp_colors, grp_shapes))) %>%
              pivot_longer(all_of(y_var), names_to = "parameter", values_to = "value")
+str(data_long)
+head(data_long)
 ```
 
 
 ## Plot
 ```{r}
 # set up plot
-p_box <- ggplot(data_long, aes_string(x = x_var, y = "value")) +
+p_box <- ggplot(data_long, aes_string(x = x_var, y = "value", color = grp_colors)) +
 
          # Boxplots:
          # hide outliers (all points are shown with geom_point() below) 
-         geom_boxplot(outlier.shape = NA) +
+         geom_boxplot(outlier.shape = NA, fill = 'bisque') +
   
          # Points:
          # Add layers of shapes and colors for points 
          # Jitter points
-         geom_point(mapping = aes_string(color = grp_colors, shape = grp_shapes), position = "jitter", size = 2) +
+         geom_point(mapping = aes_string(shape = grp_shapes), position = "jitter", size = 2) +
   
          # Remove y-axis label
          labs(y = NULL) + 
@@ -145,8 +146,15 @@ p_box <- ggplot(data_long, aes_string(x = x_var, y = "value")) +
          # Wrap around parameters with free y-scales
          facet_wrap(~ parameter, scales = "free_y") +
 
-         # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly and has 8 colors
-         scale_color_brewer(palette = 'Set2')
+         # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+         scale_color_brewer(palette = 'Set2') +
+
+         # Change background colors
+         theme(panel.background = element_rect(fill = 'bisque'), 
+               plot.background = element_rect(fill = 'bisque'), 
+               legend.key = element_rect(fill = "bisque"), 
+               legend.background = element_rect(fill = "bisque"),
+               strip.background = element_rect(fill = "bisque"))
 
 # Print plot
 print(p_box)
@@ -170,16 +178,22 @@ ggsave(plot = p_box, filename = "DMTAsharks_EAVP_100x_SSFAboxplots.pdf",
 p_bi <- ggplot(data_nmp0_20, aes(x = Asfc, y = epLsar)) +
         
         # Scatterplot
-        geom_point(mapping = aes_string(color = x_var), size = 4) +
+        geom_point(mapping = aes_string(color = grp_colors, shape = grp_shapes), size = 4) +
   
         # Adjust axes labels
         labs(x = "Complexity (Asfc)", y = "Anisotropy (epLsar)") +
   
-        # The qualitative 'Set1' palette of RColorBrewer is colorblind friendly and has 9 colors
-        scale_color_brewer(palette = 'Set1') +
+        # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+        scale_color_brewer(palette = 'Set2') +
   
         # Choose a light theme
-        theme_classic()
+        theme_classic() +
+   
+        # Change background colors
+        theme(panel.background = element_rect(fill = 'bisque'), 
+              plot.background = element_rect(fill = 'bisque'), 
+              legend.key = element_rect(fill = "bisque"), 
+              legend.background = element_rect(fill = "bisque"))
 
 # Print plot
 print(p_bi)

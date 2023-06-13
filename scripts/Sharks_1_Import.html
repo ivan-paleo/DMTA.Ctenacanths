@@ -1559,7 +1559,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Import dataset of DMTA on Devionan
 sharks</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2023-06-13 08:47:07</h4>
+<h4 class="date">2023-06-13 10:35:08</h4>
 
 </div>
 
@@ -1654,8 +1654,8 @@ columns and rows</h2>
 <div id="split-column-name" class="section level2" number="4.5">
 <h2><span class="header-section-number">4.5</span> Split column
 ‘Name’</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sharks_keep[<span class="fu">c</span>(<span class="st">&quot;Species&quot;</span>, <span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Measurement&quot;</span>)] <span class="ot">&lt;-</span> <span class="fu">str_split_fixed</span>(sharks_keep<span class="sc">$</span>Name, </span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                                                                                                 <span class="st">&quot;_&quot;</span>, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>sharks_keep[<span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Tooth&quot;</span>, <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Measurement&quot;</span>)] <span class="ot">&lt;-</span> <span class="fu">str_split_fixed</span>(sharks_keep<span class="sc">$</span>Name, </span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                                                                                               <span class="st">&quot;_&quot;</span>, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
 </div>
 <div id="convert-to-numeric" class="section level2" number="4.6">
 <h2><span class="header-section-number">4.6</span> Convert to
@@ -1684,7 +1684,7 @@ categories</h2>
 <div id="re-order-columns-and-add-units-as-comment" class="section level2" number="4.8">
 <h2><span class="header-section-number">4.8</span> Re-order columns and
 add units as comment</h2>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sharks_final <span class="ot">&lt;-</span> <span class="fu">select</span>(sharks_keep, Species<span class="sc">:</span>Measurement, NMP_cat, NMP<span class="sc">:</span>HAsfc9)</span>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>sharks_final <span class="ot">&lt;-</span> <span class="fu">select</span>(sharks_keep, Specimen<span class="sc">:</span>Measurement, NMP_cat, NMP<span class="sc">:</span>HAsfc9)</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">comment</span>(sharks_final) <span class="ot">&lt;-</span> sharks_units</span></code></pre></div>
 <p>Type <code>comment(sharks_final)</code> to check the units of the
 parameters.</p>
@@ -1693,8 +1693,8 @@ parameters.</p>
 <h2><span class="header-section-number">4.9</span> Check the result</h2>
 <div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(sharks_final)</span></code></pre></div>
 <pre><code>&#39;data.frame&#39;:   80 obs. of  12 variables:
- $ Species    : chr  &quot;CC&quot; &quot;CC&quot; &quot;CC&quot; &quot;CC&quot; ...
- $ Specimen   : chr  &quot;A&quot; &quot;A&quot; &quot;A&quot; &quot;A&quot; ...
+ $ Specimen   : chr  &quot;CC&quot; &quot;CC&quot; &quot;CC&quot; &quot;CC&quot; ...
+ $ Tooth      : chr  &quot;A&quot; &quot;A&quot; &quot;A&quot; &quot;A&quot; ...
  $ Location   : chr  &quot;loc1&quot; &quot;loc1&quot; &quot;loc1&quot; &quot;loc2&quot; ...
  $ Objective  : chr  &quot;100x&quot; &quot;100x&quot; &quot;100x&quot; &quot;100x&quot; ...
  $ Measurement: chr  &quot;meas1&quot; &quot;meas2&quot; &quot;meas3&quot; &quot;meas1&quot; ...
@@ -1708,13 +1708,13 @@ parameters.</p>
  - attr(*, &quot;comment&quot;)= Named chr [1:6] &quot;%&quot; &quot;&lt;no unit&gt;&quot; &quot;&lt;no unit&gt;&quot; &quot;&lt;no unit&gt;&quot; ...
   ..- attr(*, &quot;names&quot;)= chr [1:6] &quot;NMP&quot; &quot;epLsar&quot; &quot;NewEplsar&quot; &quot;Asfc&quot; ...</code></pre>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sharks_final)</span></code></pre></div>
-<pre><code>  Species Specimen Location Objective Measurement NMP_cat      NMP      epLsar
-4      CC        A     loc1      100x       meas1    &lt;10% 3.029439 0.001190735
-5      CC        A     loc1      100x       meas2    &lt;10% 3.049307 0.001128928
-6      CC        A     loc1      100x       meas3    &lt;10% 3.344563 0.001244379
-7      CC        A     loc2      100x       meas1    &lt;10% 9.838464 0.001522344
-8      CC        A     loc2      100x       meas2    &lt;10% 9.778688 0.001796346
-9      CC        A     loc2      100x       meas3    &lt;10% 9.676411 0.001234300
+<pre><code>  Specimen Tooth Location Objective Measurement NMP_cat      NMP      epLsar
+4       CC     A     loc1      100x       meas1    &lt;10% 3.029439 0.001190735
+5       CC     A     loc1      100x       meas2    &lt;10% 3.049307 0.001128928
+6       CC     A     loc1      100x       meas3    &lt;10% 3.344563 0.001244379
+7       CC     A     loc2      100x       meas1    &lt;10% 9.838464 0.001522344
+8       CC     A     loc2      100x       meas2    &lt;10% 9.778688 0.001796346
+9       CC     A     loc2      100x       meas3    &lt;10% 9.676411 0.001234300
    NewEplsar     Asfc     Smfc    HAsfc9
 4 0.01718885 1.851713 86.15295 0.2487842
 5 0.01723834 1.787470 48.78199 0.2329559

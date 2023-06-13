@@ -125,8 +125,8 @@ units_table <- data.frame(variable = names(sharks_units), units = sharks_units)
 
 ## Split column 'Name' 
 ```{r}
-sharks_keep[c("Species", "Specimen", "Location", "Objective", "Measurement")] <- str_split_fixed(sharks_keep$Name, 
-                                                                                                 "_", n = 5)
+sharks_keep[c("Specimen", "Tooth", "Location", "Objective", "Measurement")] <- str_split_fixed(sharks_keep$Name, 
+                                                                                               "_", n = 5)
 ```
 
 
@@ -157,7 +157,7 @@ sharks_keep[["NMP_cat"]] <- factor(sharks_keep[["NMP_cat"]], levels = c("<10%", 
 
 ## Re-order columns and add units as comment 
 ```{r}
-sharks_final <- select(sharks_keep, Species:Measurement, NMP_cat, NMP:HAsfc9)
+sharks_final <- select(sharks_keep, Specimen:Measurement, NMP_cat, NMP:HAsfc9)
 comment(sharks_final) <- sharks_units
 ```
 
