@@ -1,43 +1,29 @@
 Import dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-06-13 10:35:11
+2023-06-19 15:18:59 CEST
 
-- <a href="#goal-of-the-script" id="toc-goal-of-the-script">Goal of the
-  script</a>
-- <a href="#load-packages" id="toc-load-packages">Load packages</a>
-- <a href="#get-names-and-path-all-files"
-  id="toc-get-names-and-path-all-files">Get names and path all files</a>
-- <a href="#read-and-format-data" id="toc-read-and-format-data">Read and
-  format data</a>
-  - <a href="#read-in-csv-file" id="toc-read-in-csv-file">Read in CSV
-    file</a>
-  - <a href="#select-relevant-columns-and-rows"
-    id="toc-select-relevant-columns-and-rows">Select relevant columns and
-    rows</a>
-  - <a href="#add-headers" id="toc-add-headers">Add headers</a>
-  - <a href="#extract-units" id="toc-extract-units">Extract units</a>
-  - <a href="#split-column-name" id="toc-split-column-name">Split column
-    ‘Name’</a>
-  - <a href="#convert-to-numeric" id="toc-convert-to-numeric">Convert to
-    numeric</a>
-  - <a href="#add-column-for-nmp-categories"
-    id="toc-add-column-for-nmp-categories">Add column for NMP categories</a>
-  - <a href="#re-order-columns-and-add-units-as-comment"
-    id="toc-re-order-columns-and-add-units-as-comment">Re-order columns and
-    add units as comment</a>
-  - <a href="#check-the-result" id="toc-check-the-result">Check the
-    result</a>
-- <a href="#save-data" id="toc-save-data">Save data</a>
-  - <a href="#create-file-names" id="toc-create-file-names">Create file
-    names</a>
-  - <a href="#write-to-xlsx-and-rbin" id="toc-write-to-xlsx-and-rbin">Write
-    to XLSX and Rbin</a>
-- <a href="#sessioninfo-and-rstudio-version"
-  id="toc-sessioninfo-and-rstudio-version">sessionInfo() and RStudio
-  version</a>
-- <a href="#cite-r-packages-used" id="toc-cite-r-packages-used">Cite R
-  packages used</a>
+- [Goal of the script](#goal-of-the-script)
+- [Load packages](#load-packages)
+- [Get names and path all files](#get-names-and-path-all-files)
+- [Read and format data](#read-and-format-data)
+  - [Read in CSV file](#read-in-csv-file)
+  - [Select relevant columns and
+    rows](#select-relevant-columns-and-rows)
+  - [Add headers](#add-headers)
+  - [Extract units](#extract-units)
+  - [Split column ‘Name’](#split-column-name)
+  - [Convert to numeric](#convert-to-numeric)
+  - [Add column for NMP categories](#add-column-for-nmp-categories)
+  - [Re-order columns and add units as
+    comment](#re-order-columns-and-add-units-as-comment)
+  - [Check the result](#check-the-result)
+- [Save data](#save-data)
+  - [Create file names](#create-file-names)
+  - [Write to XLSX and Rbin](#write-to-xlsx-and-rbin)
+- [sessionInfo()](#sessioninfo)
+- [Cite R packages used](#cite-r-packages-used)
+  - [References](#references)
 
 ------------------------------------------------------------------------
 
@@ -56,8 +42,8 @@ dir_out <- "derived_data"
 dir_in  <- "raw_data"
 ```
 
-Raw data must be located in “\~/raw_data”.  
-Formatted data will be saved in “\~/derived_data”.
+Raw data must be located in “~/raw_data”.  
+Formatted data will be saved in “~/derived_data”.
 
 The knit directory for this script is the project directory.
 
@@ -66,19 +52,12 @@ The knit directory for this script is the project directory.
 # Load packages
 
 ``` r
-pack_to_load <- c("grateful", "openxlsx", "R.utils", "tidyverse")
+pack_to_load <- c("grateful", "knitr", "openxlsx", "R.utils", "rmarkdown", "tidyverse")
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
 ```
 
-     grateful  openxlsx   R.utils tidyverse 
-         TRUE      TRUE      TRUE      TRUE 
-
-``` r
-#library(grateful)
-#library(openxlsx)
-#library(R.utils)
-#library(tidyverse)
-```
+     grateful     knitr  openxlsx   R.utils rmarkdown tidyverse 
+         TRUE      TRUE      TRUE      TRUE      TRUE      TRUE 
 
 ------------------------------------------------------------------------
 
@@ -253,17 +232,18 @@ rbin_data <- loadObject("DMTAsharks_EAVP_100x.Rbin")
 
 ------------------------------------------------------------------------
 
-# sessionInfo() and RStudio version
+# sessionInfo()
 
 ``` r
 sessionInfo()
 ```
 
-    R version 4.2.2 (2022-10-31 ucrt)
+    R version 4.3.1 (2023-06-16 ucrt)
     Platform: x86_64-w64-mingw32/x64 (64-bit)
     Running under: Windows 10 x64 (build 19043)
 
     Matrix products: default
+
 
     locale:
     [1] LC_COLLATE=English_United States.utf8 
@@ -272,36 +252,133 @@ sessionInfo()
     [4] LC_NUMERIC=C                          
     [5] LC_TIME=English_United States.utf8    
 
+    time zone: Europe/Berlin
+    tzcode source: internal
+
     attached base packages:
     [1] stats     graphics  grDevices utils     datasets  methods   base     
 
     other attached packages:
-     [1] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.0      
-     [5] purrr_1.0.1       readr_2.1.4       tidyr_1.3.0       tibble_3.1.8     
-     [9] ggplot2_3.4.1     tidyverse_2.0.0   R.utils_2.12.2    R.oo_1.25.0      
-    [13] R.methodsS3_1.8.2 openxlsx_4.2.5.2  grateful_0.2.0   
+     [1] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.2      
+     [5] purrr_1.0.1       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
+     [9] ggplot2_3.4.2     tidyverse_2.0.0   rmarkdown_2.22    R.utils_2.12.2   
+    [13] R.oo_1.25.0       R.methodsS3_1.8.2 openxlsx_4.2.5.2  knitr_1.43       
+    [17] grateful_0.2.0   
 
     loaded via a namespace (and not attached):
-     [1] tidyselect_1.2.0 xfun_0.37        bslib_0.4.2      colorspace_2.1-0
-     [5] vctrs_0.5.2      generics_0.1.3   htmltools_0.5.4  yaml_2.3.7      
-     [9] utf8_1.2.3       rlang_1.0.6      jquerylib_0.1.4  pillar_1.8.1    
-    [13] glue_1.6.2       withr_2.5.0      lifecycle_1.0.3  munsell_0.5.0   
-    [17] gtable_0.3.1     zip_2.2.2        evaluate_0.20    knitr_1.42      
-    [21] tzdb_0.3.0       fastmap_1.1.1    fansi_1.0.4      Rcpp_1.0.10     
-    [25] scales_1.2.1     cachem_1.0.7     jsonlite_1.8.4   hms_1.1.2       
-    [29] digest_0.6.31    stringi_1.7.12   grid_4.2.2       rprojroot_2.0.3 
-    [33] cli_3.6.0        tools_4.2.2      magrittr_2.0.3   sass_0.4.5      
-    [37] crayon_1.5.2     pkgconfig_2.0.3  ellipsis_0.3.2   timechange_0.2.0
-    [41] rmarkdown_2.20   rstudioapi_0.14  R6_2.5.1         compiler_4.2.2  
-
-RStudio version 2023.3.0.386.
+     [1] sass_0.4.6       utf8_1.2.3       generics_0.1.3   stringi_1.7.12  
+     [5] hms_1.1.3        digest_0.6.31    magrittr_2.0.3   timechange_0.2.0
+     [9] evaluate_0.21    grid_4.3.1       fastmap_1.1.1    rprojroot_2.0.3 
+    [13] jsonlite_1.8.5   zip_2.3.0        fansi_1.0.4      scales_1.2.1    
+    [17] jquerylib_0.1.4  cli_3.6.1        crayon_1.5.2     rlang_1.1.1     
+    [21] munsell_0.5.0    withr_2.5.0      cachem_1.0.8     yaml_2.3.7      
+    [25] tools_4.3.1      tzdb_0.4.0       colorspace_2.1-0 vctrs_0.6.3     
+    [29] R6_2.5.1         lifecycle_1.0.3  pkgconfig_2.0.3  pillar_1.9.0    
+    [33] bslib_0.5.0      gtable_0.3.3     glue_1.6.2       Rcpp_1.0.10     
+    [37] xfun_0.39        tidyselect_1.2.0 rstudioapi_0.14  htmltools_0.5.5 
+    [41] compiler_4.3.1  
 
 ------------------------------------------------------------------------
 
 # Cite R packages used
 
-Does not work yet
+We used the following R packages: grateful v. 0.2.0 (Francisco
+Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D. Hutchins 2023),
+knitr v. 1.43 (Xie 2014, 2015, 2023), openxlsx v. 4.2.5.2 (Schauberger
+and Walker 2023), R.utils v. 2.12.2 (Bengtsson 2022), rmarkdown v. 2.22
+(Xie, Allaire, and Grolemund 2018; Xie, Dervieux, and Riederer 2020;
+Allaire et al. 2023), tidyverse v. 2.0.0 (Wickham et al. 2019), running
+in RStudio v. 2023.6.0.421 (Posit team 2023).
 
-------------------------------------------------------------------------
+## References
 
-END OF SCRIPT
+<div id="refs" class="references csl-bib-body hanging-indent">
+
+<div id="ref-rmarkdown2023" class="csl-entry">
+
+Allaire, JJ, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
+Luraschi, Kevin Ushey, Aron Atkins, et al. 2023.
+*<span class="nocase">rmarkdown</span>: Dynamic Documents for r*.
+<https://github.com/rstudio/rmarkdown>.
+
+</div>
+
+<div id="ref-Rutils" class="csl-entry">
+
+Bengtsson, Henrik. 2022. *<span class="nocase">R.utils</span>: Various
+Programming Utilities*. <https://CRAN.R-project.org/package=R.utils>.
+
+</div>
+
+<div id="ref-grateful" class="csl-entry">
+
+Francisco Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D.
+Hutchins. 2023. *<span class="nocase">grateful</span>: Facilitate
+Citation of r Packages*. <https://github.com/Pakillo/grateful>.
+
+</div>
+
+<div id="ref-rstudio" class="csl-entry">
+
+Posit team. 2023. *RStudio: Integrated Development Environment for r*.
+Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
+
+</div>
+
+<div id="ref-openxlsx" class="csl-entry">
+
+Schauberger, Philipp, and Alexander Walker. 2023.
+*<span class="nocase">openxlsx</span>: Read, Write and Edit Xlsx Files*.
+<https://CRAN.R-project.org/package=openxlsx>.
+
+</div>
+
+<div id="ref-tidyverse" class="csl-entry">
+
+Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
+D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
+“Welcome to the <span class="nocase">tidyverse</span>.” *Journal of Open
+Source Software* 4 (43): 1686. <https://doi.org/10.21105/joss.01686>.
+
+</div>
+
+<div id="ref-knitr2014" class="csl-entry">
+
+Xie, Yihui. 2014. “<span class="nocase">knitr</span>: A Comprehensive
+Tool for Reproducible Research in R.” In *Implementing Reproducible
+Computational Research*, edited by Victoria Stodden, Friedrich Leisch,
+and Roger D. Peng. Chapman; Hall/CRC.
+
+</div>
+
+<div id="ref-knitr2015" class="csl-entry">
+
+———. 2015. *Dynamic Documents with R and Knitr*. 2nd ed. Boca Raton,
+Florida: Chapman; Hall/CRC. <https://yihui.org/knitr/>.
+
+</div>
+
+<div id="ref-knitr2023" class="csl-entry">
+
+———. 2023. *<span class="nocase">knitr</span>: A General-Purpose Package
+for Dynamic Report Generation in r*. <https://yihui.org/knitr/>.
+
+</div>
+
+<div id="ref-rmarkdown2018" class="csl-entry">
+
+Xie, Yihui, J. J. Allaire, and Garrett Grolemund. 2018. *R Markdown: The
+Definitive Guide*. Boca Raton, Florida: Chapman; Hall/CRC.
+<https://bookdown.org/yihui/rmarkdown>.
+
+</div>
+
+<div id="ref-rmarkdown2020" class="csl-entry">
+
+Xie, Yihui, Christophe Dervieux, and Emily Riederer. 2020. *R Markdown
+Cookbook*. Boca Raton, Florida: Chapman; Hall/CRC.
+<https://bookdown.org/yihui/rmarkdown-cookbook>.
+
+</div>
+
+</div>

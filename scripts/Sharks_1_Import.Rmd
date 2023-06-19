@@ -1,7 +1,7 @@
 ---
 title: "Import dataset of DMTA on Devionan sharks"
 author: "Ivan Calandra"
-date: "`r Sys.time()`"
+date: "`r format(Sys.time(), usetz = TRUE)`"
 output:
   html_document:
     toc: true
@@ -14,6 +14,7 @@ output:
     toc: true
     toc_depth: 3
     html_preview: false
+bibliography: grateful-refs.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
 ---
@@ -51,12 +52,8 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- c("grateful", "openxlsx", "R.utils", "tidyverse")
+pack_to_load <- c("grateful", "knitr", "openxlsx", "R.utils", "rmarkdown", "tidyverse")
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
-#library(grateful)
-#library(openxlsx)
-#library(R.utils)
-#library(tidyverse)
 ```
 
 
@@ -198,30 +195,22 @@ rbin_data <- loadObject("DMTAsharks_EAVP_100x.Rbin")
 ---
 
 
-# sessionInfo() and RStudio version
+# sessionInfo()
 
 ```{r}
 sessionInfo()
 ```
-
-RStudio version `r readLines("scripts/Sharks_0_RStudioVersion.txt", n = 1)`.
 
 
 ---
 
 
 # Cite R packages used
-Does not work yet
+
 ```{r, echo = FALSE}
-#cite_packages(pkgs = pack_to_load, output = "paragraph", include.RStudio = TRUE, out.dir = ".")
-#for (i in pack_to_load) {
-#  cat(i, "\n")
-#  cat(citation(i)$textVersion, "\n", "\n")
-#} 
+cite_packages(pkgs = pack_to_load, output = "paragraph", include.RStudio = TRUE, out.dir = "scripts")
 ```
 
 
----
+## References
 
-
-END OF SCRIPT
