@@ -71,9 +71,9 @@ Edit the fields "Title", "Author" and "Description" in the `DESCRIPTION` file.
 ## Create CC-BY, CC-0 or MIT license
 A project can have only one license. Run one line only:  
 ```{r}
-usethis::use_ccby_license()
+#usethis::use_ccby_license()
 #usethis::use_cc0_license()
-#usethis::use_mit_license(copyright_holder = "Ivan Calandra")
+usethis::use_mit_license(copyright_holder = "Ivan Calandra")
 ```
 
 ## Create README.Rmd file
@@ -91,6 +91,7 @@ dir.create("analysis/raw_data", showWarnings = FALSE)
 dir.create("analysis/derived_data", showWarnings = FALSE)
 dir.create("analysis/plots", showWarnings = FALSE)
 dir.create("analysis/scripts", showWarnings = FALSE)
+dir.create("analysis/stats", showWarnings = FALSE)
 ```
 Note that the folders cannot be pushed to GitHub as long as they are empty.
 
