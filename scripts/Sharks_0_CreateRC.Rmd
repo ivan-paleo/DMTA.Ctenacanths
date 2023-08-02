@@ -14,7 +14,7 @@ output:
     theme: cerulean
     highlight: pygments
     number_sections: true
-bibliography: grateful-refs.bib
+bibliography: grateful-refs-script0.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
 ---
