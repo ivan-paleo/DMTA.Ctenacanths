@@ -1,19 +1,20 @@
 ---
-title: "Plots of SSFA variables for the dataset of DMTA on Devionan sharks"
+title: "Plots for the dataset of DMTA on Devionan sharks"
 author: "Ivan Calandra"
-date: "`r Sys.time()`"
+date: "`r format(Sys.time(), usetz = TRUE)`"
 output:
-  github_document: 
-    toc: true
-    toc_depth: 2
-    html_preview: false
   html_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     toc_float: true
     theme: cerulean
     highlight: pygments
     number_sections: true
+  github_document: 
+    toc: true
+    toc_depth: 3
+    html_preview: false
+bibliography: Sharks_3_Plots.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
 ---
@@ -30,8 +31,8 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE)
 The script plots all SSFA variables for the Devonian shark dataset.   
 
 ```{r}
-dir_in  <- "derived_data"
-dir_out <- "plots"
+dir_in  <- "analysis/derived_data"
+dir_out <- "analysis/plots"
 ```
 
 Input Rbin data file must be located in "`r paste0("~/", dir_in)`".  
@@ -45,7 +46,7 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- c("R.utils", "ggplot2", "RColorBrewer", "tidyverse")
+pack_to_load <- c("ggplot2", "grateful", "knitr", "R.utils", "RColorBrewer", "rmarkdown", "tidyverse")
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE)
 ```
 
@@ -63,8 +64,8 @@ info_in
 
 ## Read in Rbin file
 ```{r}
-all_data <- loadObject(info_in)
-str(all_data)
+sharks <- loadObject(info_in)
+str(sharks)
 ```
 
 
@@ -209,22 +210,23 @@ ggsave(plot = p_bi, filename = "DMTAsharks_EAVP_100x_epLsar-Asfc.pdf",
 ---
 
 
-# sessionInfo() and RStudio version
+# sessionInfo()
 
 ```{r}
 sessionInfo()
 ```
-
-RStudio version `r readLines("scripts/Sharks_0_RStudioVersion.txt", n = 1)`.
 
 
 ---
 
 
 # Cite R packages used
-Does not work yet
+
+```{r, echo = FALSE}
+cite_packages(pkgs = c(pack_to_load, "base"), output = "paragraph", 
+              include.RStudio = TRUE, out.dir = "analysis/scripts", bib.file = "Sharks_3_Plots")
+```
 
 
----
+## References
 
-END OF SCRIPT
