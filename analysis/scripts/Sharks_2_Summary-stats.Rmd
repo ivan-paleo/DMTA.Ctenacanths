@@ -1,19 +1,20 @@
 ---
-title: "Summary statistics on SSFA datasets"
+title: "Summary statistics on dataset of DMTA on Devionan sharks"
 author: "Ivan Calandra"
-date: "`r Sys.time()`"
+date: "`r format(Sys.time(), usetz = TRUE)`"
 output:
   html_document:
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     toc_float: true
     theme: cerulean
     highlight: pygments
     number_sections: true
   github_document: 
     toc: true
-    toc_depth: 2
+    toc_depth: 3
     html_preview: false
+bibliography: Sharks_2_Summary-stats.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
 ---
@@ -31,8 +32,9 @@ knit: (function(inputFile, encoding) {
 This script computes standard descriptive statistics for each group.  
 The groups are based on:
 
-* Diet (Guinea Pigs and Sheeps datasets)  
-* Material and before/after experiment (Lithics dataset)
+* Specimen  
+* Tooth position  
+* NMP_cat
 
 It computes the following statistics:  
 
@@ -44,8 +46,8 @@ It computes the following statistics:
 * standard deviation (`sd`)
 
 ```{r}
-dir_in  <- "R_analysis/derived_data"
-dir_out <- "R_analysis/summary_stats"
+dir_in  <- "analysis/derived_data"
+dir_out <- "analysis/stats"
 ```
 
 Input Rbin data file must be located in "`r paste0("~/", dir_in)`".  
@@ -59,7 +61,7 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- c("openxlsx", "R.utils", "doBy", "tidyverse")
+pack_to_load <- c("doBy", "grateful", "knitr", "openxlsx", "R.utils", "rmarkdown", "tidyverse")
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
 ```
 
@@ -77,8 +79,8 @@ info_in
 
 ## Read in Rbin file
 ```{r}
-all_data <- loadObject(info_in)
-str(all_data)
+sharks <- loadObject(info_in)
+str(sharks)
 ```
 
 
@@ -105,37 +107,60 @@ nminmaxmeanmedsd <- function(x){
 
 ## Define grouping and numerical variables to use
 ```{r}
-# Define grouping variables
-grp <- c("Dataset", "Diet", "Treatment", "Before.after", "NMP_cat", "Software")
+# Define grouping variables: Specimen + NMP_cat
+grp1 <- c("Specimen", "NMP_cat")
+
+# Define grouping variables: Specimen + Tooth
+grp2 <- c("Specimen", "Tooth")
+
+# Define grouping variables: Specimen + Tooth + NMP_cat
+grp3 <- c("Specimen", "Tooth", "NMP_cat")
 ```
 
-The following grouping variables will be used: 
+The following grouping variables will be used:  
+
+* First set `grp1`
 ```{r, echo = FALSE}
-cat(colnames(select(all_data, all_of(grp))), sep = "\n")
+cat(colnames(select(sharks, all_of(grp1))), sep = "\n")
+```
+* Second set `grp2`
+```{r, echo = FALSE}
+cat(colnames(select(sharks, all_of(grp2))), sep = "\n")
+```
+* Third set `grp3`
+```{r, echo = FALSE}
+cat(colnames(select(sharks, all_of(grp3))), sep = "\n")
 ```
 
-All numerical variables will be used: 
+All numerical variables except `NMP` will be used: 
 ```{r, echo = FALSE}
-cat(colnames(select(all_data, where(is.numeric))), sep = "\n")
+cat(colnames(select(sharks, where(is.numeric))[-1]), sep = "\n")
 ```
 
 
 ## Compute summary statistics
 ```{r}
-# All data
-all_stats <- as.formula(paste(".~", paste(grp, collapse = "+"))) %>% 
-             summaryBy(data = all_data, FUN = nminmaxmeanmedsd)
-```
+# grp1
+# Create formula based on grouping variables in grp1
+stats_grp1 <- as.formula(paste(".~", paste(grp1, collapse = "+"))) %>% 
+  
+              # calculate group-wise stats
+              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
 
-The warnings are due to the missing values for NewEplsar - Toothfrax. NewEplsar can only be computed in ConfoMap.
-```{r}
-str(all_stats)
+# Same with grp2
+stats_grp2 <- as.formula(paste(".~", paste(grp2, collapse = "+"))) %>% 
+              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
+
+# Same with grp3
+stats_grp3 <- as.formula(paste(".~", paste(grp3, collapse = "+"))) %>% 
+              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
 ```
 
 
 ## Add units
 ```{r}
-units_stats <- data.frame(variable = names(comment(all_data)), units = comment(all_data))
+# Extract units from comment(sharks) and exclude first row (NMP)
+units_stats <- data.frame(variable = names(comment(sharks)), units = comment(sharks))[-1,]
 ```
 
 
@@ -144,35 +169,31 @@ units_stats <- data.frame(variable = names(comment(all_data)), units = comment(a
 
 # Write results to XLSX
 ```{r}
-write.xlsx(list(summary_stats = all_stats, units = units_stats), 
-           file = paste0(dir_out, "/SSFA_summary-stats.xlsx"))
+write.xlsx(list(Specimen_NMP = stats_grp1, Specimen_Tooth = stats_grp2, Specimen_Tooth_NMP = stats_grp3, 
+                units = units_stats), file = paste0(dir_out, "/DMTA-Ctenacanths_summary-stats.xlsx"))
 ```
 
 
 ---
 
 
-# sessionInfo() and RStudio version
+# sessionInfo()
 
 ```{r}
 sessionInfo()
 ```
-
-RStudio version `r readLines("R_analysis/scripts/SSFA_0_RStudioVersion.txt", n = 1)`.
 
 
 ---
 
 
 # Cite R packages used
+
 ```{r, echo = FALSE}
-for (i in pack_to_load) {
-  cat(i, "\n")
-  cat(citation(i)$textVersion, "\n", "\n")
-} 
+cite_packages(pkgs = c(pack_to_load, "base"), output = "paragraph", 
+              include.RStudio = TRUE, out.dir = "analysis/scripts", bib.file = "Sharks_2_Summary-stats")
 ```
 
 
----
+## References
 
-END OF SCRIPT
