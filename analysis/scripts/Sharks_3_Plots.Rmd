@@ -72,35 +72,6 @@ str(sharks)
 ---
 
 
-# Define variables
-Here we define which columns are used for the plots.  
-
-```{r}
-# Column to be used to group on the x-axis
-x_var <- "Specimen"
-
-# All numeric variables except NMP
-y_var <- colnames(select(sharks, where(is.numeric)))[-1] 
-
-# colors
-grp_colors <- "Tooth"
-
-# shapes
-grp_shapes <- "NMP_cat"
-```
-
-The following variables will be used:  
-```{r}
-x_var
-y_var
-grp_colors
-grp_shapes
-```
-
-
----
-
-
 # Exclude surfaces with NMP ≥ 20%
 Surfaces with more than 20% NMP should not be analyzed.
 
@@ -115,6 +86,37 @@ str(sharks_nmp0_20)
 
 
 # Plot each surface parameter in a boxplot
+## Define variables
+Here we define which columns are used for the boxplots.  
+
+```{r}
+# Column to be used to group on the x-axis
+x_var <- "Specimen"
+
+# Columns to be used on the y-axis
+y_ISO_height <- colnames(sharks)[8:13] 
+y_ISO_vol <- colnames(sharks)[24:29] 
+y_ISO_others <- colnames(sharks)[14:23] 
+y_furrow_diriso <- colnames(sharks)[30:36]
+y_SSFA <- colnames(sharks)[37:42]
+
+# colors
+grp_colors <- "Tooth"
+
+# shapes
+grp_shapes <- "NMP_cat"
+```
+
+
+## Plotting function
+```{r}
+custom_boxplot <- function(){
+  
+  
+}
+```
+
+
 ## Pivot to longer format for facet plots
 ```{r}
 data_long <- select(sharks_nmp0_20, all_of(c(x_var, y_var, grp_colors, grp_shapes))) %>%
@@ -144,7 +146,7 @@ p_box <- ggplot(data_long, aes(x = .data[[x_var]], y = value)) +
          # Choose a light theme
          theme_classic() +
   
-         # Wrap around parameters with free y-scales
+         # Wrap around parameters (i.e. 1 subplot per parameter) with free y-scales
          facet_wrap(~ parameter, scales = "free_y") +
 
          # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
@@ -170,16 +172,19 @@ ggsave(plot = p_box, filename = "DMTA-Ctenacanths_boxplots.pdf",
 ## Plot
 ```{r}
 # set up plot
-p_bi <- ggplot(data_nmp0_20, aes(x = Asfc, y = epLsar)) +
+p_bi <- ggplot(sharks_nmp0_20, aes(x = Asfc, y = epLsar)) +
         
         # Scatterplot
-        geom_point(mapping = aes_string(color = grp_colors, shape = grp_shapes), size = 4) +
+        geom_point(mapping = aes(color = .data[[grp_colors]], shape = .data[[grp_shapes]]), size = 4) +
   
         # Adjust axes labels
         labs(x = "Complexity (Asfc)", y = "Anisotropy (epLsar)") +
   
         # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
         scale_color_brewer(palette = 'Set2') +
+  
+        # Wrap around Specimen (i.e. 1 subplot per specimen)
+        facet_wrap(~ Specimen) +
   
         # Choose a light theme
         theme_classic()
