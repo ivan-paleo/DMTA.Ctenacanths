@@ -35,8 +35,8 @@ dir_in  <- "analysis/derived_data"
 dir_out <- "analysis/plots"
 ```
 
-Input Rbin data file must be located in "`r paste0("~/", dir_in)`".  
-Plots will be saved in "`r paste0("~/", dir_out)`".
+Input Rbin data file must be located in "`r paste0("./", dir_in)`".  
+Plots will be saved in "`r paste0("./", dir_out)`".
 
 The knit directory for this script is the project directory.
 

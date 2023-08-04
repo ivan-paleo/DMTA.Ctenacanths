@@ -41,8 +41,8 @@ dir_in  <- "analysis/raw_data"
 dir_out <- "analysis/derived_data"
 ```
 
-Raw data must be located in "`r paste0("~/", dir_in)`".  
-Formatted data will be saved in "`r paste0("~/", dir_out)`".
+Raw data must be located in "`r paste0("./", dir_in)`".  
+Formatted data will be saved in "`r paste0("./", dir_out)`".
 
 The knit directory for this script is the project directory.
 
@@ -226,7 +226,7 @@ write.xlsx(list(data = sharks_final, units = units_table), file = sharks_xlsx)
 saveObject(sharks_final, file = sharks_rbin) 
 ```
 
-Rbin files (e.g. `DMTAsharks_EAVP_100x.Rbin`) can be easily read into an R object (e.g. `rbin_data`) using the following code:
+Rbin files (e.g. `DMTA-Ctenacanths.Rbin`) can be easily read into an R object (e.g. `rbin_data`) using the following code:
 ```{r, eval = FALSE}
 library(R.utils)
 rbin_data <- loadObject("DMTA-Ctenacanths.Rbin")
