@@ -1,7 +1,7 @@
 Summary statistics on dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-08-03 14:37:47 CEST
+2023-08-04 11:23:49 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -45,8 +45,8 @@ dir_in  <- "analysis/derived_data"
 dir_out <- "analysis/stats"
 ```
 
-Input Rbin data file must be located in “~/analysis/derived_data”.  
-Summary statistics table will be saved in “~/analysis/stats”.
+Input Rbin data file must be located in “./analysis/derived_data”.  
+Summary statistics table will be saved in “./analysis/stats”.
 
 The knit directory for this script is the project directory.
 
@@ -299,17 +299,15 @@ sessionInfo()
 
     R version 4.3.1 (2023-06-16 ucrt)
     Platform: x86_64-w64-mingw32/x64 (64-bit)
-    Running under: Windows 10 x64 (build 19043)
+    Running under: Windows 10 x64 (build 19045)
 
     Matrix products: default
 
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=French_France.utf8  LC_CTYPE=French_France.utf8   
+    [3] LC_MONETARY=French_France.utf8 LC_NUMERIC=C                  
+    [5] LC_TIME=French_France.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -329,7 +327,7 @@ sessionInfo()
      [4] stringi_1.7.12        lattice_0.21-8        hms_1.1.3            
      [7] digest_0.6.33         magrittr_2.0.3        timechange_0.2.0     
     [10] evaluate_0.21         grid_4.3.1            fastmap_1.1.1        
-    [13] rprojroot_2.0.3       jsonlite_1.8.7        Matrix_1.6-0         
+    [13] rprojroot_2.0.3       jsonlite_1.8.7        Matrix_1.5-4.1       
     [16] zip_2.3.0             backports_1.4.1       fansi_1.0.4          
     [19] scales_1.2.1          microbenchmark_1.4.10 jquerylib_0.1.4      
     [22] cli_3.6.1             rlang_1.1.1           crayon_1.5.2         

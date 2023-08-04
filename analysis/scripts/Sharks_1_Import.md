@@ -1,7 +1,7 @@
 Import dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-08-02 17:40:27 CEST
+2023-08-04 11:22:56 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -44,8 +44,8 @@ dir_in  <- "analysis/raw_data"
 dir_out <- "analysis/derived_data"
 ```
 
-Raw data must be located in “~/analysis/raw_data”.  
-Formatted data will be saved in “~/analysis/derived_data”.
+Raw data must be located in “./analysis/raw_data”.  
+Formatted data will be saved in “./analysis/derived_data”.
 
 The knit directory for this script is the project directory.
 
@@ -338,8 +338,8 @@ write.xlsx(list(data = sharks_final, units = units_table), file = sharks_xlsx)
 saveObject(sharks_final, file = sharks_rbin) 
 ```
 
-Rbin files (e.g. `DMTAsharks_EAVP_100x.Rbin`) can be easily read into an
-R object (e.g. `rbin_data`) using the following code:
+Rbin files (e.g. `DMTA-Ctenacanths.Rbin`) can be easily read into an R
+object (e.g. `rbin_data`) using the following code:
 
 ``` r
 library(R.utils)
@@ -356,17 +356,15 @@ sessionInfo()
 
     R version 4.3.1 (2023-06-16 ucrt)
     Platform: x86_64-w64-mingw32/x64 (64-bit)
-    Running under: Windows 10 x64 (build 19043)
+    Running under: Windows 10 x64 (build 19045)
 
     Matrix products: default
 
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=French_France.utf8  LC_CTYPE=French_France.utf8   
+    [3] LC_MONETARY=French_France.utf8 LC_NUMERIC=C                  
+    [5] LC_TIME=French_France.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal

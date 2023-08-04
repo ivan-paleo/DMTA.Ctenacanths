@@ -1575,7 +1575,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Import dataset of DMTA on Devionan
 sharks</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2023-08-02 17:40:22 CEST</h4>
+<h4 class="date">2023-08-04 11:22:48 CEST</h4>
 
 </div>
 
@@ -1596,8 +1596,8 @@ R</li>
 </ol>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>dir_in  <span class="ot">&lt;-</span> <span class="st">&quot;analysis/raw_data&quot;</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>dir_out <span class="ot">&lt;-</span> <span class="st">&quot;analysis/derived_data&quot;</span></span></code></pre></div>
-<p>Raw data must be located in “~/analysis/raw_data”.<br />
-Formatted data will be saved in “~/analysis/derived_data”.</p>
+<p>Raw data must be located in “./analysis/raw_data”.<br />
+Formatted data will be saved in “./analysis/derived_data”.</p>
 <p>The knit directory for this script is the project directory.</p>
 <hr />
 </div>
@@ -1860,9 +1860,9 @@ names</h2>
 Rbin</h2>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">write.xlsx</span>(<span class="fu">list</span>(<span class="at">data =</span> sharks_final, <span class="at">units =</span> units_table), <span class="at">file =</span> sharks_xlsx) </span>
 <span id="cb22-2"><a href="#cb22-2" tabindex="-1"></a><span class="fu">saveObject</span>(sharks_final, <span class="at">file =</span> sharks_rbin) </span></code></pre></div>
-<p>Rbin files (e.g. <code>DMTAsharks_EAVP_100x.Rbin</code>) can be
-easily read into an R object (e.g. <code>rbin_data</code>) using the
-following code:</p>
+<p>Rbin files (e.g. <code>DMTA-Ctenacanths.Rbin</code>) can be easily
+read into an R object (e.g. <code>rbin_data</code>) using the following
+code:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">library</span>(R.utils)</span>
 <span id="cb23-2"><a href="#cb23-2" tabindex="-1"></a>rbin_data <span class="ot">&lt;-</span> <span class="fu">loadObject</span>(<span class="st">&quot;DMTA-Ctenacanths.Rbin&quot;</span>)</span></code></pre></div>
 <hr />
@@ -1873,17 +1873,15 @@ following code:</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 4.3.1 (2023-06-16 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
-Running under: Windows 10 x64 (build 19043)
+Running under: Windows 10 x64 (build 19045)
 
 Matrix products: default
 
 
 locale:
-[1] LC_COLLATE=English_United States.utf8 
-[2] LC_CTYPE=English_United States.utf8   
-[3] LC_MONETARY=English_United States.utf8
-[4] LC_NUMERIC=C                          
-[5] LC_TIME=English_United States.utf8    
+[1] LC_COLLATE=French_France.utf8  LC_CTYPE=French_France.utf8   
+[3] LC_MONETARY=French_France.utf8 LC_NUMERIC=C                  
+[5] LC_TIME=French_France.utf8    
 
 time zone: Europe/Berlin
 tzcode source: internal
