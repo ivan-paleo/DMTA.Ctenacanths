@@ -46,7 +46,8 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- c("ggplot2", "grateful", "knitr", "R.utils", "RColorBrewer", "rmarkdown", "tidyverse")
+pack_to_load <- c("factoextra", "ggplot2", "ggpubr", "grateful", "knitr", 
+                  "R.utils", "RColorBrewer", "rmarkdown", "tidyverse")
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE)
 ```
 
@@ -94,9 +95,9 @@ Here we define which columns are used for the boxplots.
 x_var <- "Specimen"
 
 # Columns to be used on the y-axis
-y_ISO_height <- colnames(sharks)[8:13] 
+y_ISO_height <- colnames(sharks)[8:14] 
 y_ISO_vol <- colnames(sharks)[24:29] 
-y_ISO_others <- colnames(sharks)[14:23] 
+y_ISO_others <- colnames(sharks)[15:23] 
 y_furrow_diriso <- colnames(sharks)[30:36]
 y_SSFA <- colnames(sharks)[37:42]
 
@@ -110,58 +111,98 @@ grp_shapes <- "NMP_cat"
 
 ## Plotting function
 ```{r}
-custom_boxplot <- function(){
+custom_boxplot <- function(dat, x_axis = x_var, y_axis = "Value", 
+                           group_col = grp_colors, group_shape = grp_shapes, 
+                           facet_var = "Parameter"){
   
+  # Define aesthetics
+  p_out <- ggplot(dat, aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
+
+           # Boxplots:
+           # hide outliers (all points are shown with geom_point() below) 
+           geom_boxplot(outlier.shape = NA) +
   
+           # Points:
+           # Add layers of shapes and colors for points 
+           # Jitter points
+           geom_point(mapping = aes(shape = .data[[group_shape]], color = .data[[group_col]]), 
+                      position = "jitter", size = 3, alpha = 0.7) +
+    
+           # Wrap around parameters (i.e. 1 subplot per parameter) with free y-scales
+           facet_wrap(as.formula(paste0("~", facet_var)), scales = "free_y") +
+  
+           # Remove x- and y-axis labels
+           labs(x = NULL, y = NULL) + 
+  
+           # Choose a light theme
+           theme_classic() +
+  
+           # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+           scale_color_brewer(palette = 'Set2')
+
+  # Return ggplot object
+  return(p_out)
 }
 ```
 
 
-## Pivot to longer format for facet plots
-```{r}
-data_long <- select(sharks_nmp0_20, all_of(c(x_var, y_var, grp_colors, grp_shapes))) %>%
-             pivot_longer(all_of(y_var), names_to = "parameter", values_to = "value")
-str(data_long)
-head(data_long)
-```
-
-
 ## Plot
+### ISO 25178 height parameters
 ```{r}
-# set up plot
-p_box <- ggplot(data_long, aes(x = .data[[x_var]], y = value)) +
+# Subset and pivot to longer format for facet plots
+ISO_height_long <- select(sharks_nmp0_20, all_of(c(x_var, y_ISO_height, grp_colors, grp_shapes))) %>%
+                   pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value")
+str(ISO_height_long)
+head(ISO_height_long)
 
-         # Boxplots:
-         # hide outliers (all points are shown with geom_point() below) 
-         geom_boxplot(outlier.shape = NA) +
-  
-         # Points:
-         # Add layers of shapes and colors for points 
-         # Jitter points
-         geom_point(mapping = aes(shape = .data[[grp_shapes]], color = .data[[grp_colors]]), position = "jitter", size = 2) +
-  
-         # Remove y-axis label
-         labs(y = NULL) + 
-  
-         # Choose a light theme
-         theme_classic() +
-  
-         # Wrap around parameters (i.e. 1 subplot per parameter) with free y-scales
-         facet_wrap(~ parameter, scales = "free_y") +
-
-         # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
-         scale_color_brewer(palette = 'Set2')
-
+# Define plot
+p_ISO_height <- custom_boxplot(dat = ISO_height_long)
 
 # Print plot
-print(p_box)
+print(p_ISO_height)
+```
+
+### ISO 25178 volume parameters
+```{r}
+ISO_vol_long <- select(sharks_nmp0_20, all_of(c(x_var, y_ISO_vol, grp_colors, grp_shapes))) %>%
+                pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value")
+
+p_ISO_vol <- custom_boxplot(dat = ISO_vol_long)
+print(p_ISO_vol)
+```
+
+### Other ISO 25178 parameters
+```{r}
+ISO_others_long <- select(sharks_nmp0_20, all_of(c(x_var, y_ISO_others, grp_colors, grp_shapes))) %>%
+                   pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value")
+
+p_ISO_others <- custom_boxplot(dat = ISO_others_long)
+print(p_ISO_others)
+```
+
+### Furrow, direction and isotropy parameters 
+```{r}
+furrow_diriso_long <- select(sharks_nmp0_20, all_of(c(x_var, y_furrow_diriso, grp_colors, grp_shapes))) %>%
+                      pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value")
+
+p_furrow_diriso <- custom_boxplot(dat = furrow_diriso_long)
+print(p_furrow_diriso)
+```
+
+### SSFA parameters 
+```{r}
+ssfa_long <- select(sharks_nmp0_20, all_of(c(x_var, y_SSFA, grp_colors, grp_shapes))) %>%
+                    pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value")
+
+p_ssfa_long <- custom_boxplot(dat = ssfa_long)
+print(p_ssfa_long)
 ```
 
 
-## Save plot
+## Save plots
 ```{r}
-ggsave(plot = p_box, filename = "DMTA-Ctenacanths_boxplots.pdf", 
-       path = dir_out, width = 240, height = 190, units = "mm")
+ggexport(plotlist = list(p_ISO_height, p_ISO_vol, p_ISO_others, p_furrow_diriso, p_ssfa_long), 
+         filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots.pdf"))
 ```
 
 
@@ -189,7 +230,6 @@ p_bi <- ggplot(sharks_nmp0_20, aes(x = Asfc, y = epLsar)) +
         # Choose a light theme
         theme_classic()
 
-
 # Print plot
 print(p_bi)
 ```
@@ -197,9 +237,103 @@ print(p_bi)
 
 ## Save plot
 ```{r}
-ggsave(plot = p_bi, filename = "DMTA-Ctenacanths__epLsar-Asfc.pdf", 
-       path = dir_out, width = 240, height = 190, units = "mm")
+ggexport(plotlist = list(p_bi), filename = paste0(dir_out, "/DMTA-Ctenacanths_epLsar-Asfc.pdf"))
 ```
+
+
+---
+
+
+# PCA
+## Prepare data and select parameters
+```{r}
+# Remove rows with NA 
+data_pca <- na.omit(sharks_nmp0_20)
+
+# Convert grouping variables into factor()
+data_pca[["Specimen"]] <- factor(data_pca[["Specimen"]])
+data_pca[["Tooth"]] <- factor(data_pca[["Tooth"]])
+str(data_pca)
+
+# Select parameters to use in the PCA, based on previous plots
+pca_params <- c("Sq", "Vmc", "Sal", "Sdr", "Str", 
+                "First.direction", "Mean.density.of.furrows", "Mean.depth.of.furrows", 
+                "Asfc", "epLsar", "HAsfc9")
+```
+
+## PCA of specimens (CC vs. MM)
+```{r}
+# PCA 
+pca_spec <- prcomp(data_pca[ , pca_params], scale. = TRUE) 
+
+# Visualize eigenvalues
+pca_spec_eig <- fviz_eig(pca_spec, addlabels = TRUE, ggtheme = theme_classic(), 
+                         title = "PCA Specimen - Eigenvalues")
+print(pca_spec_eig)
+
+# Biplot of PC1&2
+pca_spec_12 <- fviz_pca_biplot(pca_spec, axes = c(1, 2), 
+                               geom.ind = "point", col.ind = data_pca$Specimen, mean.point = FALSE,
+                               palette = brewer.pal(3, "Set2")[1:2], pointsize = 3, 
+                               addEllipses = TRUE, ellipse.type = "convex",  
+                               repel = TRUE, col.var = "black", 
+                               legend.title = "Specimen", title = "PCA Specimen - PC1&2")
+print(pca_spec_12)
+
+# Biplot of PC1&3
+pca_spec_13 <- fviz_pca_biplot(pca_spec, axes = c(1, 3), 
+                               geom.ind = "point", col.ind = data_pca$Specimen, mean.point = FALSE,
+                               palette = brewer.pal(3, "Set2")[1:2], pointsize = 3, 
+                               addEllipses = TRUE, ellipse.type = "convex",  
+                               repel = TRUE, col.var = "black", 
+                               legend.title = "Specimen", title = "PCA Specimen - PC1&3")
+print(pca_spec_13)
+```
+
+
+## PCA of Teeth within CC 
+```{r}
+# Filter data on Specimen CC
+data_pca_tooth <- filter(data_pca, Specimen == "CC")
+str(data_pca_tooth)
+
+# PCA 
+pca_tooth <- prcomp(data_pca_tooth[ , pca_params], scale. = TRUE) 
+
+# Visualize eigenvalues
+pca_tooth_eig <- fviz_eig(pca_tooth, addlabels = TRUE, ggtheme = theme_classic(), 
+                          title = "PCA Tooth - Eigenvalues")
+print(pca_tooth_eig)
+
+# Biplot of PC1&2
+pca_tooth_12 <- fviz_pca_biplot(pca_tooth, axes = c(1, 2), 
+                                geom.ind = "point", col.ind = data_pca_tooth$Tooth, 
+                                fill.ind = data_pca_tooth$Tooth, mean.point = FALSE, 
+                                palette = brewer.pal(7, "Set2"), pointsize = 3, pointshape = 21,
+                                addEllipses = TRUE, ellipse.type = "convex",  
+                                repel = TRUE, col.var = "black", 
+                                legend.title = "Specimen", title = "PCA Tooth - PC1&2")
+print(pca_tooth_12)
+
+# Biplot of PC1&3
+pca_tooth_13 <- fviz_pca_biplot(pca_tooth, axes = c(1, 3), 
+                                geom.ind = "point", col.ind = data_pca_tooth$Tooth, 
+                                fill.ind = data_pca_tooth$Tooth, mean.point = FALSE, 
+                                palette = brewer.pal(7, "Set2"), pointsize = 3, pointshape = 21,
+                                addEllipses = TRUE, ellipse.type = "convex",  
+                                repel = TRUE, col.var = "black", 
+                                legend.title = "Specimen", title = "PCA Tooth - PC1&3")
+print(pca_tooth_13)
+```
+
+
+## Save plots
+```{r}
+ggexport(plotlist = list(pca_spec_eig, pca_spec_12, pca_spec_13, 
+                         pca_tooth_eig, pca_tooth_12, pca_tooth_13), 
+         filename = paste0(dir_out, "/DMTA-Ctenacanths_PCA.pdf"))
+```
+
 
 ---
 
