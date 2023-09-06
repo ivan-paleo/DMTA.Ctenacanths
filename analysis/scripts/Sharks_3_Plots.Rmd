@@ -46,8 +46,8 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- c("factoextra", "ggplot2", "ggpubr", "grateful", "knitr", 
-                  "R.utils", "RColorBrewer", "rmarkdown", "tidyverse")
+pack_to_load <- sort(c("R.utils", "tidyverse", "factoextra", "ggplot2", "ggpubr", "RColorBrewer", 
+                       "knitr", "rmarkdown", "grateful"))
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE)
 ```
 
@@ -351,8 +351,9 @@ sessionInfo()
 # Cite R packages used
 
 ```{r, echo = FALSE}
-cite_packages(pkgs = c(pack_to_load, "base"), output = "paragraph", 
-              include.RStudio = TRUE, out.dir = "analysis/scripts", bib.file = "Sharks_3_Plots")
+pkgs_cite <- cite_packages(pkgs = c(pack_to_load, "base"), output = "table", include.RStudio = TRUE, 
+                           out.dir = "analysis/scripts", bib.file = "Sharks_3_Plots")
+knitr::kable(pkgs_cite)
 ```
 
 
