@@ -1,7 +1,7 @@
 Summary statistics on dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-08-04 11:23:49 CEST
+2023-09-06 09:26:13 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -11,11 +11,11 @@ Ivan Calandra
 - [Summary statistics](#summary-statistics)
   - [Create function to compute the statistics at
     once](#create-function-to-compute-the-statistics-at-once)
-  - [Define grouping and numerical variables to
-    use](#define-grouping-and-numerical-variables-to-use)
+  - [Define grouping and numeric variables to
+    use](#define-grouping-and-numeric-variables-to-use)
   - [Compute summary statistics](#compute-summary-statistics)
   - [Add units](#add-units)
-- [Write results to XLSX](#write-results-to-xlsx)
+- [Write results to ODS](#write-results-to-ods)
 - [sessionInfo()](#sessioninfo)
 - [Cite R packages used](#cite-r-packages-used)
   - [References](#references)
@@ -55,11 +55,11 @@ The knit directory for this script is the project directory.
 # Load packages
 
 ``` r
-pack_to_load <- c("doBy", "grateful", "knitr", "openxlsx", "R.utils", "rmarkdown", "tidyverse")
+pack_to_load <- sort(c("doBy", "readODS", "R.utils", "rmarkdown", "knitr", "tidyverse", "grateful"))
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
 ```
 
-         doBy  grateful     knitr  openxlsx   R.utils rmarkdown tidyverse 
+         doBy  grateful     knitr   R.utils   readODS rmarkdown tidyverse 
          TRUE      TRUE      TRUE      TRUE      TRUE      TRUE      TRUE 
 
 ------------------------------------------------------------------------
@@ -82,49 +82,50 @@ sharks <- loadObject(info_in)
 str(sharks)
 ```
 
-    'data.frame':   160 obs. of  42 variables:
+    'data.frame':   160 obs. of  43 variables:
      $ Specimen                : chr  "CC" "CC" "CC" "CC" ...
      $ Tooth                   : chr  "A" "A" "A" "A" ...
-     $ Location                : chr  "loc1" "loc1" "loc1" "loc2" ...
-     $ Objective               : chr  "100x" "100x" "100x" "100x" ...
+     $ Location                : chr  "loc1" "loc1" "loc1" "loc1" ...
+     $ Objective               : chr  "100x" "100x" "100x" "20x" ...
      $ Measurement             : chr  "meas1" "meas2" "meas3" "meas1" ...
-     $ NMP                     : num  3.03 3.05 3.34 9.84 9.78 ...
-     $ NMP_cat                 : Ord.factor w/ 3 levels "<10%"<"10-20%"<..: 1 1 1 1 1 1 2 2 2 1 ...
-     $ Sq                      : num  1.22 1.18 1.16 1.66 1.66 ...
-     $ Ssk                     : num  -0.332 -0.345 -0.355 1.53 1.454 ...
-     $ Sku                     : num  2.53 2.45 2.42 8.22 7.72 ...
-     $ Sp                      : num  2.74 2.73 2.69 8.77 8.39 ...
-     $ Sv                      : num  3.42 3.25 3.17 3.39 3.45 ...
-     $ Sz                      : num  6.16 5.98 5.86 12.16 11.84 ...
-     $ Sa                      : num  0.995 0.969 0.956 1.14 1.154 ...
-     $ Smr                     : num  5.865 4.991 4.781 0.361 0.405 ...
-     $ Smc                     : num  1.5 1.47 1.43 1.3 1.32 ...
-     $ Sxp                     : num  2.62 2.5 2.48 2.77 2.76 ...
-     $ Sal                     : num  20.7 20.4 20.3 15.3 15.2 ...
-     $ Str                     : num  0.557 0.53 0.537 0.408 0.396 ...
-     $ Std                     : num  58.5 58.5 58.5 84.5 84.5 ...
-     $ Ssw                     : num  0.658 0.658 0.658 0.658 0.658 ...
-     $ Sdq                     : num  0.179 0.176 0.176 0.409 0.395 ...
-     $ Sdr                     : num  1.51 1.47 1.46 4.86 4.71 ...
-     $ Vm                      : num  0.0382 0.033 0.032 0.2068 0.2047 ...
-     $ Vv                      : num  1.54 1.5 1.47 1.51 1.53 ...
-     $ Vmp                     : num  0.0382 0.033 0.032 0.2068 0.2047 ...
-     $ Vmc                     : num  1.21 1.18 1.15 1.16 1.18 ...
-     $ Vvc                     : num  1.39 1.35 1.32 1.35 1.37 ...
-     $ Vvv                     : num  0.148 0.148 0.147 0.154 0.155 ...
-     $ Maximum.depth.of.furrows: num  2.33 2.29 2.29 4.51 4.52 ...
-     $ Mean.depth.of.furrows   : num  0.834 0.808 0.792 1.292 1.286 ...
-     $ Mean.density.of.furrows : num  2027 2022 2034 2211 2229 ...
+     $ Position                : chr  "top" "top" "top" "top" ...
+     $ NMP                     : num  3.03 3.05 3.34 12.54 11.63 ...
+     $ NMP_cat                 : Ord.factor w/ 3 levels "<10%"<"10-20%"<..: 1 1 1 2 2 2 1 1 1 3 ...
+     $ Sq                      : num  1.22 1.18 1.16 7.28 7.29 ...
+     $ Ssk                     : num  -0.332 -0.345 -0.355 0.83 0.814 ...
+     $ Sku                     : num  2.53 2.45 2.42 3.15 3.14 ...
+     $ Sp                      : num  2.74 2.73 2.69 22.04 22.01 ...
+     $ Sv                      : num  3.42 3.25 3.17 17.88 19.03 ...
+     $ Sz                      : num  6.16 5.98 5.86 39.92 41.04 ...
+     $ Sa                      : num  0.995 0.969 0.956 5.8 5.803 ...
+     $ Smr                     : num  5.865 4.991 4.781 0.189 0.183 ...
+     $ Smc                     : num  1.5 1.47 1.43 11.42 11.45 ...
+     $ Sxp                     : num  2.62 2.5 2.48 8.72 8.84 ...
+     $ Sal                     : num  20.7 20.4 20.3 91.8 91.5 ...
+     $ Str                     : num  0.557 0.53 0.537 NA NA ...
+     $ Std                     : num  58.5 58.5 58.5 58.5 58.7 ...
+     $ Ssw                     : num  0.658 0.658 0.658 3.295 3.295 ...
+     $ Sdq                     : num  0.179 0.176 0.176 0.252 0.257 ...
+     $ Sdr                     : num  1.51 1.47 1.46 2.97 3.08 ...
+     $ Vm                      : num  0.0382 0.033 0.032 0.4189 0.414 ...
+     $ Vv                      : num  1.54 1.5 1.47 11.84 11.86 ...
+     $ Vmp                     : num  0.0382 0.033 0.032 0.4189 0.414 ...
+     $ Vmc                     : num  1.21 1.18 1.15 5.85 5.88 ...
+     $ Vvc                     : num  1.39 1.35 1.32 11.35 11.37 ...
+     $ Vvv                     : num  0.148 0.148 0.147 0.487 0.496 ...
+     $ Maximum.depth.of.furrows: num  2.33 2.29 2.29 41.48 39.05 ...
+     $ Mean.depth.of.furrows   : num  0.834 0.808 0.792 18.822 18.342 ...
+     $ Mean.density.of.furrows : num  2027 2022 2034 1354 1319 ...
      $ First.direction         : num  37 37 37 90 90 ...
-     $ Second.direction        : num  56.5 90 90 84.3 84.3 ...
-     $ Third.direction         : num  90 56.6 56.6 78.7 78.7 ...
-     $ Texture.isotropy        : num  47.3 51.9 58.7 72.8 68 ...
-     $ epLsar                  : num  0.00119 0.00113 0.00124 0.00152 0.0018 ...
-     $ NewEplsar               : num  0.0172 0.0172 0.0173 0.0176 0.0177 ...
-     $ Asfc                    : num  1.85 1.79 1.82 9.4 7.54 ...
-     $ Smfc                    : num  86.2 48.8 52 37.9 62.8 ...
-     $ HAsfc9                  : num  0.249 0.233 0.172 3.11 1.59 ...
-     $ HAsfc81                 : num  0.591 0.582 0.516 4.706 5.056 ...
+     $ Second.direction        : num  56.5 90 90 37 37 ...
+     $ Third.direction         : num  90 56.6 56.6 56.5 56.5 ...
+     $ Texture.isotropy        : num  47.3 51.9 58.7 21 21 ...
+     $ epLsar                  : num  0.00119 0.00113 0.00124 0.00347 0.00337 ...
+     $ NewEplsar               : num  0.0172 0.0172 0.0173 0.0163 0.0164 ...
+     $ Asfc                    : num  1.85 1.79 1.82 6.64 6.88 ...
+     $ Smfc                    : num  86.2 48.8 52 12.9 12.9 ...
+     $ HAsfc9                  : num  0.249 0.233 0.172 0.364 0.363 ...
+     $ HAsfc81                 : num  0.591 0.582 0.516 0.486 0.459 ...
      - attr(*, "comment")= Named chr [1:36] "%" "µm" "<no unit>" "<no unit>" ...
       ..- attr(*, "names")= chr [1:36] "NMP" "Sq" "Ssk" "Sku" ...
 
@@ -149,42 +150,47 @@ nminmaxmeanmedsd <- function(x){
 }
 ```
 
-## Define grouping and numerical variables to use
+## Define grouping and numeric variables to use
 
 ``` r
+# Create list for grouping
+sharks_grps <- vector(mode = "list", length = 5)
+names(sharks_grps) <- c("Speciment_NMP", "Specimen_Tooth", "Specimen_Position", 
+                        "Specimen_Tooth_NMP", "Specimen_Position_NMP")
+
 # Define grouping variables: Specimen + NMP_cat
-grp1 <- c("Specimen", "NMP_cat")
+sharks_grps[[1]] <- c("Specimen", "NMP_cat")
 
 # Define grouping variables: Specimen + Tooth
-grp2 <- c("Specimen", "Tooth")
+sharks_grps[[2]] <- c("Specimen", "Tooth")
+
+# Define grouping variables: Specimen + Position
+sharks_grps[[3]] <- c("Specimen", "Position")
 
 # Define grouping variables: Specimen + Tooth + NMP_cat
-grp3 <- c("Specimen", "Tooth", "NMP_cat")
+sharks_grps[[4]] <- c("Specimen", "Tooth", "NMP_cat")
+
+# Define grouping variables: Specimen + Position + NMP_cat
+sharks_grps[[5]] <- c("Specimen", "Position", "NMP_cat")
 ```
 
 The following grouping variables will be used:
 
-- First set `grp1`
-
-<!-- -->
-
-    Specimen
-    NMP_cat
-
-- Second set `grp2`
-
-<!-- -->
-
-    Specimen
-    Tooth
-
-- Third set `grp3`
-
-<!-- -->
-
-    Specimen
-    Tooth
-    NMP_cat
+    Set 1 : Speciment_NMP 
+    Specimen NMP_cat 
+     
+    Set 2 : Specimen_Tooth 
+    Specimen Tooth 
+     
+    Set 3 : Specimen_Position 
+    Specimen Position 
+     
+    Set 4 : Specimen_Tooth_NMP 
+    Specimen Tooth NMP_cat 
+     
+    Set 5 : Specimen_Position_NMP 
+    Specimen Position NMP_cat 
+     
 
 All numerical variables except `NMP` will be used:
 
@@ -227,31 +233,32 @@ All numerical variables except `NMP` will be used:
 ## Compute summary statistics
 
 ``` r
-# grp1
-# Create formula based on grouping variables in grp1
-stats_grp1 <- as.formula(paste(".~", paste(grp1, collapse = "+"))) %>% 
+# Create list for summary stats
+stats_grps <- vector(mode = "list", length = 5)
+names(stats_grps) <- names(sharks_grps)
+
+# Calculate summary stats iteratively
+for (i in seq_along(stats_grps)) {
   
-              # calculate group-wise stats
-              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
+  # Create formula based on grouping variables in grp1
+  stats_grps[[i]] <- as.formula(paste(".~", paste(sharks_grps[[i]], collapse = "+"))) %>% 
+  
+                     # calculate group-wise stats
+                     summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
+}
 ```
 
     Warning in min(y): no non-missing arguments to min; returning Inf
 
     Warning in max(y): no non-missing arguments to max; returning -Inf
 
-``` r
-# Same with grp2
-stats_grp2 <- as.formula(paste(".~", paste(grp2, collapse = "+"))) %>% 
-              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
+    Warning in min(y): no non-missing arguments to min; returning Inf
 
-# Same with grp3
-stats_grp3 <- as.formula(paste(".~", paste(grp3, collapse = "+"))) %>% 
-              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
-```
+    Warning in max(y): no non-missing arguments to max; returning -Inf
 
     Warning in min(y): no non-missing arguments to min; returning Inf
 
-    Warning in min(y): no non-missing arguments to max; returning -Inf
+    Warning in max(y): no non-missing arguments to max; returning -Inf
 
     Warning in min(y): no non-missing arguments to min; returning Inf
 
@@ -282,11 +289,10 @@ units_stats <- data.frame(variable = names(comment(sharks)), units = comment(sha
 
 ------------------------------------------------------------------------
 
-# Write results to XLSX
+# Write results to ODS
 
 ``` r
-write.xlsx(list(Specimen_NMP = stats_grp1, Specimen_Tooth = stats_grp2, Specimen_Tooth_NMP = stats_grp3, 
-                units = units_stats), file = paste0(dir_out, "/DMTA-Ctenacanths_summary-stats.xlsx"))
+write_ods(stats_grps, path = paste0(dir_out, "/DMTA-Ctenacanths_summary-stats.ods"))
 ```
 
 ------------------------------------------------------------------------
@@ -317,17 +323,17 @@ sessionInfo()
 
     other attached packages:
      [1] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.2      
-     [5] purrr_1.0.1       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
-     [9] ggplot2_3.4.2     tidyverse_2.0.0   rmarkdown_2.23    R.utils_2.12.2   
-    [13] R.oo_1.25.0       R.methodsS3_1.8.2 openxlsx_4.2.5.2  knitr_1.43       
-    [17] grateful_0.2.0    doBy_4.6.17      
+     [5] purrr_1.0.2       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
+     [9] ggplot2_3.4.3     tidyverse_2.0.0   rmarkdown_2.24    readODS_2.0.7    
+    [13] R.utils_2.12.2    R.oo_1.25.0       R.methodsS3_1.8.2 knitr_1.43       
+    [17] grateful_0.2.0    doBy_4.6.18      
 
     loaded via a namespace (and not attached):
      [1] sass_0.4.7            utf8_1.2.3            generics_0.1.3       
      [4] stringi_1.7.12        lattice_0.21-8        hms_1.1.3            
      [7] digest_0.6.33         magrittr_2.0.3        timechange_0.2.0     
     [10] evaluate_0.21         grid_4.3.1            fastmap_1.1.1        
-    [13] rprojroot_2.0.3       jsonlite_1.8.7        Matrix_1.5-4.1       
+    [13] rprojroot_2.0.3       jsonlite_1.8.7        Matrix_1.6-1         
     [16] zip_2.3.0             backports_1.4.1       fansi_1.0.4          
     [19] scales_1.2.1          microbenchmark_1.4.10 jquerylib_0.1.4      
     [22] cli_3.6.1             rlang_1.1.1           crayon_1.5.2         
@@ -336,23 +342,24 @@ sessionInfo()
     [31] colorspace_2.1-0      Deriv_4.1.3           broom_1.0.5          
     [34] vctrs_0.6.3           R6_2.5.1              lifecycle_1.0.3      
     [37] MASS_7.3-60           pkgconfig_2.0.3       pillar_1.9.0         
-    [40] bslib_0.5.0           gtable_0.3.3          glue_1.6.2           
-    [43] Rcpp_1.0.11           xfun_0.39             tidyselect_1.2.0     
-    [46] rstudioapi_0.15.0     htmltools_0.5.5       compiler_4.3.1       
+    [40] bslib_0.5.1           gtable_0.3.4          glue_1.6.2           
+    [43] xfun_0.40             tidyselect_1.2.0      rstudioapi_0.15.0    
+    [46] htmltools_0.5.6       compiler_4.3.1       
 
 ------------------------------------------------------------------------
 
 # Cite R packages used
 
-We used R version 4.3.1 (R Core Team 2023) and the following R packages:
-doBy v. 4.6.17 (Højsgaard and Halekoh 2023), grateful v. 0.2.0
-(Francisco Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D.
-Hutchins 2023), knitr v. 1.43 (Xie 2014, 2015, 2023), openxlsx v.
-4.2.5.2 (Schauberger and Walker 2023), R.utils v. 2.12.2 (Bengtsson
-2022), rmarkdown v. 2.23 (Xie, Allaire, and Grolemund 2018; Xie,
-Dervieux, and Riederer 2020; Allaire et al. 2023), tidyverse v. 2.0.0
-(Wickham et al. 2019), running in RStudio v. 2023.6.1.524 (Posit team
-2023).
+| Package   | Version | Citation                                                                                      |
+|:----------|:--------|:----------------------------------------------------------------------------------------------|
+| base      | 4.3.1   | R Core Team (2023)                                                                            |
+| doBy      | 4.6.18  | Højsgaard and Halekoh (2023)                                                                  |
+| grateful  | 0.2.0   | Francisco Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D. Hutchins (2023)               |
+| knitr     | 1.43    | Xie (2014); Xie (2015); Xie (2023)                                                            |
+| R.utils   | 2.12.2  | Bengtsson (2022)                                                                              |
+| readODS   | 2.0.7   | Schutten et al. (2023)                                                                        |
+| rmarkdown | 2.24    | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2023) |
+| tidyverse | 2.0.0   | Wickham et al. (2019)                                                                         |
 
 ## References
 
@@ -390,13 +397,6 @@ Estimates, Utilities*. <https://CRAN.R-project.org/package=doBy>.
 
 </div>
 
-<div id="ref-rstudio" class="csl-entry">
-
-Posit team. 2023. *RStudio: Integrated Development Environment for r*.
-Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
-
-</div>
-
 <div id="ref-base" class="csl-entry">
 
 R Core Team. 2023. *R: A Language and Environment for Statistical
@@ -405,11 +405,11 @@ Computing*. Vienna, Austria: R Foundation for Statistical Computing.
 
 </div>
 
-<div id="ref-openxlsx" class="csl-entry">
+<div id="ref-readODS" class="csl-entry">
 
-Schauberger, Philipp, and Alexander Walker. 2023.
-*<span class="nocase">openxlsx</span>: Read, Write and Edit Xlsx Files*.
-<https://CRAN.R-project.org/package=openxlsx>.
+Schutten, Gerrit-Jan, Chung-hong Chan, Peter Brohan, Detlef Steuer, and
+Thomas J. Leeper. 2023. *<span class="nocase">readODS</span>: Read and
+Write ODS Files*. <https://github.com/ropensci/readODS>.
 
 </div>
 

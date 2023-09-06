@@ -61,7 +61,7 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- c("doBy", "grateful", "knitr", "openxlsx", "R.utils", "rmarkdown", "tidyverse")
+pack_to_load <- sort(c("doBy", "readODS", "R.utils", "rmarkdown", "knitr", "tidyverse", "grateful"))
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
 ```
 
@@ -105,31 +105,35 @@ nminmaxmeanmedsd <- function(x){
 ```
 
 
-## Define grouping and numerical variables to use
+## Define grouping and numeric variables to use
 ```{r}
+# Create list for grouping
+sharks_grps <- vector(mode = "list", length = 5)
+names(sharks_grps) <- c("Speciment_NMP", "Specimen_Tooth", "Specimen_Position", 
+                        "Specimen_Tooth_NMP", "Specimen_Position_NMP")
+
 # Define grouping variables: Specimen + NMP_cat
-grp1 <- c("Specimen", "NMP_cat")
+sharks_grps[[1]] <- c("Specimen", "NMP_cat")
 
 # Define grouping variables: Specimen + Tooth
-grp2 <- c("Specimen", "Tooth")
+sharks_grps[[2]] <- c("Specimen", "Tooth")
+
+# Define grouping variables: Specimen + Position
+sharks_grps[[3]] <- c("Specimen", "Position")
 
 # Define grouping variables: Specimen + Tooth + NMP_cat
-grp3 <- c("Specimen", "Tooth", "NMP_cat")
+sharks_grps[[4]] <- c("Specimen", "Tooth", "NMP_cat")
+
+# Define grouping variables: Specimen + Position + NMP_cat
+sharks_grps[[5]] <- c("Specimen", "Position", "NMP_cat")
 ```
 
 The following grouping variables will be used:  
-
-* First set `grp1`
 ```{r, echo = FALSE}
-cat(colnames(select(sharks, all_of(grp1))), sep = "\n")
-```
-* Second set `grp2`
-```{r, echo = FALSE}
-cat(colnames(select(sharks, all_of(grp2))), sep = "\n")
-```
-* Third set `grp3`
-```{r, echo = FALSE}
-cat(colnames(select(sharks, all_of(grp3))), sep = "\n")
+for (i in seq_along(sharks_grps)) {
+  cat("Set", i, ":", names(sharks_grps)[i], "\n")
+  cat(sharks_grps[[i]], "\n", "\n")  
+}
 ```
 
 All numerical variables except `NMP` will be used: 
@@ -140,20 +144,19 @@ cat(colnames(select(sharks, where(is.numeric))[-1]), sep = "\n")
 
 ## Compute summary statistics
 ```{r}
-# grp1
-# Create formula based on grouping variables in grp1
-stats_grp1 <- as.formula(paste(".~", paste(grp1, collapse = "+"))) %>% 
+# Create list for summary stats
+stats_grps <- vector(mode = "list", length = 5)
+names(stats_grps) <- names(sharks_grps)
+
+# Calculate summary stats iteratively
+for (i in seq_along(stats_grps)) {
   
-              # calculate group-wise stats
-              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
-
-# Same with grp2
-stats_grp2 <- as.formula(paste(".~", paste(grp2, collapse = "+"))) %>% 
-              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
-
-# Same with grp3
-stats_grp3 <- as.formula(paste(".~", paste(grp3, collapse = "+"))) %>% 
-              summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
+  # Create formula based on grouping variables in grp1
+  stats_grps[[i]] <- as.formula(paste(".~", paste(sharks_grps[[i]], collapse = "+"))) %>% 
+  
+                     # calculate group-wise stats
+                     summaryBy(data = sharks, FUN = nminmaxmeanmedsd)
+}
 ```
 
 
@@ -167,10 +170,9 @@ units_stats <- data.frame(variable = names(comment(sharks)), units = comment(sha
 ---
 
 
-# Write results to XLSX
+# Write results to ODS
 ```{r}
-write.xlsx(list(Specimen_NMP = stats_grp1, Specimen_Tooth = stats_grp2, Specimen_Tooth_NMP = stats_grp3, 
-                units = units_stats), file = paste0(dir_out, "/DMTA-Ctenacanths_summary-stats.xlsx"))
+write_ods(stats_grps, path = paste0(dir_out, "/DMTA-Ctenacanths_summary-stats.ods"))
 ```
 
 
@@ -190,8 +192,9 @@ sessionInfo()
 # Cite R packages used
 
 ```{r, echo = FALSE}
-cite_packages(pkgs = c(pack_to_load, "base"), output = "paragraph", 
-              include.RStudio = TRUE, out.dir = "analysis/scripts", bib.file = "Sharks_2_Summary-stats")
+pkgs_cite <- cite_packages(pkgs = c(pack_to_load, "base"), output = "table", include.RStudio = TRUE, 
+                           out.dir = "analysis/scripts", bib.file = "Sharks_2_Summary-stats")
+knitr::kable(pkgs_cite)
 ```
 
 
