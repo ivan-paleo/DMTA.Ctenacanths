@@ -34,7 +34,7 @@ The script will:
 
 1. Read in the original files  
 2. Format the data  
-3. Write XLSX-files and save R objects ready for further analysis in R  
+3. Write ODS file and save R objects ready for further analysis in R  
 
 ```{r}
 dir_in  <- "analysis/raw_data"
@@ -52,7 +52,7 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- c("grateful", "knitr", "openxlsx", "R.utils", "rmarkdown", "tidyverse")
+pack_to_load <- sort(c("R.utils", "readODS", "tidyverse", "rmarkdown", "knitr", "grateful"))
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
 ```
 
@@ -74,11 +74,17 @@ info_in
 ## Read in CSV files
 ```{r}
 # Loop through list of CSV files and read in
-sharks <- lapply(info_in, function(x) read.csv(x, header = FALSE, na.strings = "*****", 
-                                               fileEncoding = 'WINDOWS-1252')) %>%
+sharks <- info_in %>% 
   
-          # rbind together
-          do.call(rbind, .)
+           # Subset relevant CSV files
+           .[grepl("x.csv", .)] %>% 
+  
+           # Read in all relevant CSV files
+           lapply(function(x) read.csv(x, header = FALSE, na.strings = "*****", 
+                                       fileEncoding = 'WINDOWS-1252')) %>%
+  
+           # rbind together
+           do.call(rbind, .)
 ```
 
 
@@ -122,7 +128,7 @@ colnames(sharks_keep)[ISO] <- strsplit(names(sharks_keep)[ISO], ".", fixed = TRU
 colnames(sharks_keep)[SSFA] <- gsub("^([A-Za-z0-9]+\\.)+", "", colnames(sharks_keep)[SSFA])
 
 # Edit headers for name of surfaces and non-measured point ratios
-colnames(sharks_keep)[ID] <- c("Surface.Name", "NMP")
+colnames(sharks_keep)[ID] <- c("Name", "NMP")
 ```
 
 
@@ -155,7 +161,7 @@ if (n_units != 1) {
 ## Split column 'Name' 
 ```{r}
 sharks_keep[c("Specimen", "Tooth", "Location", "Objective", "Measurement")] <- str_split_fixed(
-                                                                               sharks_keep$Surface.Name, "_", n = 5)
+                                                                               sharks_keep$Name, "_", n = 5)
 ```
 
 
@@ -193,9 +199,26 @@ table(sharks_keep[c("NMP_cat", "Objective")])
 ```
 
 
+## Read in CSV files of measurement positions
+```{r}
+meas_pos <- info_in %>% 
+            .[grepl("positions", .)] %>% 
+            lapply(function(x) read.csv2(x, fileEncoding = 'WINDOWS-1252')) %>%
+            do.call(rbind, .)
+str(meas_pos)
+head(meas_pos)
+```
+
+
+## Merge measurement positions with dataset
+```{r}
+sharks_keep_pos <- merge(sharks_keep, meas_pos, by = "Name", all.x = TRUE)
+```
+
+
 ## Re-order columns and add units as comment 
 ```{r}
-sharks_final <- select(sharks_keep, Specimen:Measurement, NMP, NMP_cat, Sq:HAsfc81)
+sharks_final <- select(sharks_keep_pos, Specimen:Measurement, Position, NMP, NMP_cat, Sq:HAsfc81)
 comment(sharks_final) <- sharks_units
 ```
 
@@ -215,14 +238,14 @@ head(sharks_final)
 # Save data
 ## Create file names
 ```{r}
-sharks_xlsx <- paste0(dir_out, "/DMTA-Ctenacanths.xlsx")
+sharks_ods <- paste0(dir_out, "/DMTA-Ctenacanths.ods")
 sharks_rbin <- paste0(dir_out, "/DMTA-Ctenacanths.Rbin")
 ```
 
 
-## Write to XLSX and Rbin
+## Write to ODS and Rbin
 ```{r}
-write.xlsx(list(data = sharks_final, units = units_table), file = sharks_xlsx) 
+write_ods(list("data" = sharks_final, "units" = units_table), path = sharks_ods) 
 saveObject(sharks_final, file = sharks_rbin) 
 ```
 
@@ -249,8 +272,9 @@ sessionInfo()
 # Cite R packages used
 
 ```{r, echo = FALSE}
-cite_packages(pkgs = c(pack_to_load, "base"), output = "paragraph", 
-              include.RStudio = TRUE, out.dir = "analysis/scripts", bib.file = "Sharks_1_Import")
+pkgs_cite <- cite_packages(pkgs = c(pack_to_load, "base"), output = "table", include.RStudio = TRUE, 
+                           out.dir = "analysis/scripts", bib.file = "Sharks_1_Import")
+knitr::kable(pkgs_cite)
 ```
 
 

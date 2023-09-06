@@ -1,7 +1,7 @@
 Import dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-08-04 11:22:56 CEST
+2023-09-06 08:51:56 CEST
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -17,12 +17,16 @@ Ivan Calandra
   - [Split column ‘Name’](#split-column-name)
   - [Convert to numeric](#convert-to-numeric)
   - [Add column for NMP categories](#add-column-for-nmp-categories)
+  - [Read in CSV files of measurement
+    positions](#read-in-csv-files-of-measurement-positions)
+  - [Merge measurement positions with
+    dataset](#merge-measurement-positions-with-dataset)
   - [Re-order columns and add units as
     comment](#re-order-columns-and-add-units-as-comment)
   - [Check the result](#check-the-result)
 - [Save data](#save-data)
   - [Create file names](#create-file-names)
-  - [Write to XLSX and Rbin](#write-to-xlsx-and-rbin)
+  - [Write to ODS and Rbin](#write-to-ods-and-rbin)
 - [sessionInfo()](#sessioninfo)
 - [Cite R packages used](#cite-r-packages-used)
   - [References](#references)
@@ -37,7 +41,7 @@ will:
 
 1.  Read in the original files  
 2.  Format the data  
-3.  Write XLSX-files and save R objects ready for further analysis in R
+3.  Write ODS file and save R objects ready for further analysis in R
 
 ``` r
 dir_in  <- "analysis/raw_data"
@@ -54,11 +58,11 @@ The knit directory for this script is the project directory.
 # Load packages
 
 ``` r
-pack_to_load <- c("grateful", "knitr", "openxlsx", "R.utils", "rmarkdown", "tidyverse")
+pack_to_load <- sort(c("R.utils", "readODS", "tidyverse", "rmarkdown", "knitr", "grateful"))
 sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
 ```
 
-     grateful     knitr  openxlsx   R.utils rmarkdown tidyverse 
+     grateful     knitr   R.utils   readODS rmarkdown tidyverse 
          TRUE      TRUE      TRUE      TRUE      TRUE      TRUE 
 
 ------------------------------------------------------------------------
@@ -70,8 +74,10 @@ info_in <- list.files(dir_in, pattern = "\\.csv$", full.names = TRUE)
 info_in
 ```
 
-    [1] "analysis/raw_data/DMTA-Ctenacanths_100x.csv"
-    [2] "analysis/raw_data/DMTA-Ctenacanths_20x.csv" 
+    [1] "analysis/raw_data/DMTA-Ctenacanths_100x.csv"          
+    [2] "analysis/raw_data/DMTA-Ctenacanths_100x_positions.csv"
+    [3] "analysis/raw_data/DMTA-Ctenacanths_20x.csv"           
+    [4] "analysis/raw_data/DMTA-Ctenacanths_20x_positions.csv" 
 
 ------------------------------------------------------------------------
 
@@ -81,11 +87,17 @@ info_in
 
 ``` r
 # Loop through list of CSV files and read in
-sharks <- lapply(info_in, function(x) read.csv(x, header = FALSE, na.strings = "*****", 
-                                               fileEncoding = 'WINDOWS-1252')) %>%
+sharks <- info_in %>% 
   
-          # rbind together
-          do.call(rbind, .)
+           # Subset relevant CSV files
+           .[grepl("x.csv", .)] %>% 
+  
+           # Read in all relevant CSV files
+           lapply(function(x) read.csv(x, header = FALSE, na.strings = "*****", 
+                                       fileEncoding = 'WINDOWS-1252')) %>%
+  
+           # rbind together
+           do.call(rbind, .)
 ```
 
 ## Select relevant columns and rows
@@ -129,7 +141,7 @@ colnames(sharks_keep)[ISO] <- strsplit(names(sharks_keep)[ISO], ".", fixed = TRU
 colnames(sharks_keep)[SSFA] <- gsub("^([A-Za-z0-9]+\\.)+", "", colnames(sharks_keep)[SSFA])
 
 # Edit headers for name of surfaces and non-measured point ratios
-colnames(sharks_keep)[ID] <- c("Surface.Name", "NMP")
+colnames(sharks_keep)[ID] <- c("Name", "NMP")
 ```
 
 ## Extract units
@@ -162,7 +174,7 @@ if (n_units != 1) {
 
 ``` r
 sharks_keep[c("Specimen", "Tooth", "Location", "Objective", "Measurement")] <- str_split_fixed(
-                                                                               sharks_keep$Surface.Name, "_", n = 5)
+                                                                               sharks_keep$Name, "_", n = 5)
 ```
 
 ## Convert to numeric
@@ -205,10 +217,42 @@ table(sharks_keep[c("NMP_cat", "Objective")])
       10-20%   28  31
       ≥20%      5  11
 
+## Read in CSV files of measurement positions
+
+``` r
+meas_pos <- info_in %>% 
+            .[grepl("positions", .)] %>% 
+            lapply(function(x) read.csv2(x, fileEncoding = 'WINDOWS-1252')) %>%
+            do.call(rbind, .)
+str(meas_pos)
+```
+
+    'data.frame':   160 obs. of  2 variables:
+     $ Name    : chr  "CC_A_loc1_100x_meas1" "CC_A_loc1_100x_meas2" "CC_A_loc1_100x_meas3" "CC_A_loc2_100x_meas1" ...
+     $ Position: chr  "top" "top" "top" "bottom" ...
+
+``` r
+head(meas_pos)
+```
+
+                      Name Position
+    1 CC_A_loc1_100x_meas1      top
+    2 CC_A_loc1_100x_meas2      top
+    3 CC_A_loc1_100x_meas3      top
+    4 CC_A_loc2_100x_meas1   bottom
+    5 CC_A_loc2_100x_meas2   bottom
+    6 CC_A_loc2_100x_meas3   bottom
+
+## Merge measurement positions with dataset
+
+``` r
+sharks_keep_pos <- merge(sharks_keep, meas_pos, by = "Name", all.x = TRUE)
+```
+
 ## Re-order columns and add units as comment
 
 ``` r
-sharks_final <- select(sharks_keep, Specimen:Measurement, NMP, NMP_cat, Sq:HAsfc81)
+sharks_final <- select(sharks_keep_pos, Specimen:Measurement, Position, NMP, NMP_cat, Sq:HAsfc81)
 comment(sharks_final) <- sharks_units
 ```
 
@@ -220,49 +264,50 @@ Type `comment(sharks_final)` to check the units of the parameters.
 str(sharks_final)
 ```
 
-    'data.frame':   160 obs. of  42 variables:
+    'data.frame':   160 obs. of  43 variables:
      $ Specimen                : chr  "CC" "CC" "CC" "CC" ...
      $ Tooth                   : chr  "A" "A" "A" "A" ...
-     $ Location                : chr  "loc1" "loc1" "loc1" "loc2" ...
-     $ Objective               : chr  "100x" "100x" "100x" "100x" ...
+     $ Location                : chr  "loc1" "loc1" "loc1" "loc1" ...
+     $ Objective               : chr  "100x" "100x" "100x" "20x" ...
      $ Measurement             : chr  "meas1" "meas2" "meas3" "meas1" ...
-     $ NMP                     : num  3.03 3.05 3.34 9.84 9.78 ...
-     $ NMP_cat                 : Ord.factor w/ 3 levels "<10%"<"10-20%"<..: 1 1 1 1 1 1 2 2 2 1 ...
-     $ Sq                      : num  1.22 1.18 1.16 1.66 1.66 ...
-     $ Ssk                     : num  -0.332 -0.345 -0.355 1.53 1.454 ...
-     $ Sku                     : num  2.53 2.45 2.42 8.22 7.72 ...
-     $ Sp                      : num  2.74 2.73 2.69 8.77 8.39 ...
-     $ Sv                      : num  3.42 3.25 3.17 3.39 3.45 ...
-     $ Sz                      : num  6.16 5.98 5.86 12.16 11.84 ...
-     $ Sa                      : num  0.995 0.969 0.956 1.14 1.154 ...
-     $ Smr                     : num  5.865 4.991 4.781 0.361 0.405 ...
-     $ Smc                     : num  1.5 1.47 1.43 1.3 1.32 ...
-     $ Sxp                     : num  2.62 2.5 2.48 2.77 2.76 ...
-     $ Sal                     : num  20.7 20.4 20.3 15.3 15.2 ...
-     $ Str                     : num  0.557 0.53 0.537 0.408 0.396 ...
-     $ Std                     : num  58.5 58.5 58.5 84.5 84.5 ...
-     $ Ssw                     : num  0.658 0.658 0.658 0.658 0.658 ...
-     $ Sdq                     : num  0.179 0.176 0.176 0.409 0.395 ...
-     $ Sdr                     : num  1.51 1.47 1.46 4.86 4.71 ...
-     $ Vm                      : num  0.0382 0.033 0.032 0.2068 0.2047 ...
-     $ Vv                      : num  1.54 1.5 1.47 1.51 1.53 ...
-     $ Vmp                     : num  0.0382 0.033 0.032 0.2068 0.2047 ...
-     $ Vmc                     : num  1.21 1.18 1.15 1.16 1.18 ...
-     $ Vvc                     : num  1.39 1.35 1.32 1.35 1.37 ...
-     $ Vvv                     : num  0.148 0.148 0.147 0.154 0.155 ...
-     $ Maximum.depth.of.furrows: num  2.33 2.29 2.29 4.51 4.52 ...
-     $ Mean.depth.of.furrows   : num  0.834 0.808 0.792 1.292 1.286 ...
-     $ Mean.density.of.furrows : num  2027 2022 2034 2211 2229 ...
+     $ Position                : chr  "top" "top" "top" "top" ...
+     $ NMP                     : num  3.03 3.05 3.34 12.54 11.63 ...
+     $ NMP_cat                 : Ord.factor w/ 3 levels "<10%"<"10-20%"<..: 1 1 1 2 2 2 1 1 1 3 ...
+     $ Sq                      : num  1.22 1.18 1.16 7.28 7.29 ...
+     $ Ssk                     : num  -0.332 -0.345 -0.355 0.83 0.814 ...
+     $ Sku                     : num  2.53 2.45 2.42 3.15 3.14 ...
+     $ Sp                      : num  2.74 2.73 2.69 22.04 22.01 ...
+     $ Sv                      : num  3.42 3.25 3.17 17.88 19.03 ...
+     $ Sz                      : num  6.16 5.98 5.86 39.92 41.04 ...
+     $ Sa                      : num  0.995 0.969 0.956 5.8 5.803 ...
+     $ Smr                     : num  5.865 4.991 4.781 0.189 0.183 ...
+     $ Smc                     : num  1.5 1.47 1.43 11.42 11.45 ...
+     $ Sxp                     : num  2.62 2.5 2.48 8.72 8.84 ...
+     $ Sal                     : num  20.7 20.4 20.3 91.8 91.5 ...
+     $ Str                     : num  0.557 0.53 0.537 NA NA ...
+     $ Std                     : num  58.5 58.5 58.5 58.5 58.7 ...
+     $ Ssw                     : num  0.658 0.658 0.658 3.295 3.295 ...
+     $ Sdq                     : num  0.179 0.176 0.176 0.252 0.257 ...
+     $ Sdr                     : num  1.51 1.47 1.46 2.97 3.08 ...
+     $ Vm                      : num  0.0382 0.033 0.032 0.4189 0.414 ...
+     $ Vv                      : num  1.54 1.5 1.47 11.84 11.86 ...
+     $ Vmp                     : num  0.0382 0.033 0.032 0.4189 0.414 ...
+     $ Vmc                     : num  1.21 1.18 1.15 5.85 5.88 ...
+     $ Vvc                     : num  1.39 1.35 1.32 11.35 11.37 ...
+     $ Vvv                     : num  0.148 0.148 0.147 0.487 0.496 ...
+     $ Maximum.depth.of.furrows: num  2.33 2.29 2.29 41.48 39.05 ...
+     $ Mean.depth.of.furrows   : num  0.834 0.808 0.792 18.822 18.342 ...
+     $ Mean.density.of.furrows : num  2027 2022 2034 1354 1319 ...
      $ First.direction         : num  37 37 37 90 90 ...
-     $ Second.direction        : num  56.5 90 90 84.3 84.3 ...
-     $ Third.direction         : num  90 56.6 56.6 78.7 78.7 ...
-     $ Texture.isotropy        : num  47.3 51.9 58.7 72.8 68 ...
-     $ epLsar                  : num  0.00119 0.00113 0.00124 0.00152 0.0018 ...
-     $ NewEplsar               : num  0.0172 0.0172 0.0173 0.0176 0.0177 ...
-     $ Asfc                    : num  1.85 1.79 1.82 9.4 7.54 ...
-     $ Smfc                    : num  86.2 48.8 52 37.9 62.8 ...
-     $ HAsfc9                  : num  0.249 0.233 0.172 3.11 1.59 ...
-     $ HAsfc81                 : num  0.591 0.582 0.516 4.706 5.056 ...
+     $ Second.direction        : num  56.5 90 90 37 37 ...
+     $ Third.direction         : num  90 56.6 56.6 56.5 56.5 ...
+     $ Texture.isotropy        : num  47.3 51.9 58.7 21 21 ...
+     $ epLsar                  : num  0.00119 0.00113 0.00124 0.00347 0.00337 ...
+     $ NewEplsar               : num  0.0172 0.0172 0.0173 0.0163 0.0164 ...
+     $ Asfc                    : num  1.85 1.79 1.82 6.64 6.88 ...
+     $ Smfc                    : num  86.2 48.8 52 12.9 12.9 ...
+     $ HAsfc9                  : num  0.249 0.233 0.172 0.364 0.363 ...
+     $ HAsfc81                 : num  0.591 0.582 0.516 0.486 0.459 ...
      - attr(*, "comment")= Named chr [1:36] "%" "µm" "<no unit>" "<no unit>" ...
       ..- attr(*, "names")= chr [1:36] "NMP" "Sq" "Ssk" "Sku" ...
 
@@ -270,55 +315,55 @@ str(sharks_final)
 head(sharks_final)
 ```
 
-      Specimen Tooth Location Objective Measurement      NMP NMP_cat       Sq
-    4       CC     A     loc1      100x       meas1 3.029439    <10% 1.216901
-    5       CC     A     loc1      100x       meas2 3.049307    <10% 1.179617
-    6       CC     A     loc1      100x       meas3 3.344563    <10% 1.159639
-    7       CC     A     loc2      100x       meas1 9.838464    <10% 1.656338
-    8       CC     A     loc2      100x       meas2 9.778688    <10% 1.660077
-    9       CC     A     loc2      100x       meas3 9.676411    <10% 1.672438
-             Ssk      Sku       Sp       Sv        Sz        Sa       Smr      Smc
-    4 -0.3324891 2.531089 2.739170 3.419274  6.158444 0.9953219 5.8654996 1.501282
-    5 -0.3453720 2.445014 2.728211 3.249398  5.977609 0.9692665 4.9913841 1.466514
-    6 -0.3552218 2.419064 2.691938 3.171959  5.863897 0.9563751 4.7814041 1.433144
-    7  1.5304097 8.222025 8.770563 3.392293 12.162856 1.1397393 0.3605701 1.299871
-    8  1.4536571 7.720735 8.385795 3.451509 11.837304 1.1538744 0.4047778 1.323791
-    9  1.3428177 7.123336 8.221306 3.535302 11.756608 1.1745203 0.3790766 1.340443
-           Sxp      Sal       Str      Std       Ssw       Sdq      Sdr         Vm
-    4 2.616679 20.72644 0.5567234 58.51426 0.6583791 0.1788874 1.506669 0.03822744
-    5 2.496966 20.41661 0.5302128 58.51580 0.6583791 0.1762588 1.467242 0.03300682
-    6 2.478542 20.34239 0.5374210 58.51426 0.6583791 0.1757932 1.461778 0.03196542
-    7 2.773392 15.28407 0.4082060 84.49350 0.6583791 0.4089966 4.864301 0.20681889
-    8 2.764030 15.15797 0.3964592 84.49088 0.6583791 0.3952110 4.711679 0.20466698
-    9 2.785413 15.04554 0.3796597 84.49234 0.6583791 0.4100509 4.876693 0.20529636
-            Vv        Vmp      Vmc      Vvc       Vvv Maximum.depth.of.furrows
-    4 1.539509 0.03822744 1.208085 1.391427 0.1480817                 2.330753
-    5 1.499521 0.03300682 1.177222 1.351987 0.1475341                 2.286745
-    6 1.465109 0.03196542 1.152959 1.318489 0.1466205                 2.291874
-    7 1.506690 0.20681889 1.155887 1.352251 0.1544399                 4.505557
-    8 1.528458 0.20466698 1.179001 1.373821 0.1546366                 4.519094
-    9 1.545739 0.20529636 1.218516 1.389702 0.1560377                 4.589052
-      Mean.depth.of.furrows Mean.density.of.furrows First.direction
-    4             0.8337031                2026.884        37.00334
-    5             0.8079501                2022.394        37.00374
-    6             0.7918662                2033.563        37.00464
-    7             1.2923442                2210.950        90.00308
-    8             1.2861711                2228.890        89.99409
-    9             1.3129296                2198.418        90.00073
-      Second.direction Third.direction Texture.isotropy      epLsar  NewEplsar
-    4         56.54720        89.98706         47.34345 0.001190735 0.01718885
-    5         90.00751        56.55262         51.88475 0.001128928 0.01723834
-    6         89.99660        56.55126         58.70932 0.001244379 0.01734807
-    7         84.27736        78.66287         72.77926 0.001522344 0.01759510
-    8         84.26899        78.65584         68.00086 0.001796346 0.01773082
-    9         84.26877       142.98863         65.80603 0.001234300 0.01778692
-          Asfc     Smfc    HAsfc9   HAsfc81
-    4 1.851713 86.15295 0.2487842 0.5906368
-    5 1.787470 48.78199 0.2329559 0.5822596
-    6 1.822078 51.96430 0.1722548 0.5164332
-    7 9.401217 37.88585 3.1102284 4.7057083
-    8 7.539994 62.81191 1.5898377 5.0555013
-    9 7.913469 51.96430 1.2035583 3.9106375
+      Specimen Tooth Location Objective Measurement Position       NMP NMP_cat
+    1       CC     A     loc1      100x       meas1      top  3.029439    <10%
+    2       CC     A     loc1      100x       meas2      top  3.049307    <10%
+    3       CC     A     loc1      100x       meas3      top  3.344563    <10%
+    4       CC     A     loc1       20x       meas1      top 12.535975  10-20%
+    5       CC     A     loc1       20x       meas2      top 11.627484  10-20%
+    6       CC     A     loc1       20x       meas3      top 11.532629  10-20%
+            Sq        Ssk      Sku        Sp        Sv        Sz        Sa
+    1 1.216901 -0.3324891 2.531089  2.739170  3.419274  6.158444 0.9953219
+    2 1.179617 -0.3453720 2.445014  2.728211  3.249398  5.977609 0.9692665
+    3 1.159639 -0.3552218 2.419064  2.691938  3.171959  5.863897 0.9563751
+    4 7.283899  0.8300851 3.150191 22.041760 17.879370 39.921130 5.8003993
+    5 7.291346  0.8135181 3.143032 22.005620 19.034020 41.039640 5.8025693
+    6 7.299769  0.7937514 3.133681 21.947290 19.597010 41.544300 5.8089293
+            Smr       Smc      Sxp      Sal       Str      Std       Ssw       Sdq
+    1 5.8654996  1.501282 2.616679 20.72644 0.5567234 58.51426 0.6583791 0.1788874
+    2 4.9913841  1.466514 2.496966 20.41661 0.5302128 58.51580 0.6583791 0.1762588
+    3 4.7814041  1.433144 2.478542 20.34239 0.5374210 58.51426 0.6583791 0.1757932
+    4 0.1894798 11.422816 8.719022 91.81795        NA 58.51104 3.2947348 0.2516132
+    5 0.1831192 11.447557 8.835691 91.52523        NA 58.74993 3.2947348 0.2565464
+    6 0.1789167 11.420322 8.937201 91.26699        NA 58.50948 3.2947348 0.2573718
+           Sdr         Vm        Vv        Vmp      Vmc       Vvc       Vvv
+    1 1.506669 0.03822744  1.539509 0.03822744 1.208085  1.391427 0.1480817
+    2 1.467242 0.03300682  1.499521 0.03300682 1.177222  1.351987 0.1475341
+    3 1.461778 0.03196542  1.465109 0.03196542 1.152959  1.318489 0.1466205
+    4 2.969515 0.41885768 11.841674 0.41885768 5.853784 11.354906 0.4867681
+    5 3.077962 0.41399141 11.861548 0.41399141 5.876793 11.365137 0.4964114
+    6 3.094444 0.41329807 11.833616 0.41329807 5.893694 11.326966 0.5066504
+      Maximum.depth.of.furrows Mean.depth.of.furrows Mean.density.of.furrows
+    1                 2.330753             0.8337031                2026.884
+    2                 2.286745             0.8079501                2022.394
+    3                 2.291874             0.7918662                2033.563
+    4                41.483780            18.8223490                1353.924
+    5                39.054195            18.3416154                1318.768
+    6                36.911570            18.3032455                1322.121
+      First.direction Second.direction Third.direction Texture.isotropy      epLsar
+    1        37.00334         56.54720        89.98706         47.34345 0.001190735
+    2        37.00374         90.00751        56.55262         51.88475 0.001128928
+    3        37.00464         89.99660        56.55126         58.70932 0.001244379
+    4        89.99845         37.00583        56.52640         20.95764 0.003465575
+    5        90.00132         37.00101        56.51804         20.96000 0.003372058
+    6        90.00973         37.00585        56.52725         20.91598 0.003303745
+       NewEplsar     Asfc     Smfc    HAsfc9   HAsfc81
+    1 0.01718885 1.851713 86.15295 0.2487842 0.5906368
+    2 0.01723834 1.787470 48.78199 0.2329559 0.5822596
+    3 0.01734807 1.822078 51.96430 0.1722548 0.5164332
+    4 0.01632353 6.642577 12.86064 0.3637900 0.4857648
+    5 0.01638856 6.882199 12.86064 0.3629004 0.4593461
+    6 0.01641245 7.008048 12.86064 0.3699310 0.4620558
 
 ------------------------------------------------------------------------
 
@@ -327,14 +372,14 @@ head(sharks_final)
 ## Create file names
 
 ``` r
-sharks_xlsx <- paste0(dir_out, "/DMTA-Ctenacanths.xlsx")
+sharks_ods <- paste0(dir_out, "/DMTA-Ctenacanths.ods")
 sharks_rbin <- paste0(dir_out, "/DMTA-Ctenacanths.Rbin")
 ```
 
-## Write to XLSX and Rbin
+## Write to ODS and Rbin
 
 ``` r
-write.xlsx(list(data = sharks_final, units = units_table), file = sharks_xlsx) 
+write_ods(list("data" = sharks_final, "units" = units_table), path = sharks_ods) 
 saveObject(sharks_final, file = sharks_rbin) 
 ```
 
@@ -374,36 +419,36 @@ sessionInfo()
 
     other attached packages:
      [1] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.2      
-     [5] purrr_1.0.1       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
-     [9] ggplot2_3.4.2     tidyverse_2.0.0   rmarkdown_2.23    R.utils_2.12.2   
-    [13] R.oo_1.25.0       R.methodsS3_1.8.2 openxlsx_4.2.5.2  knitr_1.43       
+     [5] purrr_1.0.2       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
+     [9] ggplot2_3.4.3     tidyverse_2.0.0   rmarkdown_2.24    readODS_2.0.7    
+    [13] R.utils_2.12.2    R.oo_1.25.0       R.methodsS3_1.8.2 knitr_1.43       
     [17] grateful_0.2.0   
 
     loaded via a namespace (and not attached):
      [1] sass_0.4.7        utf8_1.2.3        generics_0.1.3    stringi_1.7.12   
-     [5] hms_1.1.3         digest_0.6.33     magrittr_2.0.3    timechange_0.2.0 
-     [9] evaluate_0.21     grid_4.3.1        fastmap_1.1.1     rprojroot_2.0.3  
+     [5] hms_1.1.3         digest_0.6.33     magrittr_2.0.3    evaluate_0.21    
+     [9] grid_4.3.1        timechange_0.2.0  fastmap_1.1.1     rprojroot_2.0.3  
     [13] jsonlite_1.8.7    zip_2.3.0         fansi_1.0.4       scales_1.2.1     
     [17] jquerylib_0.1.4   cli_3.6.1         rlang_1.1.1       crayon_1.5.2     
     [21] munsell_0.5.0     withr_2.5.0       cachem_1.0.8      yaml_2.3.7       
     [25] tools_4.3.1       tzdb_0.4.0        colorspace_2.1-0  vctrs_0.6.3      
     [29] R6_2.5.1          lifecycle_1.0.3   pkgconfig_2.0.3   pillar_1.9.0     
-    [33] bslib_0.5.0       gtable_0.3.3      glue_1.6.2        Rcpp_1.0.11      
-    [37] xfun_0.39         tidyselect_1.2.0  rstudioapi_0.15.0 htmltools_0.5.5  
-    [41] compiler_4.3.1   
+    [33] bslib_0.5.1       gtable_0.3.4      glue_1.6.2        xfun_0.40        
+    [37] tidyselect_1.2.0  rstudioapi_0.15.0 htmltools_0.5.6   compiler_4.3.1   
 
 ------------------------------------------------------------------------
 
 # Cite R packages used
 
-We used R version 4.3.1 (R Core Team 2023) and the following R packages:
-grateful v. 0.2.0 (Francisco Rodríguez-Sánchez, Connor P. Jackson, and
-Shaurita D. Hutchins 2023), knitr v. 1.43 (Xie 2014, 2015, 2023),
-openxlsx v. 4.2.5.2 (Schauberger and Walker 2023), R.utils v. 2.12.2
-(Bengtsson 2022), rmarkdown v. 2.23 (Xie, Allaire, and Grolemund 2018;
-Xie, Dervieux, and Riederer 2020; Allaire et al. 2023), tidyverse v.
-2.0.0 (Wickham et al. 2019), running in RStudio v. 2023.6.1.524 (Posit
-team 2023).
+| Package   | Version | Citation                                                                                      |
+|:----------|:--------|:----------------------------------------------------------------------------------------------|
+| base      | 4.3.1   | R Core Team (2023)                                                                            |
+| grateful  | 0.2.0   | Francisco Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D. Hutchins (2023)               |
+| knitr     | 1.43    | Xie (2014); Xie (2015); Xie (2023)                                                            |
+| R.utils   | 2.12.2  | Bengtsson (2022)                                                                              |
+| readODS   | 2.0.7   | Schutten et al. (2023)                                                                        |
+| rmarkdown | 2.24    | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2023) |
+| tidyverse | 2.0.0   | Wickham et al. (2019)                                                                         |
 
 ## References
 
@@ -433,13 +478,6 @@ Citation of r Packages*. <https://github.com/Pakillo/grateful>.
 
 </div>
 
-<div id="ref-rstudio" class="csl-entry">
-
-Posit team. 2023. *RStudio: Integrated Development Environment for r*.
-Boston, MA: Posit Software, PBC. <http://www.posit.co/>.
-
-</div>
-
 <div id="ref-base" class="csl-entry">
 
 R Core Team. 2023. *R: A Language and Environment for Statistical
@@ -448,11 +486,11 @@ Computing*. Vienna, Austria: R Foundation for Statistical Computing.
 
 </div>
 
-<div id="ref-openxlsx" class="csl-entry">
+<div id="ref-readODS" class="csl-entry">
 
-Schauberger, Philipp, and Alexander Walker. 2023.
-*<span class="nocase">openxlsx</span>: Read, Write and Edit Xlsx Files*.
-<https://CRAN.R-project.org/package=openxlsx>.
+Schutten, Gerrit-Jan, Chung-hong Chan, Peter Brohan, Detlef Steuer, and
+Thomas J. Leeper. 2023. *<span class="nocase">readODS</span>: Read and
+Write ODS Files*. <https://github.com/ropensci/readODS>.
 
 </div>
 
