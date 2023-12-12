@@ -48,7 +48,7 @@ The [scripts](/analysis/scripts) directory contains the following files:
 - [Sharks_1_Import.Rmd](/analysis/scripts/Sharks_1_Import.Rmd): script to import the raw, input data. Rendered to [Sharks_1_Import.md](/analysis/scripts/Sharks_1_Import.md) and [Sharks_1_Import.html](/analysis/scripts/Sharks_1_Import.html). The references are exported to a BIB file ([Sharks_1_Import.bib](/analysis/scripts/Sharks_1_Import.bib)).  
 - [Sharks_2_Summary-stats.Rmd](/analysis/scripts/Sharks_2_Summary-stats.Rmd): script to compute group-wise summary statistics. Rendered to [Sharks_2_Summary-stats.md](/analysis/scripts/Sharks_2_Summary-stats.md) and [Sharks_2_Summary-stats.html](/analysis/scripts/Sharks_2_Summary-stats.html). The references are exported to a BIB file ([Sharks_2_Summary-stats.bib](/analysis/scripts/Sharks_2_Summary-stats.bib)).  
 - [Sharks_3_Plots.Rmd](/analysis/scripts/Sharks_3_Plots.Rmd): script to produce plots for each SSFA variable. Rendered to [Sharks_3_Plots.md](/analysis/scripts/Sharks_3_Plots.md) and [Sharks_3_Plots.html](/analysis/scripts/Sharks_3_Plots.html). The references are exported to a BIB file ([Sharks_3_Plots.bib](/analysis/scripts/Sharks_3_Plots.bib)).   
-- [Sharks_3_Plots_files](/analysis/scripts/Sharks_3_Plots_files/figure-gfm/): contains PNG files of the plots; used in the [Sharks_3_Plots.md](/R_analysis/scripts/Sharks_3_Plots.md) file.
+- [Sharks_3_Plots_files](/analysis/scripts/Sharks_3_Plots_files/figure-gfm/): contains PNG files of the plots; used in the [Sharks_3_Plots.md](/analysis/scripts/Sharks_3_Plots.md) file.
 
 Note that the HTML files are not rendered nicely on GitHub; you need to download them and open them with your browser. Use the MD files to view on GitHub. However, MD files do not have all functionalities of HTML files (numbered sections, floating table of content). I therefore recommend using the HTML files.  
 To download an HTML file from GitHub, first display the "raw" file and then save it as HTML.
@@ -72,7 +72,7 @@ To work locally with the R analysis, either from the ZIP archive or from cloning
 
 Using the package `renv` implies that installing, removing and updating packages is done within the project. In other words, all the packages that you install/update while in a project using `renv` will not be available in any other project. If you want to globally install/remove/update packages, make sure you close the project first.
 
-You can also download the compendium as [a ZIP archive](https://github.com/tracer-monrepos/`r repo`/archive/master.zip).  
+You can also download the compendium as [a ZIP archive](https://github.com/tracer-monrepos/`r repo`/archive/main.zip).  
 Alternatively, if you use GitHub, you can [fork and clone](https://happygitwithr.com/fork-and-clone.html) the repository to your account. See also the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 

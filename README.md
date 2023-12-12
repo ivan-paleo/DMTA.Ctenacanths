@@ -6,7 +6,7 @@
 This repository contains the data and code for our paper:  
 \> Greif M, Calandra I, Lautenschlager S, Kaiser T & Klug C (submitted).
 *Feeding behaviour and diet in Devonian ctenacanth chondrichthyans using
-tooth wear and Finite Element analysis*. Name of journal: TBA
+tooth wear and Finite Element analysis*. Name of journal: TBA.
 <https://doi.org/xxx/xxx>
 
 # How to cite
@@ -77,7 +77,7 @@ The [scripts](/analysis/scripts) directory contains the following files:
   ([Sharks_3_Plots.bib](/analysis/scripts/Sharks_3_Plots.bib)).  
 - [Sharks_3_Plots_files](/analysis/scripts/Sharks_3_Plots_files/figure-gfm/):
   contains PNG files of the plots; used in the
-  [Sharks_3_Plots.md](/R_analysis/scripts/Sharks_3_Plots.md) file.
+  [Sharks_3_Plots.md](/analysis/scripts/Sharks_3_Plots.md) file.
 
 Note that the HTML files are not rendered nicely on GitHub; you need to
 download them and open them with your browser. Use the MD files to view
@@ -120,7 +120,7 @@ available in any other project. If you want to globally
 install/remove/update packages, make sure you close the project first.
 
 You can also download the compendium as [a ZIP
-archive](https://github.com/tracer-monrepos/DMTA.Ctenacanths/archive/master.zip).  
+archive](https://github.com/tracer-monrepos/DMTA.Ctenacanths/archive/main.zip).  
 Alternatively, if you use GitHub, you can [fork and
 clone](https://happygitwithr.com/fork-and-clone.html) the repository to
 your account. See also the [CONTRIBUTING.md](CONTRIBUTING.md) file.
