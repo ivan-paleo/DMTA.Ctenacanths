@@ -165,6 +165,12 @@ sharks_keep[c("Specimen", "Tooth", "Location", "Objective", "Measurement")] <- s
 ```
 
 
+## Rename MM teeth to MM-H and MM-I
+```{r}
+sharks_keep[sharks_keep$Specimen == "MM" & sharks_keep$Tooth == "A", "Tooth"] <- "H"
+sharks_keep[sharks_keep$Specimen == "MM" & sharks_keep$Tooth == "B", "Tooth"] <- "I"
+```
+
 ## Convert to numeric
 ```{r}
 # Replace "-nan(ind)" with NA in column HAsfc81

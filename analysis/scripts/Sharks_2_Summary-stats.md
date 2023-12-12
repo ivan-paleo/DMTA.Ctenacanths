@@ -1,7 +1,7 @@
 Summary statistics on dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-09-06 09:26:13 CEST
+2023-12-12 10:29:39 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -27,8 +27,10 @@ Ivan Calandra
 This script computes standard descriptive statistics for each group.  
 The groups are based on:
 
+- Objective  
 - Specimen  
-- Tooth position  
+- Tooth  
+- Position  
 - NMP_cat
 
 It computes the following statistics:
@@ -155,41 +157,41 @@ nminmaxmeanmedsd <- function(x){
 ``` r
 # Create list for grouping
 sharks_grps <- vector(mode = "list", length = 5)
-names(sharks_grps) <- c("Speciment_NMP", "Specimen_Tooth", "Specimen_Position", 
-                        "Specimen_Tooth_NMP", "Specimen_Position_NMP")
+names(sharks_grps) <- c("Obj_Spec_NMP", "Obj_Spec_Tooth", "Obj_Spec_Pos", 
+                        "Obj_Spec_Tooth_NMP", "Obj_Spec_Pos_NMP")
 
-# Define grouping variables: Specimen + NMP_cat
-sharks_grps[[1]] <- c("Specimen", "NMP_cat")
+# Define grouping variables: Objective + Specimen + NMP_cat
+sharks_grps[[1]] <- c("Objective", "Specimen", "NMP_cat")
 
-# Define grouping variables: Specimen + Tooth
-sharks_grps[[2]] <- c("Specimen", "Tooth")
+# Define grouping variables: Objective + Specimen + Tooth
+sharks_grps[[2]] <- c("Objective", "Specimen", "Tooth")
 
-# Define grouping variables: Specimen + Position
-sharks_grps[[3]] <- c("Specimen", "Position")
+# Define grouping variables: Objective + Specimen + Position
+sharks_grps[[3]] <- c("Objective", "Specimen", "Position")
 
-# Define grouping variables: Specimen + Tooth + NMP_cat
-sharks_grps[[4]] <- c("Specimen", "Tooth", "NMP_cat")
+# Define grouping variables: Objective + Specimen + Tooth + NMP_cat
+sharks_grps[[4]] <- c("Objective", "Specimen", "Tooth", "NMP_cat")
 
-# Define grouping variables: Specimen + Position + NMP_cat
-sharks_grps[[5]] <- c("Specimen", "Position", "NMP_cat")
+# Define grouping variables: Objective + Specimen + Position + NMP_cat
+sharks_grps[[5]] <- c("Objective", "Specimen", "Position", "NMP_cat")
 ```
 
 The following grouping variables will be used:
 
-    Set 1 : Speciment_NMP 
-    Specimen NMP_cat 
+    Set 1 : Obj_Spec_NMP 
+    Objective Specimen NMP_cat 
      
-    Set 2 : Specimen_Tooth 
-    Specimen Tooth 
+    Set 2 : Obj_Spec_Tooth 
+    Objective Specimen Tooth 
      
-    Set 3 : Specimen_Position 
-    Specimen Position 
+    Set 3 : Obj_Spec_Pos 
+    Objective Specimen Position 
      
-    Set 4 : Specimen_Tooth_NMP 
-    Specimen Tooth NMP_cat 
+    Set 4 : Obj_Spec_Tooth_NMP 
+    Objective Specimen Tooth NMP_cat 
      
-    Set 5 : Specimen_Position_NMP 
-    Specimen Position NMP_cat 
+    Set 5 : Obj_Spec_Pos_NMP 
+    Objective Specimen Position NMP_cat 
      
 
 All numerical variables except `NMP` will be used:
@@ -280,6 +282,18 @@ for (i in seq_along(stats_grps)) {
 
     Warning in max(y): no non-missing arguments to max; returning -Inf
 
+    Warning in min(y): no non-missing arguments to min; returning Inf
+
+    Warning in max(y): no non-missing arguments to max; returning -Inf
+
+    Warning in min(y): no non-missing arguments to min; returning Inf
+
+    Warning in max(y): no non-missing arguments to max; returning -Inf
+
+    Warning in min(y): no non-missing arguments to min; returning Inf
+
+    Warning in max(y): no non-missing arguments to max; returning -Inf
+
 ## Add units
 
 ``` r
@@ -303,7 +317,7 @@ write_ods(stats_grps, path = paste0(dir_out, "/DMTA-Ctenacanths_summary-stats.od
 sessionInfo()
 ```
 
-    R version 4.3.1 (2023-06-16 ucrt)
+    R version 4.3.2 (2023-10-31 ucrt)
     Platform: x86_64-w64-mingw32/x64 (64-bit)
     Running under: Windows 10 x64 (build 19045)
 
@@ -311,9 +325,11 @@ sessionInfo()
 
 
     locale:
-    [1] LC_COLLATE=French_France.utf8  LC_CTYPE=French_France.utf8   
-    [3] LC_MONETARY=French_France.utf8 LC_NUMERIC=C                  
-    [5] LC_TIME=French_France.utf8    
+    [1] LC_COLLATE=English_United States.utf8 
+    [2] LC_CTYPE=English_United States.utf8   
+    [3] LC_MONETARY=English_United States.utf8
+    [4] LC_NUMERIC=C                          
+    [5] LC_TIME=English_United States.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
@@ -322,29 +338,29 @@ sessionInfo()
     [1] stats     graphics  grDevices utils     datasets  methods   base     
 
     other attached packages:
-     [1] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.2      
+     [1] lubridate_1.9.3   forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4      
      [5] purrr_1.0.2       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
-     [9] ggplot2_3.4.3     tidyverse_2.0.0   rmarkdown_2.24    readODS_2.0.7    
-    [13] R.utils_2.12.2    R.oo_1.25.0       R.methodsS3_1.8.2 knitr_1.43       
-    [17] grateful_0.2.0    doBy_4.6.18      
+     [9] ggplot2_3.4.4     tidyverse_2.0.0   rmarkdown_2.25    readODS_2.1.0    
+    [13] R.utils_2.12.3    R.oo_1.25.0       R.methodsS3_1.8.2 knitr_1.45       
+    [17] grateful_0.2.4    doBy_4.6.20      
 
     loaded via a namespace (and not attached):
-     [1] sass_0.4.7            utf8_1.2.3            generics_0.1.3       
-     [4] stringi_1.7.12        lattice_0.21-8        hms_1.1.3            
+     [1] sass_0.4.8            utf8_1.2.4            generics_0.1.3       
+     [4] stringi_1.8.3         lattice_0.21-9        hms_1.1.3            
      [7] digest_0.6.33         magrittr_2.0.3        timechange_0.2.0     
-    [10] evaluate_0.21         grid_4.3.1            fastmap_1.1.1        
-    [13] rprojroot_2.0.3       jsonlite_1.8.7        Matrix_1.6-1         
-    [16] zip_2.3.0             backports_1.4.1       fansi_1.0.4          
-    [19] scales_1.2.1          microbenchmark_1.4.10 jquerylib_0.1.4      
-    [22] cli_3.6.1             rlang_1.1.1           crayon_1.5.2         
-    [25] munsell_0.5.0         withr_2.5.0           cachem_1.0.8         
-    [28] yaml_2.3.7            tools_4.3.1           tzdb_0.4.0           
+    [10] evaluate_0.23         grid_4.3.2            fastmap_1.1.1        
+    [13] rprojroot_2.0.4       jsonlite_1.8.8        Matrix_1.6-1.1       
+    [16] zip_2.3.0             backports_1.4.1       fansi_1.0.6          
+    [19] scales_1.3.0          microbenchmark_1.4.10 jquerylib_0.1.4      
+    [22] cli_3.6.2             rlang_1.1.2           crayon_1.5.2         
+    [25] munsell_0.5.0         withr_2.5.2           cachem_1.0.8         
+    [28] yaml_2.3.8            tools_4.3.2           tzdb_0.4.0           
     [31] colorspace_2.1-0      Deriv_4.1.3           broom_1.0.5          
-    [34] vctrs_0.6.3           R6_2.5.1              lifecycle_1.0.3      
+    [34] vctrs_0.6.5           R6_2.5.1              lifecycle_1.0.4      
     [37] MASS_7.3-60           pkgconfig_2.0.3       pillar_1.9.0         
-    [40] bslib_0.5.1           gtable_0.3.4          glue_1.6.2           
-    [43] xfun_0.40             tidyselect_1.2.0      rstudioapi_0.15.0    
-    [46] htmltools_0.5.6       compiler_4.3.1       
+    [40] bslib_0.6.1           gtable_0.3.4          glue_1.6.2           
+    [43] xfun_0.41             tidyselect_1.2.0      rstudioapi_0.15.0    
+    [46] htmltools_0.5.7       compiler_4.3.2       
 
 ------------------------------------------------------------------------
 
@@ -352,13 +368,13 @@ sessionInfo()
 
 | Package   | Version | Citation                                                                                      |
 |:----------|:--------|:----------------------------------------------------------------------------------------------|
-| base      | 4.3.1   | R Core Team (2023)                                                                            |
-| doBy      | 4.6.18  | Højsgaard and Halekoh (2023)                                                                  |
-| grateful  | 0.2.0   | Francisco Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D. Hutchins (2023)               |
-| knitr     | 1.43    | Xie (2014); Xie (2015); Xie (2023)                                                            |
-| R.utils   | 2.12.2  | Bengtsson (2022)                                                                              |
-| readODS   | 2.0.7   | Schutten et al. (2023)                                                                        |
-| rmarkdown | 2.24    | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2023) |
+| base      | 4.3.2   | R Core Team (2023)                                                                            |
+| doBy      | 4.6.20  | Højsgaard and Halekoh (2023)                                                                  |
+| grateful  | 0.2.4   | Francisco Rodriguez-Sanchez and Connor P. Jackson (2023)                                      |
+| knitr     | 1.45    | Xie (2014); Xie (2015); Xie (2023)                                                            |
+| R.utils   | 2.12.3  | Bengtsson (2023)                                                                              |
+| readODS   | 2.1.0   | Schutten et al. (2023)                                                                        |
+| rmarkdown | 2.25    | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2023) |
 | tidyverse | 2.0.0   | Wickham et al. (2019)                                                                         |
 
 ## References
@@ -376,16 +392,16 @@ Luraschi, Kevin Ushey, Aron Atkins, et al. 2023.
 
 <div id="ref-Rutils" class="csl-entry">
 
-Bengtsson, Henrik. 2022. *<span class="nocase">R.utils</span>: Various
+Bengtsson, Henrik. 2023. *<span class="nocase">R.utils</span>: Various
 Programming Utilities*. <https://CRAN.R-project.org/package=R.utils>.
 
 </div>
 
 <div id="ref-grateful" class="csl-entry">
 
-Francisco Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D.
-Hutchins. 2023. *<span class="nocase">grateful</span>: Facilitate
-Citation of r Packages*. <https://github.com/Pakillo/grateful>.
+Francisco Rodriguez-Sanchez, and Connor P. Jackson. 2023.
+*<span class="nocase">grateful</span>: Facilitate Citation of r
+Packages*. <https://pakillo.github.io/grateful/>.
 
 </div>
 
@@ -409,7 +425,7 @@ Computing*. Vienna, Austria: R Foundation for Statistical Computing.
 
 Schutten, Gerrit-Jan, Chung-hong Chan, Peter Brohan, Detlef Steuer, and
 Thomas J. Leeper. 2023. *<span class="nocase">readODS</span>: Read and
-Write ODS Files*. <https://github.com/ropensci/readODS>.
+Write ODS Files*. <https://CRAN.R-project.org/package=readODS>.
 
 </div>
 

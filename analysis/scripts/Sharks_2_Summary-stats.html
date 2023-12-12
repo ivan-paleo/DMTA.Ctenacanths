@@ -1575,7 +1575,7 @@ border-radius: 0px;
 <h1 class="title toc-ignore">Summary statistics on dataset of DMTA on
 Devionan sharks</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2023-09-06 09:26:06 CEST</h4>
+<h4 class="date">2023-12-12 10:29:35 CET</h4>
 
 </div>
 
@@ -1587,9 +1587,13 @@ Devionan sharks</h1>
 group.<br />
 The groups are based on:</p>
 <ul>
+<li>Objective<br />
+</li>
 <li>Specimen<br />
 </li>
-<li>Tooth position<br />
+<li>Tooth<br />
+</li>
+<li>Position<br />
 </li>
 <li>NMP_cat</li>
 </ul>
@@ -1708,38 +1712,38 @@ compute the statistics at once</h2>
 numeric variables to use</h2>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Create list for grouping</span></span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>sharks_grps <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="at">mode =</span> <span class="st">&quot;list&quot;</span>, <span class="at">length =</span> <span class="dv">5</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">names</span>(sharks_grps) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Speciment_NMP&quot;</span>, <span class="st">&quot;Specimen_Tooth&quot;</span>, <span class="st">&quot;Specimen_Position&quot;</span>, </span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                        <span class="st">&quot;Specimen_Tooth_NMP&quot;</span>, <span class="st">&quot;Specimen_Position_NMP&quot;</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a><span class="fu">names</span>(sharks_grps) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Obj_Spec_NMP&quot;</span>, <span class="st">&quot;Obj_Spec_Tooth&quot;</span>, <span class="st">&quot;Obj_Spec_Pos&quot;</span>, </span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                        <span class="st">&quot;Obj_Spec_Tooth_NMP&quot;</span>, <span class="st">&quot;Obj_Spec_Pos_NMP&quot;</span>)</span>
 <span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co"># Define grouping variables: Specimen + NMP_cat</span></span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>sharks_grps[[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;NMP_cat&quot;</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a><span class="co"># Define grouping variables: Objective + Specimen + NMP_cat</span></span>
+<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>sharks_grps[[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;NMP_cat&quot;</span>)</span>
 <span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co"># Define grouping variables: Specimen + Tooth</span></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>sharks_grps[[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Tooth&quot;</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a><span class="co"># Define grouping variables: Objective + Specimen + Tooth</span></span>
+<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a>sharks_grps[[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Tooth&quot;</span>)</span>
 <span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a></span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># Define grouping variables: Specimen + Position</span></span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>sharks_grps[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Position&quot;</span>)</span>
+<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a><span class="co"># Define grouping variables: Objective + Specimen + Position</span></span>
+<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>sharks_grps[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Position&quot;</span>)</span>
 <span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a></span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co"># Define grouping variables: Specimen + Tooth + NMP_cat</span></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>sharks_grps[[<span class="dv">4</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Tooth&quot;</span>, <span class="st">&quot;NMP_cat&quot;</span>)</span>
+<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a><span class="co"># Define grouping variables: Objective + Specimen + Tooth + NMP_cat</span></span>
+<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>sharks_grps[[<span class="dv">4</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Tooth&quot;</span>, <span class="st">&quot;NMP_cat&quot;</span>)</span>
 <span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a></span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co"># Define grouping variables: Specimen + Position + NMP_cat</span></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>sharks_grps[[<span class="dv">5</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Position&quot;</span>, <span class="st">&quot;NMP_cat&quot;</span>)</span></code></pre></div>
+<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a><span class="co"># Define grouping variables: Objective + Specimen + Position + NMP_cat</span></span>
+<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>sharks_grps[[<span class="dv">5</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Position&quot;</span>, <span class="st">&quot;NMP_cat&quot;</span>)</span></code></pre></div>
 <p>The following grouping variables will be used:</p>
-<pre><code>Set 1 : Speciment_NMP 
-Specimen NMP_cat 
+<pre><code>Set 1 : Obj_Spec_NMP 
+Objective Specimen NMP_cat 
  
-Set 2 : Specimen_Tooth 
-Specimen Tooth 
+Set 2 : Obj_Spec_Tooth 
+Objective Specimen Tooth 
  
-Set 3 : Specimen_Position 
-Specimen Position 
+Set 3 : Obj_Spec_Pos 
+Objective Specimen Position 
  
-Set 4 : Specimen_Tooth_NMP 
-Specimen Tooth NMP_cat 
+Set 4 : Obj_Spec_Tooth_NMP 
+Objective Specimen Tooth NMP_cat 
  
-Set 5 : Specimen_Position_NMP 
-Specimen Position NMP_cat 
+Set 5 : Obj_Spec_Pos_NMP 
+Objective Specimen Position NMP_cat 
  </code></pre>
 <p>All numerical variables except <code>NMP</code> will be used:</p>
 <pre><code>Sq
@@ -1810,24 +1814,30 @@ statistics</h2>
 <pre><code>Warning in max(y): no non-missing arguments to max; returning -Inf</code></pre>
 <pre><code>Warning in min(y): no non-missing arguments to min; returning Inf</code></pre>
 <pre><code>Warning in max(y): no non-missing arguments to max; returning -Inf</code></pre>
+<pre><code>Warning in min(y): no non-missing arguments to min; returning Inf</code></pre>
+<pre><code>Warning in max(y): no non-missing arguments to max; returning -Inf</code></pre>
+<pre><code>Warning in min(y): no non-missing arguments to min; returning Inf</code></pre>
+<pre><code>Warning in max(y): no non-missing arguments to max; returning -Inf</code></pre>
+<pre><code>Warning in min(y): no non-missing arguments to min; returning Inf</code></pre>
+<pre><code>Warning in max(y): no non-missing arguments to max; returning -Inf</code></pre>
 </div>
 <div id="add-units" class="section level2" number="4.4">
 <h2><span class="header-section-number">4.4</span> Add units</h2>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="co"># Extract units from comment(sharks) and exclude first row (NMP)</span></span>
-<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a>units_stats <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">variable =</span> <span class="fu">names</span>(<span class="fu">comment</span>(sharks)), <span class="at">units =</span> <span class="fu">comment</span>(sharks))[<span class="sc">-</span><span class="dv">1</span>,]</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a><span class="co"># Extract units from comment(sharks) and exclude first row (NMP)</span></span>
+<span id="cb35-2"><a href="#cb35-2" tabindex="-1"></a>units_stats <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">variable =</span> <span class="fu">names</span>(<span class="fu">comment</span>(sharks)), <span class="at">units =</span> <span class="fu">comment</span>(sharks))[<span class="sc">-</span><span class="dv">1</span>,]</span></code></pre></div>
 <hr />
 </div>
 </div>
 <div id="write-results-to-ods" class="section level1" number="5">
 <h1><span class="header-section-number">5</span> Write results to
 ODS</h1>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a><span class="fu">write_ods</span>(stats_grps, <span class="at">path =</span> <span class="fu">paste0</span>(dir_out, <span class="st">&quot;/DMTA-Ctenacanths_summary-stats.ods&quot;</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">write_ods</span>(stats_grps, <span class="at">path =</span> <span class="fu">paste0</span>(dir_out, <span class="st">&quot;/DMTA-Ctenacanths_summary-stats.ods&quot;</span>))</span></code></pre></div>
 <hr />
 </div>
 <div id="sessioninfo" class="section level1" number="6">
 <h1><span class="header-section-number">6</span> sessionInfo()</h1>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
-<pre><code>R version 4.3.1 (2023-06-16 ucrt)
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<pre><code>R version 4.3.2 (2023-10-31 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 10 x64 (build 19045)
 
@@ -1835,9 +1845,11 @@ Matrix products: default
 
 
 locale:
-[1] LC_COLLATE=French_France.utf8  LC_CTYPE=French_France.utf8   
-[3] LC_MONETARY=French_France.utf8 LC_NUMERIC=C                  
-[5] LC_TIME=French_France.utf8    
+[1] LC_COLLATE=English_United States.utf8 
+[2] LC_CTYPE=English_United States.utf8   
+[3] LC_MONETARY=English_United States.utf8
+[4] LC_NUMERIC=C                          
+[5] LC_TIME=English_United States.utf8    
 
 time zone: Europe/Berlin
 tzcode source: internal
@@ -1846,29 +1858,29 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
- [1] lubridate_1.9.2   forcats_1.0.0     stringr_1.5.0     dplyr_1.1.2      
+ [1] lubridate_1.9.3   forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4      
  [5] purrr_1.0.2       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
- [9] ggplot2_3.4.3     tidyverse_2.0.0   rmarkdown_2.24    readODS_2.0.7    
-[13] R.utils_2.12.2    R.oo_1.25.0       R.methodsS3_1.8.2 knitr_1.43       
-[17] grateful_0.2.0    doBy_4.6.18      
+ [9] ggplot2_3.4.4     tidyverse_2.0.0   rmarkdown_2.25    readODS_2.1.0    
+[13] R.utils_2.12.3    R.oo_1.25.0       R.methodsS3_1.8.2 knitr_1.45       
+[17] grateful_0.2.4    doBy_4.6.20      
 
 loaded via a namespace (and not attached):
- [1] sass_0.4.7            utf8_1.2.3            generics_0.1.3       
- [4] stringi_1.7.12        lattice_0.21-8        hms_1.1.3            
+ [1] sass_0.4.8            utf8_1.2.4            generics_0.1.3       
+ [4] stringi_1.8.3         lattice_0.21-9        hms_1.1.3            
  [7] digest_0.6.33         magrittr_2.0.3        timechange_0.2.0     
-[10] evaluate_0.21         grid_4.3.1            fastmap_1.1.1        
-[13] rprojroot_2.0.3       jsonlite_1.8.7        Matrix_1.6-1         
-[16] zip_2.3.0             backports_1.4.1       fansi_1.0.4          
-[19] scales_1.2.1          microbenchmark_1.4.10 jquerylib_0.1.4      
-[22] cli_3.6.1             rlang_1.1.1           crayon_1.5.2         
-[25] munsell_0.5.0         withr_2.5.0           cachem_1.0.8         
-[28] yaml_2.3.7            tools_4.3.1           tzdb_0.4.0           
+[10] evaluate_0.23         grid_4.3.2            fastmap_1.1.1        
+[13] rprojroot_2.0.4       jsonlite_1.8.8        Matrix_1.6-1.1       
+[16] zip_2.3.0             backports_1.4.1       fansi_1.0.6          
+[19] scales_1.3.0          microbenchmark_1.4.10 jquerylib_0.1.4      
+[22] cli_3.6.2             rlang_1.1.2           crayon_1.5.2         
+[25] munsell_0.5.0         withr_2.5.2           cachem_1.0.8         
+[28] yaml_2.3.8            tools_4.3.2           tzdb_0.4.0           
 [31] colorspace_2.1-0      Deriv_4.1.3           broom_1.0.5          
-[34] vctrs_0.6.3           R6_2.5.1              lifecycle_1.0.3      
+[34] vctrs_0.6.5           R6_2.5.1              lifecycle_1.0.4      
 [37] MASS_7.3-60           pkgconfig_2.0.3       pillar_1.9.0         
-[40] bslib_0.5.1           gtable_0.3.4          glue_1.6.2           
-[43] xfun_0.40             tidyselect_1.2.0      rstudioapi_0.15.0    
-[46] htmltools_0.5.6       compiler_4.3.1       </code></pre>
+[40] bslib_0.6.1           gtable_0.3.4          glue_1.6.2           
+[43] xfun_0.41             tidyselect_1.2.0      rstudioapi_0.15.0    
+[46] htmltools_0.5.7       compiler_4.3.2       </code></pre>
 <hr />
 </div>
 <div id="cite-r-packages-used" class="section level1" number="7">
@@ -1885,41 +1897,41 @@ used</h1>
 <tbody>
 <tr class="odd">
 <td align="left">base</td>
-<td align="left">4.3.1</td>
+<td align="left">4.3.2</td>
 <td align="left"><span class="citation">R Core Team (2023)</span></td>
 </tr>
 <tr class="even">
 <td align="left">doBy</td>
-<td align="left">4.6.18</td>
+<td align="left">4.6.20</td>
 <td align="left"><span class="citation">Højsgaard and Halekoh
 (2023)</span></td>
 </tr>
 <tr class="odd">
 <td align="left">grateful</td>
-<td align="left">0.2.0</td>
-<td align="left"><span class="citation">Francisco Rodríguez-Sánchez,
-Connor P. Jackson, and Shaurita D. Hutchins (2023)</span></td>
+<td align="left">0.2.4</td>
+<td align="left"><span class="citation">Francisco Rodriguez-Sanchez and
+Connor P. Jackson (2023)</span></td>
 </tr>
 <tr class="even">
 <td align="left">knitr</td>
-<td align="left">1.43</td>
+<td align="left">1.45</td>
 <td align="left"><span class="citation">Xie (2014)</span>; <span class="citation">Xie (2015)</span>; <span class="citation">Xie
 (2023)</span></td>
 </tr>
 <tr class="odd">
 <td align="left">R.utils</td>
-<td align="left">2.12.2</td>
-<td align="left"><span class="citation">Bengtsson (2022)</span></td>
+<td align="left">2.12.3</td>
+<td align="left"><span class="citation">Bengtsson (2023)</span></td>
 </tr>
 <tr class="even">
 <td align="left">readODS</td>
-<td align="left">2.0.7</td>
+<td align="left">2.1.0</td>
 <td align="left"><span class="citation">Schutten et al.
 (2023)</span></td>
 </tr>
 <tr class="odd">
 <td align="left">rmarkdown</td>
-<td align="left">2.24</td>
+<td align="left">2.25</td>
 <td align="left"><span class="citation">Xie, Allaire, and Grolemund
 (2018)</span>; <span class="citation">Xie, Dervieux, and Riederer
 (2020)</span>; <span class="citation">Allaire et al. (2023)</span></td>
@@ -1940,13 +1952,12 @@ Allaire, JJ, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
 Luraschi, Kevin Ushey, Aron Atkins, et al. 2023. <em><span class="nocase">rmarkdown</span>: Dynamic Documents for r</em>. <a href="https://github.com/rstudio/rmarkdown">https://github.com/rstudio/rmarkdown</a>.
 </div>
 <div id="ref-Rutils" class="csl-entry">
-Bengtsson, Henrik. 2022. <em><span class="nocase">R.utils</span>:
+Bengtsson, Henrik. 2023. <em><span class="nocase">R.utils</span>:
 Various Programming Utilities</em>. <a href="https://CRAN.R-project.org/package=R.utils">https://CRAN.R-project.org/package=R.utils</a>.
 </div>
 <div id="ref-grateful" class="csl-entry">
-Francisco Rodríguez-Sánchez, Connor P. Jackson, and Shaurita D.
-Hutchins. 2023. <em><span class="nocase">grateful</span>: Facilitate
-Citation of r Packages</em>. <a href="https://github.com/Pakillo/grateful">https://github.com/Pakillo/grateful</a>.
+Francisco Rodriguez-Sanchez, and Connor P. Jackson. 2023. <em><span class="nocase">grateful</span>: Facilitate Citation of r Packages</em>.
+<a href="https://pakillo.github.io/grateful/">https://pakillo.github.io/grateful/</a>.
 </div>
 <div id="ref-doBy" class="csl-entry">
 Højsgaard, Søren, and Ulrich Halekoh. 2023. <em><span class="nocase">doBy</span>: Groupwise Statistics, LSmeans, Linear
@@ -1960,7 +1971,7 @@ Statistical Computing. <a href="https://www.R-project.org/">https://www.R-projec
 <div id="ref-readODS" class="csl-entry">
 Schutten, Gerrit-Jan, Chung-hong Chan, Peter Brohan, Detlef Steuer, and
 Thomas J. Leeper. 2023. <em><span class="nocase">readODS</span>: Read
-and Write ODS Files</em>. <a href="https://github.com/ropensci/readODS">https://github.com/ropensci/readODS</a>.
+and Write ODS Files</em>. <a href="https://CRAN.R-project.org/package=readODS">https://CRAN.R-project.org/package=readODS</a>.
 </div>
 <div id="ref-tidyverse" class="csl-entry">
 Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy

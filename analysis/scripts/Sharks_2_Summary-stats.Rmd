@@ -32,8 +32,10 @@ knit: (function(inputFile, encoding) {
 This script computes standard descriptive statistics for each group.  
 The groups are based on:
 
+* Objective  
 * Specimen  
-* Tooth position  
+* Tooth  
+* Position  
 * NMP_cat
 
 It computes the following statistics:  
@@ -109,23 +111,23 @@ nminmaxmeanmedsd <- function(x){
 ```{r}
 # Create list for grouping
 sharks_grps <- vector(mode = "list", length = 5)
-names(sharks_grps) <- c("Speciment_NMP", "Specimen_Tooth", "Specimen_Position", 
-                        "Specimen_Tooth_NMP", "Specimen_Position_NMP")
+names(sharks_grps) <- c("Obj_Spec_NMP", "Obj_Spec_Tooth", "Obj_Spec_Pos", 
+                        "Obj_Spec_Tooth_NMP", "Obj_Spec_Pos_NMP")
 
-# Define grouping variables: Specimen + NMP_cat
-sharks_grps[[1]] <- c("Specimen", "NMP_cat")
+# Define grouping variables: Objective + Specimen + NMP_cat
+sharks_grps[[1]] <- c("Objective", "Specimen", "NMP_cat")
 
-# Define grouping variables: Specimen + Tooth
-sharks_grps[[2]] <- c("Specimen", "Tooth")
+# Define grouping variables: Objective + Specimen + Tooth
+sharks_grps[[2]] <- c("Objective", "Specimen", "Tooth")
 
-# Define grouping variables: Specimen + Position
-sharks_grps[[3]] <- c("Specimen", "Position")
+# Define grouping variables: Objective + Specimen + Position
+sharks_grps[[3]] <- c("Objective", "Specimen", "Position")
 
-# Define grouping variables: Specimen + Tooth + NMP_cat
-sharks_grps[[4]] <- c("Specimen", "Tooth", "NMP_cat")
+# Define grouping variables: Objective + Specimen + Tooth + NMP_cat
+sharks_grps[[4]] <- c("Objective", "Specimen", "Tooth", "NMP_cat")
 
-# Define grouping variables: Specimen + Position + NMP_cat
-sharks_grps[[5]] <- c("Specimen", "Position", "NMP_cat")
+# Define grouping variables: Objective + Specimen + Position + NMP_cat
+sharks_grps[[5]] <- c("Objective", "Specimen", "Position", "NMP_cat")
 ```
 
 The following grouping variables will be used:  
