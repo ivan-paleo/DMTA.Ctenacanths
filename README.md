@@ -96,6 +96,9 @@ Here are direct links to display the files directly in your browser:
 - [Sharks_2_Summary-stats.html](http://htmlpreview.github.io/?https://github.com/ivan-paleo/DMTA.Ctenacanths/blob/main/analysis/scripts/Sharks_2_Summary-stats.html)  
 - [Sharks_3_Plots.html](http://htmlpreview.github.io/?https://github.com/ivan-paleo/DMTA.Ctenacanths/blob/main/analysis/scripts/Sharks_3_Plots.html)
 
+See the section [Contributions](#contributions) for details on the
+[CONDUCT.md](/CONDUCT.md) and [CONTRIBUTING.md](CONTRIBUTING.md) files.
+
 # How to run in your browser or download and run locally
 
 This research compendium has been developed using the statistical
@@ -120,7 +123,7 @@ available in any other project. If you want to globally
 install/remove/update packages, make sure you close the project first.
 
 You can also download the compendium as [a ZIP
-archive](https://github.com/tracer-monrepos/DMTA.Ctenacanths/archive/main.zip).  
+archive](https://github.com/ivan-paleo/DMTA.Ctenacanths/archive/main.zip).  
 Alternatively, if you use GitHub, you can [fork and
 clone](https://happygitwithr.com/fork-and-clone.html) the repository to
 your account. See also the [CONTRIBUTING.md](CONTRIBUTING.md) file.

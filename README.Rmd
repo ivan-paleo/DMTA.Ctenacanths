@@ -61,6 +61,8 @@ Here are direct links to display the files directly in your browser:
 - [Sharks_2_Summary-stats.html](http://htmlpreview.github.io/?https://github.com/ivan-paleo/DMTA.Ctenacanths/blob/main/analysis/scripts/Sharks_2_Summary-stats.html)  
 - [Sharks_3_Plots.html](http://htmlpreview.github.io/?https://github.com/ivan-paleo/DMTA.Ctenacanths/blob/main/analysis/scripts/Sharks_3_Plots.html)  
 
+See the section [Contributions](#contributions) for details on the [CONDUCT.md](/CONDUCT.md) and [CONTRIBUTING.md](CONTRIBUTING.md) files.
+
 
 # How to run in your browser or download and run locally
 This research compendium has been developed using the statistical programming languages R. To work with the compendium, you will need to install on your computer the [R software](https://cloud.r-project.org/) and [RStudio Desktop](https://rstudio.com/products/rstudio/download/).
@@ -72,7 +74,7 @@ To work locally with the R analysis, either from the ZIP archive or from cloning
 
 Using the package `renv` implies that installing, removing and updating packages is done within the project. In other words, all the packages that you install/update while in a project using `renv` will not be available in any other project. If you want to globally install/remove/update packages, make sure you close the project first.
 
-You can also download the compendium as [a ZIP archive](https://github.com/tracer-monrepos/`r repo`/archive/main.zip).  
+You can also download the compendium as [a ZIP archive](https://github.com/ivan-paleo/`r repo`/archive/main.zip).  
 Alternatively, if you use GitHub, you can [fork and clone](https://happygitwithr.com/fork-and-clone.html) the repository to your account. See also the [CONTRIBUTING.md](CONTRIBUTING.md) file.
 
 
