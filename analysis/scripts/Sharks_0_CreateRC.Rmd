@@ -14,7 +14,7 @@ output:
     theme: cerulean
     highlight: pygments
     number_sections: true
-bibliography: grateful-refs-script0.bib
+bibliography: Sharks_0_CreateRC.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
 ---
@@ -68,14 +68,6 @@ rrtools::use_compendium(getwd())
 A new project has opened in a new session.  
 Edit the fields "Title", "Author" and "Description" in the `DESCRIPTION` file. 
 
-## Create CC-BY, CC-0 or MIT license
-A project can have only one license. Run one line only:  
-```{r}
-#usethis::use_ccby_license()
-#usethis::use_cc0_license()
-usethis::use_mit_license(copyright_holder = "Ivan Calandra")
-```
-
 ## Create README.Rmd file
 ```{r}
 rrtools::use_readme_rmd()
@@ -118,12 +110,6 @@ I have run this command to add the dependencies to the DESCRIPTION file.
 rrtools::add_dependencies_to_description()
 ```
 
-## Create Binder badge
-```{r}
-holepunch::write_dockerfile(maintainer = "Ivan Calandra")
-holepunch::generate_badge()
-```
-Now paste to the README.Rmd, where you want the badge to appear.
 
 ## renv
 Save the state of the project library using the `renv` package.  
@@ -134,12 +120,24 @@ renv::init()
 
 ---
 
-# sessionInfo() and RStudio version
+
+# sessionInfo()
+
 ```{r, eval = TRUE}
 sessionInfo()
 ```
 
-RStudio version `r readLines("analysis/scripts/SUH_0_RStudioVersion.txt", n = 1)`.
+
+---
 
 
-END OF SCRIPT
+# Cite R packages used
+
+```{r, echo = FALSE, eval = TRUE}
+pkgs_cite <- cite_packages(pkgs = c(pack_to_load, "base"), output = "table", include.RStudio = TRUE, 
+                           out.dir = "analysis/scripts", bib.file = "Sharks_0_CreateRC")
+knitr::kable(pkgs_cite)
+```
+
+
+## References
