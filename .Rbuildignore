@@ -1,3 +1,5 @@
+^renv$
+^renv\.lock$
 ^DMTA\.Ctenacanths\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$

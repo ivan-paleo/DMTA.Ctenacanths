@@ -1,7 +1,7 @@
 Plots for the dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-12-12 15:36:52 CET
+2023-12-14 15:04:06 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -9,8 +9,6 @@ Ivan Calandra
   - [Get name and path of input file](#get-name-and-path-of-input-file)
   - [Read in Rbin file](#read-in-rbin-file)
 - [Exclude surfaces with NMP ≥ 20%](#exclude-surfaces-with-nmp--20)
-- [Separate data acquired with different
-  objectives](#separate-data-acquired-with-different-objectives)
 - [Plot each surface parameter in a
   boxplot](#plot-each-surface-parameter-in-a-boxplot)
   - [Define variables](#define-variables)
@@ -81,15 +79,17 @@ The knit directory for this script is the project directory.
 # Load packages
 
 ``` r
-pack_to_load <- sort(c("R.utils", "tidyverse", "factoextra", "ggplot2", "ggpubr", "RColorBrewer", 
-                       "knitr", "rmarkdown", "grateful"))
-sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE)
+library(factoextra)
+library(ggplot2)
+library(ggpubr)
+library(grateful)
+library(knitr)
+library(R.utils)
+library(RColorBrewer)
+library(readODS)
+library(rmarkdown)
+library(tidyverse)
 ```
-
-      factoextra      ggplot2       ggpubr     grateful        knitr      R.utils 
-            TRUE         TRUE         TRUE         TRUE         TRUE         TRUE 
-    RColorBrewer    rmarkdown    tidyverse 
-            TRUE         TRUE         TRUE 
 
 ------------------------------------------------------------------------
 
@@ -217,116 +217,6 @@ str(sharks_nmp20)
      - attr(*, "comment")= Named chr [1:36] "%" "µm" "<no unit>" "<no unit>" ...
       ..- attr(*, "names")= chr [1:36] "NMP" "Sq" "Ssk" "Sku" ...
 
-# Separate data acquired with different objectives
-
-``` r
-#20x objective
-sharks_nmp20_20x <- filter(sharks_nmp20, Objective == "20x")
-sharks_nmp20_20x$Objective <- factor(sharks_nmp20_20x$Objective)
-str(sharks_nmp20_20x)
-```
-
-    'data.frame':   69 obs. of  43 variables:
-     $ Specimen                : chr  "CC" "CC" "CC" "CC" ...
-     $ Tooth                   : chr  "A" "A" "A" "A" ...
-     $ Location                : chr  "loc1" "loc1" "loc1" "loc3" ...
-     $ Objective               : Factor w/ 1 level "20x": 1 1 1 1 1 1 1 1 1 1 ...
-     $ Measurement             : chr  "meas1" "meas2" "meas3" "meas1" ...
-     $ Position                : chr  "top" "top" "top" "bottom" ...
-     $ NMP                     : num  12.5 11.6 11.5 13.6 13.5 ...
-     $ NMP_cat                 : Ord.factor w/ 2 levels "<10%"<"10-20%": 2 2 2 2 2 2 1 1 1 1 ...
-     $ Sq                      : num  7.28 7.29 7.3 7.91 7.89 ...
-     $ Ssk                     : num  0.83 0.814 0.794 -0.714 -0.717 ...
-     $ Sku                     : num  3.15 3.14 3.13 4.11 4.13 ...
-     $ Sp                      : num  22 22 21.9 17.5 17.4 ...
-     $ Sv                      : num  17.9 19 19.6 33.3 33.4 ...
-     $ Sz                      : num  39.9 41 41.5 50.7 50.9 ...
-     $ Sa                      : num  5.8 5.8 5.81 6.09 6.07 ...
-     $ Smr                     : num  0.189 0.183 0.179 0.319 0.303 ...
-     $ Smc                     : num  11.42 11.45 11.42 9.81 9.78 ...
-     $ Sxp                     : num  8.72 8.84 8.94 19.26 19.17 ...
-     $ Sal                     : num  91.8 91.5 91.3 66.3 66.1 ...
-     $ Str                     : num  NA NA NA NA NA ...
-     $ Std                     : num  58.51 58.75 58.51 3.74 3.75 ...
-     $ Ssw                     : num  3.29 3.29 3.29 4.39 4.39 ...
-     $ Sdq                     : num  0.252 0.257 0.257 0.33 0.33 ...
-     $ Sdr                     : num  2.97 3.08 3.09 4.98 4.97 ...
-     $ Vm                      : num  0.419 0.414 0.413 0.231 0.231 ...
-     $ Vv                      : num  11.8 11.9 11.8 10 10 ...
-     $ Vmp                     : num  0.419 0.414 0.413 0.231 0.231 ...
-     $ Vmc                     : num  5.85 5.88 5.89 6.49 6.46 ...
-     $ Vvc                     : num  11.35 11.37 11.33 8.82 8.8 ...
-     $ Vvv                     : num  0.487 0.496 0.507 1.218 1.216 ...
-     $ Maximum.depth.of.furrows: num  41.5 39.1 36.9 47.2 47 ...
-     $ Mean.depth.of.furrows   : num  18.8 18.3 18.3 16.9 16.9 ...
-     $ Mean.density.of.furrows : num  1354 1319 1322 1443 1442 ...
-     $ First.direction         : num  90 90 90 143 143 ...
-     $ Second.direction        : num  37.00583 37.00101 37.00585 0.00521 0.0164 ...
-     $ Third.direction         : num  56.5 56.5 56.5 20.8 20.8 ...
-     $ Texture.isotropy        : num  20.96 20.96 20.92 9.82 9.8 ...
-     $ epLsar                  : num  0.00347 0.00337 0.0033 0.00213 0.00211 ...
-     $ NewEplsar               : num  0.0163 0.0164 0.0164 0.0181 0.018 ...
-     $ Asfc                    : num  6.64 6.88 7.01 9.35 9.23 ...
-     $ Smfc                    : num  12.9 12.9 12.9 12 12 ...
-     $ HAsfc9                  : num  0.364 0.363 0.37 0.265 0.276 ...
-     $ HAsfc81                 : num  0.486 0.459 0.462 0.368 0.364 ...
-     - attr(*, "comment")= Named chr [1:36] "%" "µm" "<no unit>" "<no unit>" ...
-      ..- attr(*, "names")= chr [1:36] "NMP" "Sq" "Ssk" "Sku" ...
-
-``` r
-#100x objective
-sharks_nmp20_100x <- filter(sharks_nmp20, Objective == "100x")
-sharks_nmp20_100x$Objective <- factor(sharks_nmp20_100x$Objective)
-str(sharks_nmp20_100x)
-```
-
-    'data.frame':   75 obs. of  43 variables:
-     $ Specimen                : chr  "CC" "CC" "CC" "CC" ...
-     $ Tooth                   : chr  "A" "A" "A" "A" ...
-     $ Location                : chr  "loc1" "loc1" "loc1" "loc2" ...
-     $ Objective               : Factor w/ 1 level "100x": 1 1 1 1 1 1 1 1 1 1 ...
-     $ Measurement             : chr  "meas1" "meas2" "meas3" "meas1" ...
-     $ Position                : chr  "top" "top" "top" "bottom" ...
-     $ NMP                     : num  3.03 3.05 3.34 9.84 9.78 ...
-     $ NMP_cat                 : Ord.factor w/ 2 levels "<10%"<"10-20%": 1 1 1 1 1 1 2 2 2 1 ...
-     $ Sq                      : num  1.22 1.18 1.16 1.66 1.66 ...
-     $ Ssk                     : num  -0.332 -0.345 -0.355 1.53 1.454 ...
-     $ Sku                     : num  2.53 2.45 2.42 8.22 7.72 ...
-     $ Sp                      : num  2.74 2.73 2.69 8.77 8.39 ...
-     $ Sv                      : num  3.42 3.25 3.17 3.39 3.45 ...
-     $ Sz                      : num  6.16 5.98 5.86 12.16 11.84 ...
-     $ Sa                      : num  0.995 0.969 0.956 1.14 1.154 ...
-     $ Smr                     : num  5.865 4.991 4.781 0.361 0.405 ...
-     $ Smc                     : num  1.5 1.47 1.43 1.3 1.32 ...
-     $ Sxp                     : num  2.62 2.5 2.48 2.77 2.76 ...
-     $ Sal                     : num  20.7 20.4 20.3 15.3 15.2 ...
-     $ Str                     : num  0.557 0.53 0.537 0.408 0.396 ...
-     $ Std                     : num  58.5 58.5 58.5 84.5 84.5 ...
-     $ Ssw                     : num  0.658 0.658 0.658 0.658 0.658 ...
-     $ Sdq                     : num  0.179 0.176 0.176 0.409 0.395 ...
-     $ Sdr                     : num  1.51 1.47 1.46 4.86 4.71 ...
-     $ Vm                      : num  0.0382 0.033 0.032 0.2068 0.2047 ...
-     $ Vv                      : num  1.54 1.5 1.47 1.51 1.53 ...
-     $ Vmp                     : num  0.0382 0.033 0.032 0.2068 0.2047 ...
-     $ Vmc                     : num  1.21 1.18 1.15 1.16 1.18 ...
-     $ Vvc                     : num  1.39 1.35 1.32 1.35 1.37 ...
-     $ Vvv                     : num  0.148 0.148 0.147 0.154 0.155 ...
-     $ Maximum.depth.of.furrows: num  2.33 2.29 2.29 4.51 4.52 ...
-     $ Mean.depth.of.furrows   : num  0.834 0.808 0.792 1.292 1.286 ...
-     $ Mean.density.of.furrows : num  2027 2022 2034 2211 2229 ...
-     $ First.direction         : num  37 37 37 90 90 ...
-     $ Second.direction        : num  56.5 90 90 84.3 84.3 ...
-     $ Third.direction         : num  90 56.6 56.6 78.7 78.7 ...
-     $ Texture.isotropy        : num  47.3 51.9 58.7 72.8 68 ...
-     $ epLsar                  : num  0.00119 0.00113 0.00124 0.00152 0.0018 ...
-     $ NewEplsar               : num  0.0172 0.0172 0.0173 0.0176 0.0177 ...
-     $ Asfc                    : num  1.85 1.79 1.82 9.4 7.54 ...
-     $ Smfc                    : num  86.2 48.8 52 37.9 62.8 ...
-     $ HAsfc9                  : num  0.249 0.233 0.172 3.11 1.59 ...
-     $ HAsfc81                 : num  0.591 0.582 0.516 4.706 5.056 ...
-     - attr(*, "comment")= Named chr [1:36] "%" "µm" "<no unit>" "<no unit>" ...
-      ..- attr(*, "names")= chr [1:36] "NMP" "Sq" "Ssk" "Sku" ...
-
 ------------------------------------------------------------------------
 
 # Plot each surface parameter in a boxplot
@@ -359,7 +249,7 @@ grp_shapes <- "NMP_cat"
 ``` r
 custom_boxplot <- function(dat, x_axis, y_axis = "Value", 
                            group_col = grp_colors, group_shape = grp_shapes, 
-                           facet_var = "Parameter", plot_title){
+                           facet_grid1 = "Parameter", var_grid2 = "Objective", plot_title){
   
   # Define aesthetics
   p_out <- ggplot(dat, aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
@@ -372,13 +262,10 @@ custom_boxplot <- function(dat, x_axis, y_axis = "Value",
            # Add layers of shapes and colors for points 
            # Jitter points
            geom_point(mapping = aes(shape = .data[[group_shape]], color = .data[[group_col]]), 
-                      position = "jitter", size = 3, alpha = 0.7) +
+                      position = "jitter", size = 2, alpha = 0.7) +
     
-           # Wrap around parameters (i.e. 1 subplot per parameter) with free y-scales
-           facet_wrap(as.formula(paste0("~", facet_var)), scales = "free_y") +
-    
-           # Alternative with facet.grid() (i.e. parameters in rows and objectives in columns) with free y-scales
-           #facet_grid(as.formula(paste0(facet_var, "~ Objective")), scales = "free_y") +
+           # Grid with parameters in rows and objectives in columns, with free y-scales
+           facet_grid(as.formula(paste0(facet_grid1, "~", var_grid2)), scales = "free_y") +
   
            # Remove x- and y-axis labels
            labs(x = NULL, y = NULL, title = plot_title) + 
@@ -386,7 +273,8 @@ custom_boxplot <- function(dat, x_axis, y_axis = "Value",
            # Choose a light theme
            theme_classic() +
   
-           # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+           # The qualitative 'Set1' palette of RColorBrewer is possibly not colorblind-friendly, 
+           # but there is no colorblind-friendly alternative with 9 values
            scale_color_brewer(palette = 'Set1')
 
   # Return ggplot object
@@ -399,135 +287,62 @@ custom_boxplot <- function(dat, x_axis, y_axis = "Value",
 ### ISO 25178 height parameters
 
 ``` r
-# 100x objective
-# Subset and pivot to longer format for facet plots
-Sp_ISO_height_long_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_ISO_height, grp_colors, grp_shapes))) %>%
-                           pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value")
-str(Sp_ISO_height_long_100x)
-```
-
-    tibble [525 × 5] (S3: tbl_df/tbl/data.frame)
-     $ Specimen : chr [1:525] "CC" "CC" "CC" "CC" ...
-     $ Tooth    : chr [1:525] "A" "A" "A" "A" ...
-     $ NMP_cat  : Ord.factor w/ 2 levels "<10%"<"10-20%": 1 1 1 1 1 1 1 1 1 1 ...
-     $ Parameter: chr [1:525] "Sq" "Ssk" "Sku" "Sp" ...
-     $ Value    : num [1:525] 1.217 -0.332 2.531 2.739 3.419 ...
-
-``` r
-head(Sp_ISO_height_long_100x)
-```
-
-    # A tibble: 6 × 5
-      Specimen Tooth NMP_cat Parameter  Value
-      <chr>    <chr> <ord>   <chr>      <dbl>
-    1 CC       A     <10%    Sq         1.22 
-    2 CC       A     <10%    Ssk       -0.332
-    3 CC       A     <10%    Sku        2.53 
-    4 CC       A     <10%    Sp         2.74 
-    5 CC       A     <10%    Sv         3.42 
-    6 CC       A     <10%    Sz         6.16 
-
-``` r
-# Define plot
-Sp_p_ISO_height_100x <- custom_boxplot(dat = Sp_ISO_height_long_100x, x_axis = x_sp, 
-                                       plot_title = "ISO height parameters - 100x")
+# Select columns that will be used in the plotting
+Sp_p_ISO_height <- select(sharks_nmp20, all_of(c(x_sp, y_ISO_height, grp_colors, grp_shapes, "Objective"))) %>%
+  
+                   # Pivot to longer format for facet plots
+                   pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
+  
+                   # Define plot
+                   custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO height parameters")
 
 # Print plot
-print(Sp_p_ISO_height_100x)
+print(Sp_p_ISO_height)
+```
+
+    Warning: Using shapes for an ordinal variable is not advised
+
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+
+### ISO 25178 volume parameters
+
+``` r
+Sp_p_ISO_vol <- select(sharks_nmp20, all_of(c(x_sp, y_ISO_vol, grp_colors, grp_shapes, "Objective"))) %>%
+                pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
+                custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO volume parameters")
+print(Sp_p_ISO_vol)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
 
 ![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
-``` r
-#Same with 20x objective
-Sp_p_ISO_height_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_ISO_height, grp_colors, grp_shapes))) %>%
-                       pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
-                       custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO height parameters - 20x")
-print(Sp_p_ISO_height_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-9-2.png)<!-- -->
-
-### ISO 25178 volume parameters
-
-``` r
-Sp_p_ISO_vol_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                     pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                     custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO volume parameters - 100x")
-print(Sp_p_ISO_vol_100x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
-
-``` r
-Sp_p_ISO_vol_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                    pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                    custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO volume parameters - 20x")
-print(Sp_p_ISO_vol_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-10-2.png)<!-- -->
-
 ### Other ISO 25178 parameters
 
 ``` r
-Sp_p_ISO_others_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_ISO_others, grp_colors, grp_shapes))) %>%
-                        pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                        custom_boxplot(dat = ., x_axis = x_sp, plot_title = "Other ISO parameters - 100x")
-print(Sp_p_ISO_others_100x)
+Sp_p_ISO_others <- select(sharks_nmp20, all_of(c(x_sp, y_ISO_others, grp_colors, grp_shapes, "Objective"))) %>%
+                   pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
+                   custom_boxplot(dat = ., x_axis = x_sp, plot_title = "Other ISO parameters")
+print(Sp_p_ISO_others)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
 
-    Warning: Removed 25 rows containing non-finite values (`stat_boxplot()`).
+    Warning: Removed 45 rows containing non-finite values (`stat_boxplot()`).
 
-    Warning: Removed 25 rows containing missing values (`geom_point()`).
+    Warning: Removed 45 rows containing missing values (`geom_point()`).
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
-
-``` r
-Sp_p_ISO_others_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_ISO_others, grp_colors, grp_shapes))) %>%
-                       pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                       custom_boxplot(dat = ., x_axis = x_sp, plot_title = "Other ISO parameters - 20x")
-print(Sp_p_ISO_others_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-    Warning: Removed 20 rows containing non-finite values (`stat_boxplot()`).
-
-    Warning: Removed 20 rows containing missing values (`geom_point()`).
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-11-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ### Furrow, direction and isotropy parameters
 
 ``` r
-Sp_p_furrow_diriso_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                           pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                           custom_boxplot(dat = ., x_axis = x_sp, 
-                                          plot_title = "Furrow, direction and isotropy parameters - 100x")
-print(Sp_p_furrow_diriso_100x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
-
-``` r
-Sp_p_furrow_diriso_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                          pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                          custom_boxplot(dat = ., x_axis = x_sp, 
-                                         plot_title = "Furrow, direction and isotropy parameters - 20x")
-print(Sp_p_furrow_diriso_20x)
+Sp_p_furrow_diriso <- select(sharks_nmp20, 
+                             all_of(c(x_sp, y_furrow_diriso, grp_colors, grp_shapes, "Objective"))) %>%
+                      pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
+                      custom_boxplot(dat = ., x_axis = x_sp, 
+                                     plot_title = "Furrow, direction and isotropy parameters")
+print(Sp_p_furrow_diriso)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
@@ -536,15 +351,15 @@ print(Sp_p_furrow_diriso_20x)
 
     Warning: Removed 9 rows containing missing values (`geom_point()`).
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ### SSFA parameters
 
 ``` r
-Sp_p_ssfa_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_SSFA, grp_colors, grp_shapes))) %>%
-                  pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                  custom_boxplot(dat = ., x_axis = x_sp, plot_title = "SSFA parameters - 100x")
-print(Sp_p_ssfa_100x)
+Sp_p_ssfa <- select(sharks_nmp20, all_of(c(x_sp, y_SSFA, grp_colors, grp_shapes, "Objective"))) %>%
+             pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
+             custom_boxplot(dat = ., x_axis = x_sp, plot_title = "SSFA parameters")
+print(Sp_p_ssfa)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
@@ -553,32 +368,14 @@ print(Sp_p_ssfa_100x)
 
     Warning: Removed 3 rows containing missing values (`geom_point()`).
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
-
-``` r
-Sp_p_ssfa_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_SSFA, grp_colors, grp_shapes))) %>%
-                 pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                 custom_boxplot(dat = ., x_axis = x_sp, plot_title = "SSFA parameters - 20x")
-print(Sp_p_ssfa_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-13-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
 ### Save plots
 
 ``` r
 suppressWarnings(
-  ggexport(plotlist = list(Sp_p_ISO_height_100x, Sp_p_ISO_vol_100x, Sp_p_ISO_others_100x, Sp_p_furrow_diriso_100x,
-                           Sp_p_ssfa_100x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_sp, "-100x.pdf"))
-)
-
-suppressWarnings(
-  ggexport(plotlist = list(Sp_p_ISO_height_20x, Sp_p_ISO_vol_20x, Sp_p_ISO_others_20x, Sp_p_furrow_diriso_20x,
-                           Sp_p_ssfa_20x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_sp, "-20x.pdf"))
+  ggexport(plotlist = list(Sp_p_ISO_height, Sp_p_ISO_vol, Sp_p_ISO_others, Sp_p_furrow_diriso, Sp_p_ssfa), 
+           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_sp, ".pdf"))
 )
 ```
 
@@ -587,143 +384,56 @@ suppressWarnings(
 ### ISO 25178 height parameters
 
 ``` r
-# 100x objective
-# Subset and pivot to longer format for facet plots
-Pos_ISO_height_long_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_ISO_height, grp_colors, grp_shapes))) %>%
-                            pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value")
-str(Pos_ISO_height_long_100x)
+Pos_p_ISO_height <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_height, grp_colors, grp_shapes, "Objective"))) %>%
+                    pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
+                    custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO height parameters")
+print(Pos_p_ISO_height)
 ```
 
-    tibble [525 × 5] (S3: tbl_df/tbl/data.frame)
-     $ Position : chr [1:525] "top" "top" "top" "top" ...
-     $ Tooth    : chr [1:525] "A" "A" "A" "A" ...
-     $ NMP_cat  : Ord.factor w/ 2 levels "<10%"<"10-20%": 1 1 1 1 1 1 1 1 1 1 ...
-     $ Parameter: chr [1:525] "Sq" "Ssk" "Sku" "Sp" ...
-     $ Value    : num [1:525] 1.217 -0.332 2.531 2.739 3.419 ...
+    Warning: Using shapes for an ordinal variable is not advised
+
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+### ISO 25178 volume parameters
 
 ``` r
-head(Pos_ISO_height_long_100x)
-```
-
-    # A tibble: 6 × 5
-      Position Tooth NMP_cat Parameter  Value
-      <chr>    <chr> <ord>   <chr>      <dbl>
-    1 top      A     <10%    Sq         1.22 
-    2 top      A     <10%    Ssk       -0.332
-    3 top      A     <10%    Sku        2.53 
-    4 top      A     <10%    Sp         2.74 
-    5 top      A     <10%    Sv         3.42 
-    6 top      A     <10%    Sz         6.16 
-
-``` r
-# Define plot
-Pos_p_ISO_height_100x <- custom_boxplot(dat = Pos_ISO_height_long_100x, x_axis = x_pos, 
-                                        plot_title = "ISO height parameters - 100x")
-
-# Print plot
-print(Pos_p_ISO_height_100x)
+Pos_p_ISO_vol <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_vol, grp_colors, grp_shapes, "Objective"))) %>%
+                 pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
+                 custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO volume parameters")
+print(Pos_p_ISO_vol)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
 
 ![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
-``` r
-# Same with 20x objective
-Pos_p_ISO_height_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_ISO_height, grp_colors, grp_shapes))) %>%
-                        pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
-                        custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO height parameters - 20x")
-print(Pos_p_ISO_height_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-15-2.png)<!-- -->
-
-### ISO 25178 volume parameters
-
-``` r
-Pos_p_ISO_vol_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                      pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                      custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO volume parameters - 100x")
-print(Pos_p_ISO_vol_100x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
-
-``` r
-Pos_p_ISO_vol_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                     pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                     custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO volume parameters - 20x")
-print(Pos_p_ISO_vol_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-16-2.png)<!-- -->
-
-``` r
-# Alternative with facet.grid()
-#Pos_p_ISO_vol <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_vol, grp_colors, grp_shapes, "Objective"))) %>%
-#                      pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-#                      custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO volume parameters")
-#print(Pos_p_ISO_vol)
-```
-
 ### Other ISO 25178 parameters
 
 ``` r
-Pos_p_ISO_others_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_ISO_others, grp_colors, grp_shapes))) %>%
-                         pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                         custom_boxplot(dat = ., x_axis = x_pos, plot_title = "Other ISO parameters - 100x")
-print(Pos_p_ISO_others_100x)
+Pos_p_ISO_others <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_others, grp_colors, grp_shapes, "Objective"))) %>%
+                    pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
+                    custom_boxplot(dat = ., x_axis = x_pos, plot_title = "Other ISO parameters")
+print(Pos_p_ISO_others)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
 
-    Warning: Removed 25 rows containing non-finite values (`stat_boxplot()`).
+    Warning: Removed 45 rows containing non-finite values (`stat_boxplot()`).
 
-    Warning: Removed 25 rows containing missing values (`geom_point()`).
+    Warning: Removed 45 rows containing missing values (`geom_point()`).
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
-
-``` r
-Pos_p_ISO_others_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_ISO_others, grp_colors, grp_shapes))) %>%
-                        pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                        custom_boxplot(dat = ., x_axis = x_pos, plot_title = "Other ISO parameters - 20x")
-print(Pos_p_ISO_others_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-    Warning: Removed 20 rows containing non-finite values (`stat_boxplot()`).
-
-    Warning: Removed 20 rows containing missing values (`geom_point()`).
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-17-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ### Furrow, direction and isotropy parameters
 
 ``` r
-Pos_p_furrow_diriso_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                            pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                            custom_boxplot(dat = ., x_axis = x_pos, 
-                                           plot_title = "Furrow, direction and isotropy parameters - 100x")
-print(Pos_p_furrow_diriso_100x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
-
-``` r
-Pos_p_furrow_diriso_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                           pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                           custom_boxplot(dat = ., x_axis = x_pos, 
-                                          plot_title = "Furrow, direction and isotropy parameters - 20x")
-print(Pos_p_furrow_diriso_20x)
+Pos_p_furrow_diriso <- select(sharks_nmp20, 
+                              all_of(c(x_pos, y_furrow_diriso, grp_colors, grp_shapes, "Objective"))) %>%
+                              pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", 
+                                           values_to = "Value") %>%
+                              custom_boxplot(dat = ., x_axis = x_pos, 
+                                             plot_title = "Furrow, direction and isotropy parameters")
+print(Pos_p_furrow_diriso)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
@@ -732,15 +442,15 @@ print(Pos_p_furrow_diriso_20x)
 
     Warning: Removed 9 rows containing missing values (`geom_point()`).
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-18-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
 
 ### SSFA parameters
 
 ``` r
-Pos_p_ssfa_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_SSFA, grp_colors, grp_shapes))) %>%
-                   pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                   custom_boxplot(dat = ., x_axis = x_pos, plot_title = "SSFA parameters - 100x")
-print(Pos_p_ssfa_100x)
+Pos_p_ssfa <- select(sharks_nmp20, all_of(c(x_pos, y_SSFA, grp_colors, grp_shapes, "Objective"))) %>%
+              pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
+              custom_boxplot(dat = ., x_axis = x_pos, plot_title = "SSFA parameters")
+print(Pos_p_ssfa)
 ```
 
     Warning: Using shapes for an ordinal variable is not advised
@@ -749,32 +459,14 @@ print(Pos_p_ssfa_100x)
 
     Warning: Removed 3 rows containing missing values (`geom_point()`).
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-19-1.png)<!-- -->
-
-``` r
-Pos_p_ssfa_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_SSFA, grp_colors, grp_shapes))) %>%
-                   pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                   custom_boxplot(dat = ., x_axis = x_pos, plot_title = "SSFA parameters - 20x")
-print(Pos_p_ssfa_20x)
-```
-
-    Warning: Using shapes for an ordinal variable is not advised
-
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-19-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-18-1.png)<!-- -->
 
 ### Save plots
 
 ``` r
 suppressWarnings(
-  ggexport(plotlist = list(Pos_p_ISO_height_100x, Pos_p_ISO_vol_100x, Pos_p_ISO_others_100x, Pos_p_furrow_diriso_100x,
-                           Pos_p_ssfa_100x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_pos, "-100x.pdf"))
-)
-
-suppressWarnings(
-  ggexport(plotlist = list(Pos_p_ISO_height_20x, Pos_p_ISO_vol_20x, Pos_p_ISO_others_20x, Pos_p_furrow_diriso_20x,
-                           Pos_p_ssfa_20x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_pos, "-20x.pdf"))
+  ggexport(plotlist = list(Pos_p_ISO_height, Pos_p_ISO_vol, Pos_p_ISO_others, Pos_p_furrow_diriso, Pos_p_ssfa), 
+           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_pos, ".pdf"))
 )
 ```
 
@@ -789,12 +481,14 @@ suppressWarnings(
 Sp_p_bi <- ggplot(sharks_nmp20, aes(x = Asfc, y = epLsar)) +
         
            # Scatterplot
-           geom_point(mapping = aes(color = .data[[grp_colors]], shape = .data[[grp_shapes]]), size = 4, alpha = 0.7) +
+           geom_point(mapping = aes(color = .data[[grp_colors]], shape = .data[[grp_shapes]]), 
+                      size = 4, alpha = 0.7) +
   
            # Adjust axes labels
            labs(x = "Complexity (Asfc)", y = "Anisotropy (epLsar)") +
   
-           # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+           # The qualitative 'Set1' palette of RColorBrewer is possibly not colorblind-friendly, 
+           # but there is no colorblind-friendly alternative with 9 values
            scale_color_brewer(palette = 'Set1') +
   
            # Grid with Objectives in rows and Specimen in columns
@@ -809,14 +503,15 @@ print(Sp_p_bi)
 
     Warning: Using shapes for an ordinal variable is not advised
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-20-1.png)<!-- -->
 
 ## Facetting around Position
 
 ``` r
 # set up plot
 Pos_p_bi <- ggplot(sharks_nmp20, aes(x = Asfc, y = epLsar)) +
-            geom_point(mapping = aes(color = .data[[grp_colors]], shape = .data[[grp_shapes]]), size = 4, alpha = 0.7) +
+            geom_point(mapping = aes(color = .data[[grp_colors]], shape = .data[[grp_shapes]]), 
+                       size = 4, alpha = 0.7) +
             labs(x = "Complexity (Asfc)", y = "Anisotropy (epLsar)") +
             scale_color_brewer(palette = 'Set1') +
             facet_grid(Objective ~ Position) +
@@ -828,7 +523,7 @@ print(Pos_p_bi)
 
     Warning: Using shapes for an ordinal variable is not advised
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-22-1.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-21-1.png)<!-- -->
 
 ## Save plots
 
@@ -1064,7 +759,7 @@ pca_all_100x_eig <- fviz_eig(pca_all_100x, addlabels = TRUE, ggtheme = theme_cla
 print(pca_all_100x_eig)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-26-1.png)<!-- -->
 
 ``` r
 # 20x
@@ -1073,7 +768,7 @@ pca_all_20x_eig <- fviz_eig(pca_all_20x, addlabels = TRUE, ggtheme = theme_class
 print(pca_all_20x_eig)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-27-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-26-2.png)<!-- -->
 
 #### On Specimen CC
 
@@ -1083,7 +778,7 @@ pca_cc_100x_eig <- fviz_eig(pca_cc_100x, addlabels = TRUE, ggtheme = theme_class
 print(pca_cc_100x_eig)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-28-1.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-27-1.png)<!-- -->
 
 ``` r
 pca_cc_20x_eig <- fviz_eig(pca_cc_20x, addlabels = TRUE, ggtheme = theme_classic(), 
@@ -1091,7 +786,7 @@ pca_cc_20x_eig <- fviz_eig(pca_cc_20x, addlabels = TRUE, ggtheme = theme_classic
 print(pca_cc_20x_eig)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-28-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-27-2.png)<!-- -->
 
 ### Biplots
 
@@ -1125,7 +820,7 @@ pca_sp_100x_12 <- custom_pca_biplot(pca_all_100x, datpca = data_pca_100x, pc = c
 print(pca_sp_100x_12)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-29-1.png)<!-- -->
 
 ``` r
 # Biplot of PC1&3 on 100x
@@ -1134,7 +829,7 @@ pca_sp_100x_13 <- custom_pca_biplot(pca_all_100x, datpca = data_pca_100x, pc = c
 print(pca_sp_100x_13)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-29-2.png)<!-- -->
 
 ``` r
 # Biplot of PC1&2 on 20x
@@ -1143,7 +838,7 @@ pca_sp_20x_12 <- custom_pca_biplot(pca_all_20x, datpca = data_pca_20x, pc = c(1,
 print(pca_sp_20x_12)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-3.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-29-3.png)<!-- -->
 
 ``` r
 # Biplot of PC1&3 on 20x
@@ -1152,7 +847,7 @@ pca_sp_20x_13 <- custom_pca_biplot(pca_all_20x, datpca = data_pca_20x, pc = c(1,
 print(pca_sp_20x_13)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-4.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-29-4.png)<!-- -->
 
 #### On all surfaces with grouping from Position (bottom vs. top)
 
@@ -1163,7 +858,7 @@ pca_pos_100x_12 <- custom_pca_biplot(pca_all_100x, datpca = data_pca_100x, pc = 
 print(pca_pos_100x_12)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-1.png)<!-- -->
 
 ``` r
 # Biplot of PC1&3 on 100x
@@ -1172,7 +867,7 @@ pca_pos_100x_13 <- custom_pca_biplot(pca_all_100x, datpca = data_pca_100x, pc = 
 print(pca_pos_100x_13)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-2.png)<!-- -->
 
 ``` r
 # Biplot of PC1&2 on 20x
@@ -1181,7 +876,7 @@ pca_pos_20x_12 <- custom_pca_biplot(pca_all_20x, datpca = data_pca_20x, pc = c(1
 print(pca_pos_20x_12)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-3.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-3.png)<!-- -->
 
 ``` r
 # Biplot of PC1&3 on 20x
@@ -1190,49 +885,59 @@ pca_pos_20x_13 <- custom_pca_biplot(pca_all_20x, datpca = data_pca_20x, pc = c(1
 print(pca_pos_20x_13)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-4.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-30-4.png)<!-- -->
 
 #### On Specimen CC with grouping from Tooth
 
 ``` r
+# Because of missing teeth in the 20x and 100x datasets, 
+# a custom named palette is necessary to associate each tooth to a defined color.
+# This custom palette uses the same colors as for the boxplots.
+custom_pal <- brewer.pal(7, "Set1")
+names(custom_pal) <- LETTERS[1:7]
+
 # Biplot of PC1&2 on 100x
 pca_tooth_100x_12 <- custom_pca_biplot(pca_cc_100x, datpca = data_pca_100x_tooth, pc = c(1, 2), col.pt = "Tooth",
-                                       col.pal = brewer.pal(7, "Set2"), pt.shape = 21, 
-                                       pt.fill = data_pca_100x_tooth$Tooth, main.title = "PCA CC - Tooth - PC1&2 (100x)")
+                                       col.pal = custom_pal, pt.shape = 21, 
+                                       pt.fill = data_pca_100x_tooth$Tooth, 
+                                       main.title = "PCA CC - Tooth - PC1&2 (100x)")
 print(pca_tooth_100x_12)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-32-1.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-1.png)<!-- -->
 
 ``` r
 # Biplot of PC1&3 on 100x
 pca_tooth_100x_13 <- custom_pca_biplot(pca_cc_100x, datpca = data_pca_100x_tooth, pc = c(1, 3), col.pt = "Tooth",
-                                       col.pal = brewer.pal(7, "Set2"), pt.shape = 21, 
-                                       pt.fill = data_pca_100x_tooth$Tooth, main.title = "PCA CC - Tooth - PC1&3 (100x)")
+                                       col.pal = custom_pal, pt.shape = 21, 
+                                       pt.fill = data_pca_100x_tooth$Tooth, 
+                                       main.title = "PCA CC - Tooth - PC1&3 (100x)")
 print(pca_tooth_100x_13)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-32-2.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-2.png)<!-- -->
 
 ``` r
 # Biplot of PC1&2 on 20x
 pca_tooth_20x_12 <- custom_pca_biplot(pca_cc_20x, datpca = data_pca_20x_tooth, pc = c(1, 2), col.pt = "Tooth",
-                                       col.pal = brewer.pal(7, "Set2"), pt.shape = 21, 
-                                       pt.fill = data_pca_20x_tooth$Tooth, main.title = "PCA CC - Tooth - PC1&2 (20x)")
+                                      col.pal = custom_pal, pt.shape = 21, 
+                                      pt.fill = data_pca_20x_tooth$Tooth, 
+                                      main.title = "PCA CC - Tooth - PC1&2 (20x)")
 print(pca_tooth_20x_12)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-32-3.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-3.png)<!-- -->
 
 ``` r
 # Biplot of PC1&3 on 20x
 pca_tooth_20x_13 <- custom_pca_biplot(pca_cc_20x, datpca = data_pca_20x_tooth, pc = c(1, 3), col.pt = "Tooth",
-                                       col.pal = brewer.pal(7, "Set2"), pt.shape = 21, 
-                                       pt.fill = data_pca_20x_tooth$Tooth, main.title = "PCA CC - Tooth - PC1&3 (20x)")
+                                      col.pal = custom_pal, pt.shape = 21, 
+                                      pt.fill = data_pca_20x_tooth$Tooth, 
+                                      main.title = "PCA CC - Tooth - PC1&3 (20x)")
 print(pca_tooth_20x_13)
 ```
 
-![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-32-4.png)<!-- -->
+![](Sharks_3_Plots_files/figure-gfm/unnamed-chunk-31-4.png)<!-- -->
 
 ### Save plots
 
@@ -1268,39 +973,37 @@ sessionInfo()
 
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=French_France.utf8  LC_CTYPE=French_France.utf8   
+    [3] LC_MONETARY=French_France.utf8 LC_NUMERIC=C                  
+    [5] LC_TIME=French_France.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
 
     attached base packages:
-    [1] stats     graphics  grDevices utils     datasets  methods   base     
+    [1] stats     graphics  grDevices datasets  utils     methods   base     
 
     other attached packages:
      [1] lubridate_1.9.3    forcats_1.0.0      stringr_1.5.1      dplyr_1.1.4       
      [5] purrr_1.0.2        readr_2.1.4        tidyr_1.3.0        tibble_3.2.1      
-     [9] tidyverse_2.0.0    rmarkdown_2.25     RColorBrewer_1.1-3 R.utils_2.12.3    
-    [13] R.oo_1.25.0        R.methodsS3_1.8.2  knitr_1.45         grateful_0.2.4    
-    [17] ggpubr_0.6.0       factoextra_1.0.7   ggplot2_3.4.4     
+     [9] tidyverse_2.0.0    rmarkdown_2.25     readODS_2.1.0      RColorBrewer_1.1-3
+    [13] R.utils_2.12.3     R.oo_1.25.0        R.methodsS3_1.8.2  knitr_1.45        
+    [17] grateful_0.2.4     ggpubr_0.6.0       factoextra_1.0.7   ggplot2_3.4.4     
 
     loaded via a namespace (and not attached):
-     [1] sass_0.4.8        utf8_1.2.4        generics_0.1.3    rstatix_0.7.2    
-     [5] stringi_1.8.3     hms_1.1.3         digest_0.6.33     magrittr_2.0.3   
-     [9] timechange_0.2.0  evaluate_0.23     grid_4.3.2        fastmap_1.1.1    
-    [13] rprojroot_2.0.4   jsonlite_1.8.8    ggrepel_0.9.4     backports_1.4.1  
-    [17] fansi_1.0.6       scales_1.3.0      jquerylib_0.1.4   abind_1.4-5      
-    [21] cli_3.6.2         rlang_1.1.2       crayon_1.5.2      munsell_0.5.0    
-    [25] withr_2.5.2       cachem_1.0.8      yaml_2.3.8        tools_4.3.2      
-    [29] tzdb_0.4.0        ggsignif_0.6.4    colorspace_2.1-0  broom_1.0.5      
-    [33] vctrs_0.6.5       R6_2.5.1          lifecycle_1.0.4   car_3.1-2        
-    [37] pkgconfig_2.0.3   pillar_1.9.0      bslib_0.6.1       gtable_0.3.4     
-    [41] glue_1.6.2        Rcpp_1.0.11       highr_0.10        xfun_0.41        
-    [45] tidyselect_1.2.0  rstudioapi_0.15.0 farver_2.1.1      htmltools_0.5.7  
-    [49] labeling_0.4.3    carData_3.0-5     compiler_4.3.2   
+     [1] sass_0.4.8        utf8_1.2.4        generics_0.1.3    renv_1.0.3       
+     [5] rstatix_0.7.2     stringi_1.8.3     hms_1.1.3         digest_0.6.33    
+     [9] magrittr_2.0.3    timechange_0.2.0  evaluate_0.23     grid_4.3.2       
+    [13] fastmap_1.1.1     rprojroot_2.0.4   jsonlite_1.8.8    ggrepel_0.9.4    
+    [17] backports_1.4.1   fansi_1.0.6       scales_1.3.0      jquerylib_0.1.4  
+    [21] abind_1.4-5       cli_3.6.2         rlang_1.1.2       crayon_1.5.2     
+    [25] munsell_0.5.0     withr_2.5.2       cachem_1.0.8      yaml_2.3.8       
+    [29] tools_4.3.2       tzdb_0.4.0        ggsignif_0.6.4    colorspace_2.1-0 
+    [33] broom_1.0.5       vctrs_0.6.5       R6_2.5.1          lifecycle_1.0.4  
+    [37] car_3.1-2         pkgconfig_2.0.3   pillar_1.9.0      bslib_0.6.1      
+    [41] gtable_0.3.4      glue_1.6.2        Rcpp_1.0.11       highr_0.10       
+    [45] xfun_0.41         tidyselect_1.2.0  rstudioapi_0.15.0 farver_2.1.1     
+    [49] htmltools_0.5.7   labeling_0.4.3    carData_3.0-5     compiler_4.3.2   
 
 ------------------------------------------------------------------------
 
@@ -1313,8 +1016,11 @@ sessionInfo()
 | ggpubr       | 0.6.0   | Kassambara (2023)                                                                             |
 | grateful     | 0.2.4   | Francisco Rodriguez-Sanchez and Connor P. Jackson (2023)                                      |
 | knitr        | 1.45    | Xie (2014); Xie (2015); Xie (2023)                                                            |
+| R.methodsS3  | 1.8.2   | Bengtsson (2003a)                                                                             |
+| R.oo         | 1.25.0  | Bengtsson (2003b)                                                                             |
 | R.utils      | 2.12.3  | Bengtsson (2023)                                                                              |
 | RColorBrewer | 1.1.3   | Neuwirth (2022)                                                                               |
+| readODS      | 2.1.0   | Schutten et al. (2023)                                                                        |
 | rmarkdown    | 2.25    | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2023) |
 | tidyverse    | 2.0.0   | Wickham et al. (2019)                                                                         |
 
@@ -1331,10 +1037,34 @@ Luraschi, Kevin Ushey, Aron Atkins, et al. 2023.
 
 </div>
 
+<div id="ref-RmethodsS3" class="csl-entry">
+
+Bengtsson, Henrik. 2003a. “The <span class="nocase">R.oo</span>
+Package - Object-Oriented Programming with References Using Standard R
+Code.” In *Proceedings of the 3rd International Workshop on Distributed
+Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
+Leisch, and Achim Zeileis. Vienna, Austria:
+https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+<https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
+
+</div>
+
+<div id="ref-Roo" class="csl-entry">
+
+———. 2003b. “The <span class="nocase">R.oo</span> Package -
+Object-Oriented Programming with References Using Standard R Code.” In
+*Proceedings of the 3rd International Workshop on Distributed
+Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
+Leisch, and Achim Zeileis. Vienna, Austria:
+https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+<https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
+
+</div>
+
 <div id="ref-Rutils" class="csl-entry">
 
-Bengtsson, Henrik. 2023. *<span class="nocase">R.utils</span>: Various
-Programming Utilities*. <https://CRAN.R-project.org/package=R.utils>.
+———. 2023. *<span class="nocase">R.utils</span>: Various Programming
+Utilities*. <https://CRAN.R-project.org/package=R.utils>.
 
 </div>
 
@@ -1350,7 +1080,7 @@ Packages*. <https://pakillo.github.io/grateful/>.
 
 Kassambara, Alboukadel. 2023. *<span class="nocase">ggpubr</span>:
 “<span class="nocase">ggplot2</span>” Based Publication Ready Plots*.
-<https://CRAN.R-project.org/package=ggpubr>.
+<https://rpkgs.datanovia.com/ggpubr/>.
 
 </div>
 
@@ -1359,14 +1089,13 @@ Kassambara, Alboukadel. 2023. *<span class="nocase">ggpubr</span>:
 Kassambara, Alboukadel, and Fabian Mundt. 2020.
 *<span class="nocase">factoextra</span>: Extract and Visualize the
 Results of Multivariate Data Analyses*.
-<https://CRAN.R-project.org/package=factoextra>.
+<http://www.sthda.com/english/rpkgs/factoextra>.
 
 </div>
 
 <div id="ref-RColorBrewer" class="csl-entry">
 
 Neuwirth, Erich. 2022. *RColorBrewer: ColorBrewer Palettes*.
-<https://CRAN.R-project.org/package=RColorBrewer>.
 
 </div>
 
@@ -1375,6 +1104,14 @@ Neuwirth, Erich. 2022. *RColorBrewer: ColorBrewer Palettes*.
 R Core Team. 2023. *R: A Language and Environment for Statistical
 Computing*. Vienna, Austria: R Foundation for Statistical Computing.
 <https://www.R-project.org/>.
+
+</div>
+
+<div id="ref-readODS" class="csl-entry">
+
+Schutten, Gerrit-Jan, Chung-hong Chan, Peter Brohan, Detlef Steuer, and
+Thomas J. Leeper. 2023. *<span class="nocase">readODS</span>: Read and
+Write ODS Files*. <https://github.com/ropensci/readODS>.
 
 </div>
 

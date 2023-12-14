@@ -52,8 +52,12 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- sort(c("R.utils", "readODS", "tidyverse", "rmarkdown", "knitr", "grateful"))
-sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
+library(grateful)
+library(knitr)
+library(R.utils)
+library(readODS)
+library(rmarkdown)
+library(tidyverse)
 ```
 
 
@@ -278,7 +282,7 @@ sessionInfo()
 # Cite R packages used
 
 ```{r, echo = FALSE}
-pkgs_cite <- cite_packages(pkgs = c(pack_to_load, "base"), output = "table", include.RStudio = TRUE, 
+pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
                            out.dir = "analysis/scripts", bib.file = "Sharks_1_Import")
 knitr::kable(pkgs_cite)
 ```

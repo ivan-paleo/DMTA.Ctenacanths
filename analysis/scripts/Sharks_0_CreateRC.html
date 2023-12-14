@@ -12,7 +12,7 @@
 <meta name="author" content="Ivan Calandra" />
 
 
-<title>Import dataset of DMTA on Devionan sharks</title>
+<title>Create Research Compendium - DMTA on Devionan sharks</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -1572,10 +1572,10 @@ border-radius: 0px;
 
 
 
-<h1 class="title toc-ignore">Import dataset of DMTA on Devionan
-sharks</h1>
+<h1 class="title toc-ignore">Create Research Compendium - DMTA on
+Devionan sharks</h1>
 <h4 class="author">Ivan Calandra</h4>
-<h4 class="date">2023-12-14 14:42:51 CET</h4>
+<h4 class="date">2023-12-14 14:49:38 CET</h4>
 
 </div>
 
@@ -1583,336 +1583,104 @@ sharks</h1>
 <hr />
 <div id="goal-of-the-script" class="section level1" number="1">
 <h1><span class="header-section-number">1</span> Goal of the script</h1>
-<p>This script formats the output of the resulting files from applying
-surface texture analysis to a sample of Devonian shark teeth. The script
-will:</p>
-<ol style="list-style-type: decimal">
-<li>Read in the original files<br />
-</li>
-<li>Format the data<br />
-</li>
-<li>Write ODS file and save R objects ready for further analysis in
-R</li>
-</ol>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>dir_in  <span class="ot">&lt;-</span> <span class="st">&quot;analysis/raw_data&quot;</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>dir_out <span class="ot">&lt;-</span> <span class="st">&quot;analysis/derived_data&quot;</span></span></code></pre></div>
-<p>Raw data must be located in “./analysis/raw_data”.<br />
-Formatted data will be saved in “./analysis/derived_data”.</p>
+<p>Create and set up a research compendium for the paper of DMTA on
+Devionan sharks using the R package <code>rrtools</code>.<br />
+For details on rrtools, see Ben Marwick’s <a href="https://github.com/benmarwick/rrtools">GitHub repository</a>.</p>
+<p>Note that this script is there only to show the steps taken to create
+the research compendium and is not part of the analysis per se. For this
+reason, most of the code is not evaluated
+(<code>knitr::opts_chunk$set(eval=FALSE)</code>).</p>
 <p>The knit directory for this script is the project directory.</p>
 <hr />
 </div>
-<div id="load-packages" class="section level1" number="2">
-<h1><span class="header-section-number">2</span> Load packages</h1>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">library</span>(grateful)</span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">library</span>(knitr)</span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">library</span>(R.utils)</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="fu">library</span>(readODS)</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">library</span>(rmarkdown)</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div>
+<div id="prerequisites" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Prerequisites</h1>
+<p>This script requires that you have a GitHub account and that you have
+connected RStudio, Git and GitHub. For details on how to do it, check <a href="https://happygitwithr.com/">Happy Git</a>.</p>
 <hr />
 </div>
-<div id="get-names-and-path-all-files" class="section level1" number="3">
-<h1><span class="header-section-number">3</span> Get names and path all
-files</h1>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>info_in <span class="ot">&lt;-</span> <span class="fu">list.files</span>(dir_in, <span class="at">pattern =</span> <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.csv$&quot;</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>info_in</span></code></pre></div>
-<pre><code>[1] &quot;analysis/raw_data/DMTA-Ctenacanths_100x.csv&quot;          
-[2] &quot;analysis/raw_data/DMTA-Ctenacanths_100x_positions.csv&quot;
-[3] &quot;analysis/raw_data/DMTA-Ctenacanths_20x.csv&quot;           
-[4] &quot;analysis/raw_data/DMTA-Ctenacanths_20x_positions.csv&quot; </code></pre>
+<div id="preparations" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> Preparations</h1>
+<p>Before running this script, the first step is to <a href="https://happygitwithr.com/new-github-first.html">create a
+repository on GitHub and to download it to RStudio</a>. In this case,
+the repository is called “DMTA-Devo-sharks”.<br />
+Finally, open the RStudio project created.</p>
 <hr />
 </div>
-<div id="read-and-format-data" class="section level1" number="4">
-<h1><span class="header-section-number">4</span> Read and format
-data</h1>
-<div id="read-in-csv-files" class="section level2" number="4.1">
-<h2><span class="header-section-number">4.1</span> Read in CSV
-files</h2>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co"># Loop through list of CSV files and read in</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>sharks <span class="ot">&lt;-</span> info_in <span class="sc">%&gt;%</span> </span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  </span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>           <span class="co"># Subset relevant CSV files</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>           .[<span class="fu">grepl</span>(<span class="st">&quot;x.csv&quot;</span>, .)] <span class="sc">%&gt;%</span> </span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>  </span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>           <span class="co"># Read in all relevant CSV files</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>           <span class="fu">lapply</span>(<span class="cf">function</span>(x) <span class="fu">read.csv</span>(x, <span class="at">header =</span> <span class="cn">FALSE</span>, <span class="at">na.strings =</span> <span class="st">&quot;*****&quot;</span>, </span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>                                       <span class="at">fileEncoding =</span> <span class="st">&#39;WINDOWS-1252&#39;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  </span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>           <span class="co"># rbind together</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>           <span class="fu">do.call</span>(rbind, .)</span></code></pre></div>
+<div id="create-the-research-compendium" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Create the research
+compendium</h1>
+<div id="load-packages" class="section level2" number="4.1">
+<h2><span class="header-section-number">4.1</span> Load packages</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(grateful)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(renv)</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="fu">library</span>(rrtools)</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="fu">library</span>(usethis)</span></code></pre></div>
 </div>
-<div id="select-relevant-columns-and-rows" class="section level2" number="4.2">
-<h2><span class="header-section-number">4.2</span> Select relevant
-columns and rows</h2>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>sharks_keep_col  <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">26</span><span class="sc">:</span><span class="dv">55</span>, <span class="dv">57</span><span class="sc">:</span><span class="dv">58</span>, <span class="dv">61</span><span class="sc">:</span><span class="dv">64</span>)                 <span class="co"># Define columns to keep</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>sharks_keep_rows <span class="ot">&lt;-</span> <span class="fu">which</span>(sharks[[<span class="dv">1</span>]] <span class="sc">!=</span> <span class="st">&quot;#&quot;</span>)                 <span class="co"># Define rows to keep</span></span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>sharks_keep      <span class="ot">&lt;-</span> sharks[sharks_keep_rows, sharks_keep_col] <span class="co"># Subset rows and columns</span></span></code></pre></div>
+<div id="create-compendium" class="section level2" number="4.2">
+<h2><span class="header-section-number">4.2</span> Create
+compendium</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>rrtools<span class="sc">::</span><span class="fu">use_compendium</span>(<span class="fu">getwd</span>())</span></code></pre></div>
+<p>A new project has opened in a new session.<br />
+Edit the fields “Title”, “Author” and “Description” in the
+<code>DESCRIPTION</code> file.</p>
 </div>
-<div id="identify-results-using-frame-numbers" class="section level2" number="4.3">
-<h2><span class="header-section-number">4.3</span> Identify results
-using frame numbers</h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>frames <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">unlist</span>(sharks[<span class="dv">1</span>, sharks_keep_col]))</span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>ID <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">11</span>))</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>ISO <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">==</span> <span class="dv">15</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>furrow <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">==</span> <span class="dv">16</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>diriso <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="dv">17</span><span class="sc">:</span><span class="dv">18</span>)</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>SSFA <span class="ot">&lt;-</span> <span class="fu">which</span>(frames <span class="sc">%in%</span> <span class="dv">19</span><span class="sc">:</span><span class="dv">20</span>)</span></code></pre></div>
+<div id="create-readme.rmd-file" class="section level2" number="4.3">
+<h2><span class="header-section-number">4.3</span> Create README.Rmd
+file</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>rrtools<span class="sc">::</span><span class="fu">use_readme_rmd</span>()</span></code></pre></div>
+<p>Edit the <code>README.Rmd</code> file as needed.<br />
+Make sure you render (knit) it to create the <code>README.md</code>
+file.</p>
 </div>
-<div id="add-headers" class="section level2" number="4.4">
-<h2><span class="header-section-number">4.4</span> Add headers</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Get headers from 2nd row</span></span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">colnames</span>(sharks_keep) <span class="ot">&lt;-</span> sharks[<span class="dv">2</span>, sharks_keep_col] <span class="sc">%&gt;%</span> </span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>  </span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>                         <span class="co"># Convert to valid names</span></span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>                         <span class="fu">make.names</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a>  </span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>                         <span class="co"># Delete repeated periods</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>                         <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.+&quot;</span>, <span class="st">&quot;</span><span class="sc">\\</span><span class="st">.&quot;</span>, <span class="at">x =</span> .) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a>  </span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a>                         <span class="co"># Delete periods at the end of the names</span></span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>                         <span class="fu">gsub</span>(<span class="st">&quot;</span><span class="sc">\\</span><span class="st">.$&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="at">x =</span> .)</span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  </span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a><span class="fu">colnames</span>(sharks_keep)[ISO] <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(<span class="fu">names</span>(sharks_keep)[ISO], <span class="st">&quot;.&quot;</span>, <span class="at">fixed =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>                              <span class="fu">sapply</span>(<span class="st">`</span><span class="at">[[</span><span class="st">`</span>, <span class="dv">1</span>)</span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#</span></span>
-<span id="cb8-17"><a href="#cb8-17" tabindex="-1"></a><span class="fu">colnames</span>(sharks_keep)[SSFA] <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">&quot;^([A-Za-z0-9]+</span><span class="sc">\\</span><span class="st">.)+&quot;</span>, <span class="st">&quot;&quot;</span>, <span class="fu">colnames</span>(sharks_keep)[SSFA])</span>
-<span id="cb8-18"><a href="#cb8-18" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" tabindex="-1"></a><span class="co"># Edit headers for name of surfaces and non-measured point ratios</span></span>
-<span id="cb8-20"><a href="#cb8-20" tabindex="-1"></a><span class="fu">colnames</span>(sharks_keep)[ID] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">&quot;Name&quot;</span>, <span class="st">&quot;NMP&quot;</span>)</span></code></pre></div>
+<div id="create-a-folders" class="section level2" number="4.4">
+<h2><span class="header-section-number">4.4</span> Create a folders</h2>
+<p>Create a folder ‘analysis’ and subfolders to contain raw data,
+derived data, plots, statistics and scripts. Also create a folder for
+the Python analysis:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/raw_data&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/derived_data&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/plots&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/scripts&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">dir.create</span>(<span class="st">&quot;analysis/stats&quot;</span>, <span class="at">showWarnings =</span> <span class="cn">FALSE</span>)</span></code></pre></div>
+<p>Note that the folders cannot be pushed to GitHub as long as they are
+empty.</p>
 </div>
-<div id="extract-units" class="section level2" number="4.5">
-<h2><span class="header-section-number">4.5</span> Extract units</h2>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Filter out rows which contains units</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>n_units <span class="ot">&lt;-</span> <span class="fu">filter</span>(sharks, V4 <span class="sc">==</span> <span class="st">&quot;&lt;no unit&gt;&quot;</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>          </span>
-<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>           <span class="co"># Keep only unique/distinct rows of units</span></span>
-<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>           <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb9-6"><a href="#cb9-6" tabindex="-1"></a>  </span>
-<span id="cb9-7"><a href="#cb9-7" tabindex="-1"></a>           <span class="co"># Number of unique/distinct rows of units</span></span>
-<span id="cb9-8"><a href="#cb9-8" tabindex="-1"></a>           <span class="fu">nrow</span>()</span>
-<span id="cb9-9"><a href="#cb9-9" tabindex="-1"></a></span>
-<span id="cb9-10"><a href="#cb9-10" tabindex="-1"></a><span class="cf">if</span> (n_units <span class="sc">!=</span> <span class="dv">1</span>) {</span>
-<span id="cb9-11"><a href="#cb9-11" tabindex="-1"></a>  <span class="fu">stop</span>(<span class="st">&quot;The different datasets have different units&quot;</span>)</span>
-<span id="cb9-12"><a href="#cb9-12" tabindex="-1"></a>} <span class="cf">else</span> {</span>
-<span id="cb9-13"><a href="#cb9-13" tabindex="-1"></a>  <span class="co"># Extract unit line from 3rd row for considered columns</span></span>
-<span id="cb9-14"><a href="#cb9-14" tabindex="-1"></a>  sharks_units <span class="ot">&lt;-</span> <span class="fu">unlist</span>(sharks[<span class="dv">3</span>, sharks_keep_col[<span class="sc">-</span><span class="dv">1</span>]])</span>
-<span id="cb9-15"><a href="#cb9-15" tabindex="-1"></a></span>
-<span id="cb9-16"><a href="#cb9-16" tabindex="-1"></a>  <span class="co"># Get names associated to the units</span></span>
-<span id="cb9-17"><a href="#cb9-17" tabindex="-1"></a>  <span class="fu">names</span>(sharks_units) <span class="ot">&lt;-</span> <span class="fu">colnames</span>(sharks_keep)[<span class="sc">-</span><span class="dv">1</span>]</span>
-<span id="cb9-18"><a href="#cb9-18" tabindex="-1"></a></span>
-<span id="cb9-19"><a href="#cb9-19" tabindex="-1"></a>  <span class="co"># Combine into a data.frame for export</span></span>
-<span id="cb9-20"><a href="#cb9-20" tabindex="-1"></a>  units_table <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">variable =</span> <span class="fu">names</span>(sharks_units), <span class="at">units =</span> sharks_units)</span>
-<span id="cb9-21"><a href="#cb9-21" tabindex="-1"></a>}</span></code></pre></div>
-</div>
-<div id="split-column-name" class="section level2" number="4.6">
-<h2><span class="header-section-number">4.6</span> Split column
-‘Name’</h2>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>sharks_keep[<span class="fu">c</span>(<span class="st">&quot;Specimen&quot;</span>, <span class="st">&quot;Tooth&quot;</span>, <span class="st">&quot;Location&quot;</span>, <span class="st">&quot;Objective&quot;</span>, <span class="st">&quot;Measurement&quot;</span>)] <span class="ot">&lt;-</span> <span class="fu">str_split_fixed</span>(</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>                                                                               sharks_keep<span class="sc">$</span>Name, <span class="st">&quot;_&quot;</span>, <span class="at">n =</span> <span class="dv">5</span>)</span></code></pre></div>
-</div>
-<div id="rename-mm-teeth-to-mm-h-and-mm-i" class="section level2" number="4.7">
-<h2><span class="header-section-number">4.7</span> Rename MM teeth to
-MM-H and MM-I</h2>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>sharks_keep[sharks_keep<span class="sc">$</span>Specimen <span class="sc">==</span> <span class="st">&quot;MM&quot;</span> <span class="sc">&amp;</span> sharks_keep<span class="sc">$</span>Tooth <span class="sc">==</span> <span class="st">&quot;A&quot;</span>, <span class="st">&quot;Tooth&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;H&quot;</span></span>
-<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>sharks_keep[sharks_keep<span class="sc">$</span>Specimen <span class="sc">==</span> <span class="st">&quot;MM&quot;</span> <span class="sc">&amp;</span> sharks_keep<span class="sc">$</span>Tooth <span class="sc">==</span> <span class="st">&quot;B&quot;</span>, <span class="st">&quot;Tooth&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;I&quot;</span></span></code></pre></div>
-</div>
-<div id="convert-to-numeric" class="section level2" number="4.8">
-<h2><span class="header-section-number">4.8</span> Convert to
-numeric</h2>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="co"># Replace &quot;-nan(ind)&quot; with NA in column HAsfc81</span></span>
-<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>sharks_keep<span class="sc">$</span>HAsfc81 <span class="ot">&lt;-</span> <span class="fu">na_if</span>(sharks_keep<span class="sc">$</span>HAsfc81, <span class="st">&quot;-nan(ind)&quot;</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a><span class="co"># Convert all parameter variables to numeric</span></span>
-<span id="cb12-5"><a href="#cb12-5" tabindex="-1"></a>sharks_keep <span class="ot">&lt;-</span> <span class="fu">type_convert</span>(sharks_keep)</span></code></pre></div>
-</div>
-<div id="add-column-for-nmp-categories" class="section level2" number="4.9">
-<h2><span class="header-section-number">4.9</span> Add column for NMP
-categories</h2>
-<p>Here we define 3 ranges of non-measured points (NMP):</p>
-<ul>
-<li><span class="math inline">\(&lt;\)</span> 10% NMP: “&lt;10%”<br />
-</li>
-<li><span class="math inline">\(\ge\)</span> 10% and <span class="math inline">\(&lt;\)</span> 20% NMP: “10-20%”<br />
-</li>
-<li><span class="math inline">\(\ge\)</span> 20% NMP: “≥20%”</li>
-</ul>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="co"># Create new column and fill it</span></span>
-<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>sharks_keep[sharks_keep<span class="sc">$</span>NMP <span class="sc">&lt;</span> <span class="dv">10</span>                        , <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;&lt;10%&quot;</span></span>
-<span id="cb13-3"><a href="#cb13-3" tabindex="-1"></a>sharks_keep[sharks_keep<span class="sc">$</span>NMP <span class="sc">&gt;=</span> <span class="dv">10</span> <span class="sc">&amp;</span> sharks_keep<span class="sc">$</span>NMP <span class="sc">&lt;</span> <span class="dv">20</span>, <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;10-20%&quot;</span></span>
-<span id="cb13-4"><a href="#cb13-4" tabindex="-1"></a>sharks_keep[sharks_keep<span class="sc">$</span>NMP <span class="sc">&gt;=</span> <span class="dv">20</span>                       , <span class="st">&quot;NMP_cat&quot;</span>] <span class="ot">&lt;-</span> <span class="st">&quot;≥20%&quot;</span></span>
-<span id="cb13-5"><a href="#cb13-5" tabindex="-1"></a></span>
-<span id="cb13-6"><a href="#cb13-6" tabindex="-1"></a><span class="co"># Convert to ordered factor</span></span>
-<span id="cb13-7"><a href="#cb13-7" tabindex="-1"></a>sharks_keep[[<span class="st">&quot;NMP_cat&quot;</span>]] <span class="ot">&lt;-</span> <span class="fu">factor</span>(sharks_keep[[<span class="st">&quot;NMP_cat&quot;</span>]], <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">&quot;&lt;10%&quot;</span>, <span class="st">&quot;10-20%&quot;</span>, <span class="st">&quot;≥20%&quot;</span>), <span class="at">ordered =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-<p>The number of height maps for each objective in each NMP category
-is:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a><span class="fu">table</span>(sharks_keep[<span class="fu">c</span>(<span class="st">&quot;NMP_cat&quot;</span>, <span class="st">&quot;Objective&quot;</span>)])</span></code></pre></div>
-<pre><code>        Objective
-NMP_cat  100x 20x
-  &lt;10%     47  38
-  10-20%   28  31
-  ≥20%      5  11</code></pre>
-</div>
-<div id="read-in-csv-files-of-measurement-positions" class="section level2" number="4.10">
-<h2><span class="header-section-number">4.10</span> Read in CSV files of
-measurement positions</h2>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>meas_pos <span class="ot">&lt;-</span> info_in <span class="sc">%&gt;%</span> </span>
-<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>            .[<span class="fu">grepl</span>(<span class="st">&quot;positions&quot;</span>, .)] <span class="sc">%&gt;%</span> </span>
-<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>            <span class="fu">lapply</span>(<span class="cf">function</span>(x) <span class="fu">read.csv2</span>(x, <span class="at">fileEncoding =</span> <span class="st">&#39;WINDOWS-1252&#39;</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>            <span class="fu">do.call</span>(rbind, .)</span>
-<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a><span class="fu">str</span>(meas_pos)</span></code></pre></div>
-<pre><code>&#39;data.frame&#39;:   160 obs. of  2 variables:
- $ Name    : chr  &quot;CC_A_loc1_100x_meas1&quot; &quot;CC_A_loc1_100x_meas2&quot; &quot;CC_A_loc1_100x_meas3&quot; &quot;CC_A_loc2_100x_meas1&quot; ...
- $ Position: chr  &quot;top&quot; &quot;top&quot; &quot;top&quot; &quot;bottom&quot; ...</code></pre>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a><span class="fu">head</span>(meas_pos)</span></code></pre></div>
-<pre><code>                  Name Position
-1 CC_A_loc1_100x_meas1      top
-2 CC_A_loc1_100x_meas2      top
-3 CC_A_loc1_100x_meas3      top
-4 CC_A_loc2_100x_meas1   bottom
-5 CC_A_loc2_100x_meas2   bottom
-6 CC_A_loc2_100x_meas3   bottom</code></pre>
-</div>
-<div id="merge-measurement-positions-with-dataset" class="section level2" number="4.11">
-<h2><span class="header-section-number">4.11</span> Merge measurement
-positions with dataset</h2>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a>sharks_keep_pos <span class="ot">&lt;-</span> <span class="fu">merge</span>(sharks_keep, meas_pos, <span class="at">by =</span> <span class="st">&quot;Name&quot;</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
-</div>
-<div id="re-order-columns-and-add-units-as-comment" class="section level2" number="4.12">
-<h2><span class="header-section-number">4.12</span> Re-order columns and
-add units as comment</h2>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>sharks_final <span class="ot">&lt;-</span> <span class="fu">select</span>(sharks_keep_pos, Specimen<span class="sc">:</span>Measurement, Position, NMP, NMP_cat, Sq<span class="sc">:</span>HAsfc81)</span>
-<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a><span class="fu">comment</span>(sharks_final) <span class="ot">&lt;-</span> sharks_units</span></code></pre></div>
-<p>Type <code>comment(sharks_final)</code> to check the units of the
-parameters.</p>
-</div>
-<div id="check-the-result" class="section level2" number="4.13">
-<h2><span class="header-section-number">4.13</span> Check the
-result</h2>
-<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">str</span>(sharks_final)</span></code></pre></div>
-<pre><code>&#39;data.frame&#39;:   160 obs. of  43 variables:
- $ Specimen                : chr  &quot;CC&quot; &quot;CC&quot; &quot;CC&quot; &quot;CC&quot; ...
- $ Tooth                   : chr  &quot;A&quot; &quot;A&quot; &quot;A&quot; &quot;A&quot; ...
- $ Location                : chr  &quot;loc1&quot; &quot;loc1&quot; &quot;loc1&quot; &quot;loc1&quot; ...
- $ Objective               : chr  &quot;100x&quot; &quot;100x&quot; &quot;100x&quot; &quot;20x&quot; ...
- $ Measurement             : chr  &quot;meas1&quot; &quot;meas2&quot; &quot;meas3&quot; &quot;meas1&quot; ...
- $ Position                : chr  &quot;top&quot; &quot;top&quot; &quot;top&quot; &quot;top&quot; ...
- $ NMP                     : num  3.03 3.05 3.34 12.54 11.63 ...
- $ NMP_cat                 : Ord.factor w/ 3 levels &quot;&lt;10%&quot;&lt;&quot;10-20%&quot;&lt;..: 1 1 1 2 2 2 1 1 1 3 ...
- $ Sq                      : num  1.22 1.18 1.16 7.28 7.29 ...
- $ Ssk                     : num  -0.332 -0.345 -0.355 0.83 0.814 ...
- $ Sku                     : num  2.53 2.45 2.42 3.15 3.14 ...
- $ Sp                      : num  2.74 2.73 2.69 22.04 22.01 ...
- $ Sv                      : num  3.42 3.25 3.17 17.88 19.03 ...
- $ Sz                      : num  6.16 5.98 5.86 39.92 41.04 ...
- $ Sa                      : num  0.995 0.969 0.956 5.8 5.803 ...
- $ Smr                     : num  5.865 4.991 4.781 0.189 0.183 ...
- $ Smc                     : num  1.5 1.47 1.43 11.42 11.45 ...
- $ Sxp                     : num  2.62 2.5 2.48 8.72 8.84 ...
- $ Sal                     : num  20.7 20.4 20.3 91.8 91.5 ...
- $ Str                     : num  0.557 0.53 0.537 NA NA ...
- $ Std                     : num  58.5 58.5 58.5 58.5 58.7 ...
- $ Ssw                     : num  0.658 0.658 0.658 3.295 3.295 ...
- $ Sdq                     : num  0.179 0.176 0.176 0.252 0.257 ...
- $ Sdr                     : num  1.51 1.47 1.46 2.97 3.08 ...
- $ Vm                      : num  0.0382 0.033 0.032 0.4189 0.414 ...
- $ Vv                      : num  1.54 1.5 1.47 11.84 11.86 ...
- $ Vmp                     : num  0.0382 0.033 0.032 0.4189 0.414 ...
- $ Vmc                     : num  1.21 1.18 1.15 5.85 5.88 ...
- $ Vvc                     : num  1.39 1.35 1.32 11.35 11.37 ...
- $ Vvv                     : num  0.148 0.148 0.147 0.487 0.496 ...
- $ Maximum.depth.of.furrows: num  2.33 2.29 2.29 41.48 39.05 ...
- $ Mean.depth.of.furrows   : num  0.834 0.808 0.792 18.822 18.342 ...
- $ Mean.density.of.furrows : num  2027 2022 2034 1354 1319 ...
- $ First.direction         : num  37 37 37 90 90 ...
- $ Second.direction        : num  56.5 90 90 37 37 ...
- $ Third.direction         : num  90 56.6 56.6 56.5 56.5 ...
- $ Texture.isotropy        : num  47.3 51.9 58.7 21 21 ...
- $ epLsar                  : num  0.00119 0.00113 0.00124 0.00347 0.00337 ...
- $ NewEplsar               : num  0.0172 0.0172 0.0173 0.0163 0.0164 ...
- $ Asfc                    : num  1.85 1.79 1.82 6.64 6.88 ...
- $ Smfc                    : num  86.2 48.8 52 12.9 12.9 ...
- $ HAsfc9                  : num  0.249 0.233 0.172 0.364 0.363 ...
- $ HAsfc81                 : num  0.591 0.582 0.516 0.486 0.459 ...
- - attr(*, &quot;comment&quot;)= Named chr [1:36] &quot;%&quot; &quot;µm&quot; &quot;&lt;no unit&gt;&quot; &quot;&lt;no unit&gt;&quot; ...
-  ..- attr(*, &quot;names&quot;)= chr [1:36] &quot;NMP&quot; &quot;Sq&quot; &quot;Ssk&quot; &quot;Sku&quot; ...</code></pre>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" tabindex="-1"></a><span class="fu">head</span>(sharks_final)</span></code></pre></div>
-<pre><code>  Specimen Tooth Location Objective Measurement Position       NMP NMP_cat
-1       CC     A     loc1      100x       meas1      top  3.029439    &lt;10%
-2       CC     A     loc1      100x       meas2      top  3.049307    &lt;10%
-3       CC     A     loc1      100x       meas3      top  3.344563    &lt;10%
-4       CC     A     loc1       20x       meas1      top 12.535975  10-20%
-5       CC     A     loc1       20x       meas2      top 11.627484  10-20%
-6       CC     A     loc1       20x       meas3      top 11.532629  10-20%
-        Sq        Ssk      Sku        Sp        Sv        Sz        Sa
-1 1.216901 -0.3324891 2.531089  2.739170  3.419274  6.158444 0.9953219
-2 1.179617 -0.3453720 2.445014  2.728211  3.249398  5.977609 0.9692665
-3 1.159639 -0.3552218 2.419064  2.691938  3.171959  5.863897 0.9563751
-4 7.283899  0.8300851 3.150191 22.041760 17.879370 39.921130 5.8003993
-5 7.291346  0.8135181 3.143032 22.005620 19.034020 41.039640 5.8025693
-6 7.299769  0.7937514 3.133681 21.947290 19.597010 41.544300 5.8089293
-        Smr       Smc      Sxp      Sal       Str      Std       Ssw       Sdq
-1 5.8654996  1.501282 2.616679 20.72644 0.5567234 58.51426 0.6583791 0.1788874
-2 4.9913841  1.466514 2.496966 20.41661 0.5302128 58.51580 0.6583791 0.1762588
-3 4.7814041  1.433144 2.478542 20.34239 0.5374210 58.51426 0.6583791 0.1757932
-4 0.1894798 11.422816 8.719022 91.81795        NA 58.51104 3.2947348 0.2516132
-5 0.1831192 11.447557 8.835691 91.52523        NA 58.74993 3.2947348 0.2565464
-6 0.1789167 11.420322 8.937201 91.26699        NA 58.50948 3.2947348 0.2573718
-       Sdr         Vm        Vv        Vmp      Vmc       Vvc       Vvv
-1 1.506669 0.03822744  1.539509 0.03822744 1.208085  1.391427 0.1480817
-2 1.467242 0.03300682  1.499521 0.03300682 1.177222  1.351987 0.1475341
-3 1.461778 0.03196542  1.465109 0.03196542 1.152959  1.318489 0.1466205
-4 2.969515 0.41885768 11.841674 0.41885768 5.853784 11.354906 0.4867681
-5 3.077962 0.41399141 11.861548 0.41399141 5.876793 11.365137 0.4964114
-6 3.094444 0.41329807 11.833616 0.41329807 5.893694 11.326966 0.5066504
-  Maximum.depth.of.furrows Mean.depth.of.furrows Mean.density.of.furrows
-1                 2.330753             0.8337031                2026.884
-2                 2.286745             0.8079501                2022.394
-3                 2.291874             0.7918662                2033.563
-4                41.483780            18.8223490                1353.924
-5                39.054195            18.3416154                1318.768
-6                36.911570            18.3032455                1322.121
-  First.direction Second.direction Third.direction Texture.isotropy      epLsar
-1        37.00334         56.54720        89.98706         47.34345 0.001190735
-2        37.00374         90.00751        56.55262         51.88475 0.001128928
-3        37.00464         89.99660        56.55126         58.70932 0.001244379
-4        89.99845         37.00583        56.52640         20.95764 0.003465575
-5        90.00132         37.00101        56.51804         20.96000 0.003372058
-6        90.00973         37.00585        56.52725         20.91598 0.003303745
-   NewEplsar     Asfc     Smfc    HAsfc9   HAsfc81
-1 0.01718885 1.851713 86.15295 0.2487842 0.5906368
-2 0.01723834 1.787470 48.78199 0.2329559 0.5822596
-3 0.01734807 1.822078 51.96430 0.1722548 0.5164332
-4 0.01632353 6.642577 12.86064 0.3637900 0.4857648
-5 0.01638856 6.882199 12.86064 0.3629004 0.4593461
-6 0.01641245 7.008048 12.86064 0.3699310 0.4620558</code></pre>
+<div id="delete-file-namespace" class="section level2" number="4.5">
+<h2><span class="header-section-number">4.5</span> Delete file
+‘NAMESPACE’</h2>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">file.remove</span>(<span class="st">&quot;NAMESPACE&quot;</span>)</span></code></pre></div>
 <hr />
 </div>
 </div>
-<div id="save-data" class="section level1" number="5">
-<h1><span class="header-section-number">5</span> Save data</h1>
-<div id="create-file-names" class="section level2" number="5.1">
-<h2><span class="header-section-number">5.1</span> Create file
-names</h2>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" tabindex="-1"></a>sharks_ods <span class="ot">&lt;-</span> <span class="fu">paste0</span>(dir_out, <span class="st">&quot;/DMTA-Ctenacanths.ods&quot;</span>)</span>
-<span id="cb26-2"><a href="#cb26-2" tabindex="-1"></a>sharks_rbin <span class="ot">&lt;-</span> <span class="fu">paste0</span>(dir_out, <span class="st">&quot;/DMTA-Ctenacanths.Rbin&quot;</span>)</span></code></pre></div>
+<div id="before-running-the-analyses" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Before running the
+analyses</h1>
+<p>After the creation of this research compendium, I have moved the raw,
+input data files to <code>&quot;~/analysis/raw_data&quot;</code> (as read-only
+files) and the R scripts to <code>&quot;~/analysis/scripts&quot;</code>.</p>
+<hr />
 </div>
-<div id="write-to-ods-and-rbin" class="section level2" number="5.2">
-<h2><span class="header-section-number">5.2</span> Write to ODS and
-Rbin</h2>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a><span class="fu">write_ods</span>(<span class="fu">list</span>(<span class="st">&quot;data&quot;</span> <span class="ot">=</span> sharks_final, <span class="st">&quot;units&quot;</span> <span class="ot">=</span> units_table), <span class="at">path =</span> sharks_ods) </span>
-<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="fu">saveObject</span>(sharks_final, <span class="at">file =</span> sharks_rbin) </span></code></pre></div>
-<p>Rbin files (e.g. <code>DMTA-Ctenacanths.Rbin</code>) can be easily
-read into an R object (e.g. <code>rbin_data</code>) using the following
-code:</p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" tabindex="-1"></a><span class="fu">library</span>(R.utils)</span>
-<span id="cb28-2"><a href="#cb28-2" tabindex="-1"></a>rbin_data <span class="ot">&lt;-</span> <span class="fu">loadObject</span>(<span class="st">&quot;DMTA-Ctenacanths.Rbin&quot;</span>)</span></code></pre></div>
+<div id="after-running-the-analyses" class="section level1" number="6">
+<h1><span class="header-section-number">6</span> After running the
+analyses</h1>
+<div id="description" class="section level2" number="6.1">
+<h2><span class="header-section-number">6.1</span> DESCRIPTION</h2>
+<p>Run this command to add the dependencies to the DESCRIPTION file.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>rrtools<span class="sc">::</span><span class="fu">add_dependencies_to_description</span>()</span></code></pre></div>
+</div>
+<div id="renv" class="section level2" number="6.2">
+<h2><span class="header-section-number">6.2</span> renv</h2>
+<p>Save the state of the project library using the <code>renv</code>
+package.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>renv<span class="sc">::</span><span class="fu">init</span>()</span></code></pre></div>
 <hr />
 </div>
 </div>
-<div id="sessioninfo" class="section level1" number="6">
-<h1><span class="header-section-number">6</span> sessionInfo()</h1>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
+<div id="sessioninfo" class="section level1" number="7">
+<h1><span class="header-section-number">7</span> sessionInfo()</h1>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div>
 <pre><code>R version 4.3.2 (2023-10-31 ucrt)
 Platform: x86_64-w64-mingw32/x64 (64-bit)
 Running under: Windows 10 x64 (build 19045)
@@ -1932,28 +1700,26 @@ attached base packages:
 [1] stats     graphics  grDevices datasets  utils     methods   base     
 
 other attached packages:
- [1] lubridate_1.9.3   forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4      
- [5] purrr_1.0.2       readr_2.1.4       tidyr_1.3.0       tibble_3.2.1     
- [9] ggplot2_3.4.4     tidyverse_2.0.0   rmarkdown_2.25    readODS_2.1.0    
-[13] R.utils_2.12.3    R.oo_1.25.0       R.methodsS3_1.8.2 knitr_1.45       
-[17] grateful_0.2.4   
+[1] usethis_2.2.2  rrtools_0.1.5  renv_1.0.3     grateful_0.2.4
 
 loaded via a namespace (and not attached):
- [1] sass_0.4.8        utf8_1.2.4        generics_0.1.3    renv_1.0.3       
- [5] stringi_1.8.3     hms_1.1.3         digest_0.6.33     magrittr_2.0.3   
- [9] evaluate_0.23     grid_4.3.2        timechange_0.2.0  fastmap_1.1.1    
-[13] rprojroot_2.0.4   jsonlite_1.8.8    zip_2.3.0         fansi_1.0.6      
-[17] scales_1.3.0      jquerylib_0.1.4   cli_3.6.2         rlang_1.1.2      
-[21] crayon_1.5.2      munsell_0.5.0     withr_2.5.2       cachem_1.0.8     
-[25] yaml_2.3.8        tools_4.3.2       tzdb_0.4.0        colorspace_2.1-0 
-[29] vctrs_0.6.5       R6_2.5.1          lifecycle_1.0.4   pkgconfig_2.0.3  
-[33] pillar_1.9.0      bslib_0.6.1       gtable_0.3.4      glue_1.6.2       
-[37] xfun_0.41         tidyselect_1.2.0  rstudioapi_0.15.0 htmltools_0.5.7  
-[41] compiler_4.3.2   </code></pre>
+ [1] miniUI_0.1.1.1    jsonlite_1.8.8    compiler_4.3.2    crayon_1.5.2     
+ [5] promises_1.2.1    Rcpp_1.0.11       git2r_0.33.0      stringr_1.5.1    
+ [9] later_1.3.2       jquerylib_0.1.4   yaml_2.3.8        fastmap_1.1.1    
+[13] here_1.0.1        mime_0.12         R6_2.5.1          knitr_1.45       
+[17] htmlwidgets_1.6.4 profvis_0.3.8     rprojroot_2.0.4   shiny_1.8.0      
+[21] bslib_0.6.1       rlang_1.1.2       cachem_1.0.8      stringi_1.8.3    
+[25] httpuv_1.6.13     xfun_0.41         fs_1.6.3          sass_0.4.8       
+[29] pkgload_1.3.3     memoise_2.0.1     cli_3.6.2         magrittr_2.0.3   
+[33] digest_0.6.33     rstudioapi_0.15.0 xtable_1.8-4      clisymbols_1.2.0 
+[37] remotes_2.4.2.1   devtools_2.4.5    lifecycle_1.0.4   vctrs_0.6.5      
+[41] glue_1.6.2        evaluate_0.23     urlchecker_1.0.1  sessioninfo_1.2.2
+[45] pkgbuild_1.4.3    purrr_1.0.2       rmarkdown_2.25    tools_4.3.2      
+[49] ellipsis_0.3.2    htmltools_0.5.7  </code></pre>
 <hr />
 </div>
-<div id="cite-r-packages-used" class="section level1" number="7">
-<h1><span class="header-section-number">7</span> Cite R packages
+<div id="cite-r-packages-used" class="section level1" number="8">
+<h1><span class="header-section-number">8</span> Cite R packages
 used</h1>
 <table>
 <thead>
@@ -1976,116 +1742,47 @@ used</h1>
 Connor P. Jackson (2023)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">knitr</td>
-<td align="left">1.45</td>
-<td align="left"><span class="citation">Xie (2014)</span>; <span class="citation">Xie (2015)</span>; <span class="citation">Xie
+<td align="left">renv</td>
+<td align="left">1.0.3</td>
+<td align="left"><span class="citation">Ushey and Wickham
 (2023)</span></td>
 </tr>
 <tr class="even">
-<td align="left">R.methodsS3</td>
-<td align="left">1.8.2</td>
-<td align="left"><span class="citation">Bengtsson (2003a)</span></td>
+<td align="left">rrtools</td>
+<td align="left">0.1.5</td>
+<td align="left"><span class="citation">Marwick (2019)</span></td>
 </tr>
 <tr class="odd">
-<td align="left">R.oo</td>
-<td align="left">1.25.0</td>
-<td align="left"><span class="citation">Bengtsson (2003b)</span></td>
-</tr>
-<tr class="even">
-<td align="left">R.utils</td>
-<td align="left">2.12.3</td>
-<td align="left"><span class="citation">Bengtsson (2023)</span></td>
-</tr>
-<tr class="odd">
-<td align="left">readODS</td>
-<td align="left">2.1.0</td>
-<td align="left"><span class="citation">Schutten et al.
-(2023)</span></td>
-</tr>
-<tr class="even">
-<td align="left">rmarkdown</td>
-<td align="left">2.25</td>
-<td align="left"><span class="citation">Xie, Allaire, and Grolemund
-(2018)</span>; <span class="citation">Xie, Dervieux, and Riederer
-(2020)</span>; <span class="citation">Allaire et al. (2023)</span></td>
-</tr>
-<tr class="odd">
-<td align="left">tidyverse</td>
-<td align="left">2.0.0</td>
+<td align="left">usethis</td>
+<td align="left">2.2.2</td>
 <td align="left"><span class="citation">Wickham et al.
-(2019)</span></td>
+(2023)</span></td>
 </tr>
 </tbody>
 </table>
 <div id="references" class="section level2 unnumbered">
 <h2 class="unnumbered">References</h2>
 <div id="refs" class="references csl-bib-body hanging-indent">
-<div id="ref-rmarkdown2023" class="csl-entry">
-Allaire, JJ, Yihui Xie, Christophe Dervieux, Jonathan McPherson, Javier
-Luraschi, Kevin Ushey, Aron Atkins, et al. 2023. <em><span class="nocase">rmarkdown</span>: Dynamic Documents for r</em>. <a href="https://github.com/rstudio/rmarkdown">https://github.com/rstudio/rmarkdown</a>.
-</div>
-<div id="ref-RmethodsS3" class="csl-entry">
-Bengtsson, Henrik. 2003a. <span>“The <span class="nocase">R.oo</span>
-Package - Object-Oriented Programming with References Using Standard
-<span>R</span> Code.”</span> In <em>Proceedings of the 3rd International
-Workshop on Distributed Statistical Computing (DSC 2003)</em>, edited by
-Kurt Hornik, Friedrich Leisch, and Achim Zeileis. Vienna, Austria:
-https://www.r-project.org/conferences/DSC-2003/Proceedings/. <a href="https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf">https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf</a>.
-</div>
-<div id="ref-Roo" class="csl-entry">
-———. 2003b. <span>“The <span class="nocase">R.oo</span> Package -
-Object-Oriented Programming with References Using Standard
-<span>R</span> Code.”</span> In <em>Proceedings of the 3rd International
-Workshop on Distributed Statistical Computing (DSC 2003)</em>, edited by
-Kurt Hornik, Friedrich Leisch, and Achim Zeileis. Vienna, Austria:
-https://www.r-project.org/conferences/DSC-2003/Proceedings/. <a href="https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf">https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf</a>.
-</div>
-<div id="ref-Rutils" class="csl-entry">
-———. 2023. <em><span class="nocase">R.utils</span>: Various Programming
-Utilities</em>. <a href="https://CRAN.R-project.org/package=R.utils">https://CRAN.R-project.org/package=R.utils</a>.
-</div>
 <div id="ref-grateful" class="csl-entry">
 Francisco Rodriguez-Sanchez, and Connor P. Jackson. 2023. <em><span class="nocase">grateful</span>: Facilitate Citation of r Packages</em>.
 <a href="https://pakillo.github.io/grateful/">https://pakillo.github.io/grateful/</a>.
+</div>
+<div id="ref-rrtools" class="csl-entry">
+Marwick, Ben. 2019. <em><span class="nocase">rrtools</span>: Creates a
+Reproducible Research Compendium</em>. <a href="https://github.com/benmarwick/rrtools">https://github.com/benmarwick/rrtools</a>.
 </div>
 <div id="ref-base" class="csl-entry">
 R Core Team. 2023. <em><span>R</span>: A Language and Environment for
 Statistical Computing</em>. Vienna, Austria: R Foundation for
 Statistical Computing. <a href="https://www.R-project.org/">https://www.R-project.org/</a>.
 </div>
-<div id="ref-readODS" class="csl-entry">
-Schutten, Gerrit-Jan, Chung-hong Chan, Peter Brohan, Detlef Steuer, and
-Thomas J. Leeper. 2023. <em><span class="nocase">readODS</span>: Read
-and Write ODS Files</em>. <a href="https://github.com/ropensci/readODS">https://github.com/ropensci/readODS</a>.
+<div id="ref-renv" class="csl-entry">
+Ushey, Kevin, and Hadley Wickham. 2023. <em><span class="nocase">renv</span>: Project Environments</em>. <a href="https://CRAN.R-project.org/package=renv">https://CRAN.R-project.org/package=renv</a>.
 </div>
-<div id="ref-tidyverse" class="csl-entry">
-Wickham, Hadley, Mara Averick, Jennifer Bryan, Winston Chang, Lucy
-D’Agostino McGowan, Romain François, Garrett Grolemund, et al. 2019.
-<span>“Welcome to the <span class="nocase">tidyverse</span>.”</span>
-<em>Journal of Open Source Software</em> 4 (43): 1686. <a href="https://doi.org/10.21105/joss.01686">https://doi.org/10.21105/joss.01686</a>.
-</div>
-<div id="ref-knitr2014" class="csl-entry">
-Xie, Yihui. 2014. <span>“<span class="nocase">knitr</span>: A
-Comprehensive Tool for Reproducible Research in <span>R</span>.”</span>
-In <em>Implementing Reproducible Computational Research</em>, edited by
-Victoria Stodden, Friedrich Leisch, and Roger D. Peng. Chapman;
-Hall/CRC.
-</div>
-<div id="ref-knitr2015" class="csl-entry">
-———. 2015. <em>Dynamic Documents with <span>R</span> and Knitr</em>. 2nd
-ed. Boca Raton, Florida: Chapman; Hall/CRC. <a href="https://yihui.org/knitr/">https://yihui.org/knitr/</a>.
-</div>
-<div id="ref-knitr2023" class="csl-entry">
-———. 2023. <em><span class="nocase">knitr</span>: A General-Purpose
-Package for Dynamic Report Generation in r</em>. <a href="https://yihui.org/knitr/">https://yihui.org/knitr/</a>.
-</div>
-<div id="ref-rmarkdown2018" class="csl-entry">
-Xie, Yihui, J. J. Allaire, and Garrett Grolemund. 2018. <em>R Markdown:
-The Definitive Guide</em>. Boca Raton, Florida: Chapman; Hall/CRC. <a href="https://bookdown.org/yihui/rmarkdown">https://bookdown.org/yihui/rmarkdown</a>.
-</div>
-<div id="ref-rmarkdown2020" class="csl-entry">
-Xie, Yihui, Christophe Dervieux, and Emily Riederer. 2020. <em>R
-Markdown Cookbook</em>. Boca Raton, Florida: Chapman; Hall/CRC. <a href="https://bookdown.org/yihui/rmarkdown-cookbook">https://bookdown.org/yihui/rmarkdown-cookbook</a>.
+<div id="ref-usethis" class="csl-entry">
+Wickham, Hadley, Jennifer Bryan, Malcolm Barrett, and Andy Teucher.
+2023. <em><span class="nocase">usethis</span>: Automate Package and
+Project Setup</em>. <a href="https://CRAN.R-project.org/package=usethis">https://CRAN.R-project.org/package=usethis</a>.
 </div>
 </div>
 </div>
@@ -2140,7 +1837,7 @@ $(document).ready(function ()  {
 
     // establish options
     var options = {
-      selectors: "h1,h2,h3",
+      selectors: "h1,h2",
       theme: "bootstrap3",
       context: '.toc-content',
       hashGenerator: function (text) {

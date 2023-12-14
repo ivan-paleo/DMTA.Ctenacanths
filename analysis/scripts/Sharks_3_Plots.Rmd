@@ -46,9 +46,16 @@ The knit directory for this script is the project directory.
 
 # Load packages
 ```{r}
-pack_to_load <- sort(c("R.utils", "tidyverse", "factoextra", "ggplot2", "ggpubr", "RColorBrewer", 
-                       "knitr", "rmarkdown", "grateful"))
-sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE)
+library(factoextra)
+library(ggplot2)
+library(ggpubr)
+library(grateful)
+library(knitr)
+library(R.utils)
+library(RColorBrewer)
+library(readODS)
+library(rmarkdown)
+library(tidyverse)
 ```
 
 
@@ -83,19 +90,6 @@ str(sharks_nmp20)
 ```
 
 
-# Separate data acquired with different objectives
-```{r}
-#20x objective
-sharks_nmp20_20x <- filter(sharks_nmp20, Objective == "20x")
-sharks_nmp20_20x$Objective <- factor(sharks_nmp20_20x$Objective)
-str(sharks_nmp20_20x)
-
-#100x objective
-sharks_nmp20_100x <- filter(sharks_nmp20, Objective == "100x")
-sharks_nmp20_100x$Objective <- factor(sharks_nmp20_100x$Objective)
-str(sharks_nmp20_100x)
-```
-
 ---
 
 
@@ -127,7 +121,7 @@ grp_shapes <- "NMP_cat"
 ```{r}
 custom_boxplot <- function(dat, x_axis, y_axis = "Value", 
                            group_col = grp_colors, group_shape = grp_shapes, 
-                           facet_var = "Parameter", plot_title){
+                           facet_grid1 = "Parameter", var_grid2 = "Objective", plot_title){
   
   # Define aesthetics
   p_out <- ggplot(dat, aes(x = .data[[x_axis]], y = .data[[y_axis]])) +
@@ -140,13 +134,10 @@ custom_boxplot <- function(dat, x_axis, y_axis = "Value",
            # Add layers of shapes and colors for points 
            # Jitter points
            geom_point(mapping = aes(shape = .data[[group_shape]], color = .data[[group_col]]), 
-                      position = "jitter", size = 3, alpha = 0.7) +
+                      position = "jitter", size = 2, alpha = 0.7) +
     
-           # Wrap around parameters (i.e. 1 subplot per parameter) with free y-scales
-           facet_wrap(as.formula(paste0("~", facet_var)), scales = "free_y") +
-    
-           # Alternative with facet.grid() (i.e. parameters in rows and objectives in columns) with free y-scales
-           #facet_grid(as.formula(paste0(facet_var, "~ Objective")), scales = "free_y") +
+           # Grid with parameters in rows and objectives in columns, with free y-scales
+           facet_grid(as.formula(paste0(facet_grid1, "~", var_grid2)), scales = "free_y") +
   
            # Remove x- and y-axis labels
            labs(x = NULL, y = NULL, title = plot_title) + 
@@ -154,7 +145,8 @@ custom_boxplot <- function(dat, x_axis, y_axis = "Value",
            # Choose a light theme
            theme_classic() +
   
-           # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+           # The qualitative 'Set1' palette of RColorBrewer is possibly not colorblind-friendly, 
+           # but there is no colorblind-friendly alternative with 9 values
            scale_color_brewer(palette = 'Set1')
 
   # Return ggplot object
@@ -166,100 +158,58 @@ custom_boxplot <- function(dat, x_axis, y_axis = "Value",
 ## Plot with Specimen as grouping variable
 ### ISO 25178 height parameters
 ```{r}
-# 100x objective
-# Subset and pivot to longer format for facet plots
-Sp_ISO_height_long_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_ISO_height, grp_colors, grp_shapes))) %>%
-                           pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value")
-str(Sp_ISO_height_long_100x)
-head(Sp_ISO_height_long_100x)
-
-# Define plot
-Sp_p_ISO_height_100x <- custom_boxplot(dat = Sp_ISO_height_long_100x, x_axis = x_sp, 
-                                       plot_title = "ISO height parameters - 100x")
+# Select columns that will be used in the plotting
+Sp_p_ISO_height <- select(sharks_nmp20, all_of(c(x_sp, y_ISO_height, grp_colors, grp_shapes, "Objective"))) %>%
+  
+                   # Pivot to longer format for facet plots
+                   pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
+  
+                   # Define plot
+                   custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO height parameters")
 
 # Print plot
-print(Sp_p_ISO_height_100x)
-
-#Same with 20x objective
-Sp_p_ISO_height_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_ISO_height, grp_colors, grp_shapes))) %>%
-                       pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
-                       custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO height parameters - 20x")
-print(Sp_p_ISO_height_20x)
-
-
-# Alternative with facet.grid()
-#Sp_p_ISO_height <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_height, grp_colors, grp_shapes, "Objective"))) %>%
-#                   pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
-#                   custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO height parameters")
-#print(Sp_p_ISO_height)
+print(Sp_p_ISO_height)
 ```
 
 ### ISO 25178 volume parameters
 ```{r}
-Sp_p_ISO_vol_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                     pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                     custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO volume parameters - 100x")
-print(Sp_p_ISO_vol_100x)
-
-Sp_p_ISO_vol_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                    pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                    custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO volume parameters - 20x")
-print(Sp_p_ISO_vol_20x)
+Sp_p_ISO_vol <- select(sharks_nmp20, all_of(c(x_sp, y_ISO_vol, grp_colors, grp_shapes, "Objective"))) %>%
+                pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
+                custom_boxplot(dat = ., x_axis = x_sp, plot_title = "ISO volume parameters")
+print(Sp_p_ISO_vol)
 ```
 
 ### Other ISO 25178 parameters
 ```{r}
-Sp_p_ISO_others_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_ISO_others, grp_colors, grp_shapes))) %>%
-                        pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                        custom_boxplot(dat = ., x_axis = x_sp, plot_title = "Other ISO parameters - 100x")
-print(Sp_p_ISO_others_100x)
-
-Sp_p_ISO_others_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_ISO_others, grp_colors, grp_shapes))) %>%
-                       pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                       custom_boxplot(dat = ., x_axis = x_sp, plot_title = "Other ISO parameters - 20x")
-print(Sp_p_ISO_others_20x)
+Sp_p_ISO_others <- select(sharks_nmp20, all_of(c(x_sp, y_ISO_others, grp_colors, grp_shapes, "Objective"))) %>%
+                   pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
+                   custom_boxplot(dat = ., x_axis = x_sp, plot_title = "Other ISO parameters")
+print(Sp_p_ISO_others)
 ```
 
 ### Furrow, direction and isotropy parameters 
 ```{r}
-Sp_p_furrow_diriso_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                           pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                           custom_boxplot(dat = ., x_axis = x_sp, 
-                                          plot_title = "Furrow, direction and isotropy parameters - 100x")
-print(Sp_p_furrow_diriso_100x)
-
-Sp_p_furrow_diriso_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                          pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                          custom_boxplot(dat = ., x_axis = x_sp, 
-                                         plot_title = "Furrow, direction and isotropy parameters - 20x")
-print(Sp_p_furrow_diriso_20x)
+Sp_p_furrow_diriso <- select(sharks_nmp20, 
+                             all_of(c(x_sp, y_furrow_diriso, grp_colors, grp_shapes, "Objective"))) %>%
+                      pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
+                      custom_boxplot(dat = ., x_axis = x_sp, 
+                                     plot_title = "Furrow, direction and isotropy parameters")
+print(Sp_p_furrow_diriso)
 ```
 
 ### SSFA parameters 
 ```{r}
-Sp_p_ssfa_100x <- select(sharks_nmp20_100x, all_of(c(x_sp, y_SSFA, grp_colors, grp_shapes))) %>%
-                  pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                  custom_boxplot(dat = ., x_axis = x_sp, plot_title = "SSFA parameters - 100x")
-print(Sp_p_ssfa_100x)
-
-Sp_p_ssfa_20x <- select(sharks_nmp20_20x, all_of(c(x_sp, y_SSFA, grp_colors, grp_shapes))) %>%
-                 pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                 custom_boxplot(dat = ., x_axis = x_sp, plot_title = "SSFA parameters - 20x")
-print(Sp_p_ssfa_20x)
+Sp_p_ssfa <- select(sharks_nmp20, all_of(c(x_sp, y_SSFA, grp_colors, grp_shapes, "Objective"))) %>%
+             pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
+             custom_boxplot(dat = ., x_axis = x_sp, plot_title = "SSFA parameters")
+print(Sp_p_ssfa)
 ```
 
 ### Save plots
 ```{r}
 suppressWarnings(
-  ggexport(plotlist = list(Sp_p_ISO_height_100x, Sp_p_ISO_vol_100x, Sp_p_ISO_others_100x, Sp_p_furrow_diriso_100x,
-                           Sp_p_ssfa_100x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_sp, "-100x.pdf"))
-)
-
-suppressWarnings(
-  ggexport(plotlist = list(Sp_p_ISO_height_20x, Sp_p_ISO_vol_20x, Sp_p_ISO_others_20x, Sp_p_furrow_diriso_20x,
-                           Sp_p_ssfa_20x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_sp, "-20x.pdf"))
+  ggexport(plotlist = list(Sp_p_ISO_height, Sp_p_ISO_vol, Sp_p_ISO_others, Sp_p_furrow_diriso, Sp_p_ssfa), 
+           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_sp, ".pdf"))
 )
 ```
 
@@ -267,94 +217,52 @@ suppressWarnings(
 ## Plot with Position as grouping variable
 ### ISO 25178 height parameters
 ```{r}
-# 100x objective
-# Subset and pivot to longer format for facet plots
-Pos_ISO_height_long_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_ISO_height, grp_colors, grp_shapes))) %>%
-                            pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value")
-str(Pos_ISO_height_long_100x)
-head(Pos_ISO_height_long_100x)
-
-# Define plot
-Pos_p_ISO_height_100x <- custom_boxplot(dat = Pos_ISO_height_long_100x, x_axis = x_pos, 
-                                        plot_title = "ISO height parameters - 100x")
-
-# Print plot
-print(Pos_p_ISO_height_100x)
-
-# Same with 20x objective
-Pos_p_ISO_height_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_ISO_height, grp_colors, grp_shapes))) %>%
-                        pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
-                        custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO height parameters - 20x")
-print(Pos_p_ISO_height_20x)
+Pos_p_ISO_height <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_height, grp_colors, grp_shapes, "Objective"))) %>%
+                    pivot_longer(all_of(y_ISO_height), names_to = "Parameter", values_to = "Value") %>%
+                    custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO height parameters")
+print(Pos_p_ISO_height)
 ```
 
 ### ISO 25178 volume parameters
 ```{r}
-Pos_p_ISO_vol_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                      pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                      custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO volume parameters - 100x")
-print(Pos_p_ISO_vol_100x)
-
-Pos_p_ISO_vol_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_ISO_vol, grp_colors, grp_shapes))) %>%
-                     pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
-                     custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO volume parameters - 20x")
-print(Pos_p_ISO_vol_20x)
+Pos_p_ISO_vol <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_vol, grp_colors, grp_shapes, "Objective"))) %>%
+                 pivot_longer(all_of(y_ISO_vol), names_to = "Parameter", values_to = "Value") %>%
+                 custom_boxplot(dat = ., x_axis = x_pos, plot_title = "ISO volume parameters")
+print(Pos_p_ISO_vol)
 ```
 
 ### Other ISO 25178 parameters
 ```{r}
-Pos_p_ISO_others_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_ISO_others, grp_colors, grp_shapes))) %>%
-                         pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                         custom_boxplot(dat = ., x_axis = x_pos, plot_title = "Other ISO parameters - 100x")
-print(Pos_p_ISO_others_100x)
-
-Pos_p_ISO_others_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_ISO_others, grp_colors, grp_shapes))) %>%
-                        pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
-                        custom_boxplot(dat = ., x_axis = x_pos, plot_title = "Other ISO parameters - 20x")
-print(Pos_p_ISO_others_20x)
+Pos_p_ISO_others <- select(sharks_nmp20, all_of(c(x_pos, y_ISO_others, grp_colors, grp_shapes, "Objective"))) %>%
+                    pivot_longer(all_of(y_ISO_others), names_to = "Parameter", values_to = "Value") %>%
+                    custom_boxplot(dat = ., x_axis = x_pos, plot_title = "Other ISO parameters")
+print(Pos_p_ISO_others)
 ```
 
 ### Furrow, direction and isotropy parameters 
 ```{r}
-Pos_p_furrow_diriso_100x <- select(sharks_nmp20_100x, 
-                                   all_of(c(x_pos, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                            pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                            custom_boxplot(dat = ., x_axis = x_pos, 
-                                           plot_title = "Furrow, direction and isotropy parameters - 100x")
-print(Pos_p_furrow_diriso_100x)
-
-Pos_p_furrow_diriso_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_furrow_diriso, grp_colors, grp_shapes))) %>%
-                           pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", values_to = "Value") %>%
-                           custom_boxplot(dat = ., x_axis = x_pos, 
-                                          plot_title = "Furrow, direction and isotropy parameters - 20x")
-print(Pos_p_furrow_diriso_20x)
+Pos_p_furrow_diriso <- select(sharks_nmp20, 
+                              all_of(c(x_pos, y_furrow_diriso, grp_colors, grp_shapes, "Objective"))) %>%
+                              pivot_longer(all_of(y_furrow_diriso), names_to = "Parameter", 
+                                           values_to = "Value") %>%
+                              custom_boxplot(dat = ., x_axis = x_pos, 
+                                             plot_title = "Furrow, direction and isotropy parameters")
+print(Pos_p_furrow_diriso)
 ```
 
 ### SSFA parameters 
 ```{r}
-Pos_p_ssfa_100x <- select(sharks_nmp20_100x, all_of(c(x_pos, y_SSFA, grp_colors, grp_shapes))) %>%
-                   pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                   custom_boxplot(dat = ., x_axis = x_pos, plot_title = "SSFA parameters - 100x")
-print(Pos_p_ssfa_100x)
-
-Pos_p_ssfa_20x <- select(sharks_nmp20_20x, all_of(c(x_pos, y_SSFA, grp_colors, grp_shapes))) %>%
-                   pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
-                   custom_boxplot(dat = ., x_axis = x_pos, plot_title = "SSFA parameters - 20x")
-print(Pos_p_ssfa_20x)
+Pos_p_ssfa <- select(sharks_nmp20, all_of(c(x_pos, y_SSFA, grp_colors, grp_shapes, "Objective"))) %>%
+              pivot_longer(all_of(y_SSFA), names_to = "Parameter", values_to = "Value") %>%
+              custom_boxplot(dat = ., x_axis = x_pos, plot_title = "SSFA parameters")
+print(Pos_p_ssfa)
 ```
 
 ### Save plots
 ```{r}
 suppressWarnings(
-  ggexport(plotlist = list(Pos_p_ISO_height_100x, Pos_p_ISO_vol_100x, Pos_p_ISO_others_100x, 
-                           Pos_p_furrow_diriso_100x, Pos_p_ssfa_100x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_pos, "-100x.pdf"))
-)
-
-suppressWarnings(
-  ggexport(plotlist = list(Pos_p_ISO_height_20x, Pos_p_ISO_vol_20x, Pos_p_ISO_others_20x, 
-                           Pos_p_furrow_diriso_20x, Pos_p_ssfa_20x), 
-           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_pos, "-20x.pdf"))
+  ggexport(plotlist = list(Pos_p_ISO_height, Pos_p_ISO_vol, Pos_p_ISO_others, Pos_p_furrow_diriso, Pos_p_ssfa), 
+           filename = paste0(dir_out, "/DMTA-Ctenacanths_boxplots-", x_pos, ".pdf"))
 )
 ```
 
@@ -375,7 +283,8 @@ Sp_p_bi <- ggplot(sharks_nmp20, aes(x = Asfc, y = epLsar)) +
            # Adjust axes labels
            labs(x = "Complexity (Asfc)", y = "Anisotropy (epLsar)") +
   
-           # The qualitative 'Set2' palette of RColorBrewer is colorblind friendly
+           # The qualitative 'Set1' palette of RColorBrewer is possibly not colorblind-friendly, 
+           # but there is no colorblind-friendly alternative with 9 values
            scale_color_brewer(palette = 'Set1') +
   
            # Grid with Objectives in rows and Specimen in columns
@@ -633,7 +542,7 @@ sessionInfo()
 # Cite R packages used
 
 ```{r, echo = FALSE}
-pkgs_cite <- cite_packages(pkgs = c(pack_to_load, "base"), output = "table", include.RStudio = TRUE, 
+pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
                            out.dir = "analysis/scripts", bib.file = "Sharks_3_Plots")
 knitr::kable(pkgs_cite)
 ```

@@ -1,7 +1,7 @@
 Import dataset of DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-12-12 10:09:57 CET
+2023-12-14 14:42:57 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Load packages](#load-packages)
@@ -60,12 +60,13 @@ The knit directory for this script is the project directory.
 # Load packages
 
 ``` r
-pack_to_load <- sort(c("R.utils", "readODS", "tidyverse", "rmarkdown", "knitr", "grateful"))
-sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
+library(grateful)
+library(knitr)
+library(R.utils)
+library(readODS)
+library(rmarkdown)
+library(tidyverse)
 ```
-
-     grateful     knitr   R.utils   readODS rmarkdown tidyverse 
-         TRUE      TRUE      TRUE      TRUE      TRUE      TRUE 
 
 ------------------------------------------------------------------------
 
@@ -416,17 +417,15 @@ sessionInfo()
 
 
     locale:
-    [1] LC_COLLATE=English_United States.utf8 
-    [2] LC_CTYPE=English_United States.utf8   
-    [3] LC_MONETARY=English_United States.utf8
-    [4] LC_NUMERIC=C                          
-    [5] LC_TIME=English_United States.utf8    
+    [1] LC_COLLATE=French_France.utf8  LC_CTYPE=French_France.utf8   
+    [3] LC_MONETARY=French_France.utf8 LC_NUMERIC=C                  
+    [5] LC_TIME=French_France.utf8    
 
     time zone: Europe/Berlin
     tzcode source: internal
 
     attached base packages:
-    [1] stats     graphics  grDevices utils     datasets  methods   base     
+    [1] stats     graphics  grDevices datasets  utils     methods   base     
 
     other attached packages:
      [1] lubridate_1.9.3   forcats_1.0.0     stringr_1.5.1     dplyr_1.1.4      
@@ -436,30 +435,33 @@ sessionInfo()
     [17] grateful_0.2.4   
 
     loaded via a namespace (and not attached):
-     [1] sass_0.4.8        utf8_1.2.4        generics_0.1.3    stringi_1.8.3    
-     [5] hms_1.1.3         digest_0.6.33     magrittr_2.0.3    evaluate_0.23    
-     [9] grid_4.3.2        timechange_0.2.0  fastmap_1.1.1     rprojroot_2.0.4  
-    [13] jsonlite_1.8.8    zip_2.3.0         fansi_1.0.6       scales_1.3.0     
-    [17] jquerylib_0.1.4   cli_3.6.2         rlang_1.1.2       crayon_1.5.2     
-    [21] munsell_0.5.0     withr_2.5.2       cachem_1.0.8      yaml_2.3.8       
-    [25] tools_4.3.2       tzdb_0.4.0        colorspace_2.1-0  vctrs_0.6.5      
-    [29] R6_2.5.1          lifecycle_1.0.4   pkgconfig_2.0.3   pillar_1.9.0     
-    [33] bslib_0.6.1       gtable_0.3.4      glue_1.6.2        xfun_0.41        
-    [37] tidyselect_1.2.0  rstudioapi_0.15.0 htmltools_0.5.7   compiler_4.3.2   
+     [1] sass_0.4.8        utf8_1.2.4        generics_0.1.3    renv_1.0.3       
+     [5] stringi_1.8.3     hms_1.1.3         digest_0.6.33     magrittr_2.0.3   
+     [9] evaluate_0.23     grid_4.3.2        timechange_0.2.0  fastmap_1.1.1    
+    [13] rprojroot_2.0.4   jsonlite_1.8.8    zip_2.3.0         fansi_1.0.6      
+    [17] scales_1.3.0      jquerylib_0.1.4   cli_3.6.2         rlang_1.1.2      
+    [21] crayon_1.5.2      munsell_0.5.0     withr_2.5.2       cachem_1.0.8     
+    [25] yaml_2.3.8        tools_4.3.2       tzdb_0.4.0        colorspace_2.1-0 
+    [29] vctrs_0.6.5       R6_2.5.1          lifecycle_1.0.4   pkgconfig_2.0.3  
+    [33] pillar_1.9.0      bslib_0.6.1       gtable_0.3.4      glue_1.6.2       
+    [37] xfun_0.41         tidyselect_1.2.0  rstudioapi_0.15.0 htmltools_0.5.7  
+    [41] compiler_4.3.2   
 
 ------------------------------------------------------------------------
 
 # Cite R packages used
 
-| Package   | Version | Citation                                                                                      |
-|:----------|:--------|:----------------------------------------------------------------------------------------------|
-| base      | 4.3.2   | R Core Team (2023)                                                                            |
-| grateful  | 0.2.4   | Francisco Rodriguez-Sanchez and Connor P. Jackson (2023)                                      |
-| knitr     | 1.45    | Xie (2014); Xie (2015); Xie (2023)                                                            |
-| R.utils   | 2.12.3  | Bengtsson (2023)                                                                              |
-| readODS   | 2.1.0   | Schutten et al. (2023)                                                                        |
-| rmarkdown | 2.25    | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2023) |
-| tidyverse | 2.0.0   | Wickham et al. (2019)                                                                         |
+| Package     | Version | Citation                                                                                      |
+|:------------|:--------|:----------------------------------------------------------------------------------------------|
+| base        | 4.3.2   | R Core Team (2023)                                                                            |
+| grateful    | 0.2.4   | Francisco Rodriguez-Sanchez and Connor P. Jackson (2023)                                      |
+| knitr       | 1.45    | Xie (2014); Xie (2015); Xie (2023)                                                            |
+| R.methodsS3 | 1.8.2   | Bengtsson (2003a)                                                                             |
+| R.oo        | 1.25.0  | Bengtsson (2003b)                                                                             |
+| R.utils     | 2.12.3  | Bengtsson (2023)                                                                              |
+| readODS     | 2.1.0   | Schutten et al. (2023)                                                                        |
+| rmarkdown   | 2.25    | Xie, Allaire, and Grolemund (2018); Xie, Dervieux, and Riederer (2020); Allaire et al. (2023) |
+| tidyverse   | 2.0.0   | Wickham et al. (2019)                                                                         |
 
 ## References
 
@@ -474,10 +476,34 @@ Luraschi, Kevin Ushey, Aron Atkins, et al. 2023.
 
 </div>
 
+<div id="ref-RmethodsS3" class="csl-entry">
+
+Bengtsson, Henrik. 2003a. “The <span class="nocase">R.oo</span>
+Package - Object-Oriented Programming with References Using Standard R
+Code.” In *Proceedings of the 3rd International Workshop on Distributed
+Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
+Leisch, and Achim Zeileis. Vienna, Austria:
+https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+<https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
+
+</div>
+
+<div id="ref-Roo" class="csl-entry">
+
+———. 2003b. “The <span class="nocase">R.oo</span> Package -
+Object-Oriented Programming with References Using Standard R Code.” In
+*Proceedings of the 3rd International Workshop on Distributed
+Statistical Computing (DSC 2003)*, edited by Kurt Hornik, Friedrich
+Leisch, and Achim Zeileis. Vienna, Austria:
+https://www.r-project.org/conferences/DSC-2003/Proceedings/.
+<https://www.r-project.org/conferences/DSC-2003/Proceedings/Bengtsson.pdf>.
+
+</div>
+
 <div id="ref-Rutils" class="csl-entry">
 
-Bengtsson, Henrik. 2023. *<span class="nocase">R.utils</span>: Various
-Programming Utilities*. <https://CRAN.R-project.org/package=R.utils>.
+———. 2023. *<span class="nocase">R.utils</span>: Various Programming
+Utilities*. <https://CRAN.R-project.org/package=R.utils>.
 
 </div>
 
@@ -501,7 +527,7 @@ Computing*. Vienna, Austria: R Foundation for Statistical Computing.
 
 Schutten, Gerrit-Jan, Chung-hong Chan, Peter Brohan, Detlef Steuer, and
 Thomas J. Leeper. 2023. *<span class="nocase">readODS</span>: Read and
-Write ODS Files*. <https://CRAN.R-project.org/package=readODS>.
+Write ODS Files*. <https://github.com/ropensci/readODS>.
 
 </div>
 

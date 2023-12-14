@@ -3,10 +3,6 @@ title: "Create Research Compendium - DMTA on Devionan sharks"
 author: "Ivan Calandra"
 date: "`r format(Sys.time(), usetz = TRUE)`"
 output:
-  github_document: 
-    toc: true
-    toc_depth: 2
-    html_preview: false
   html_document:
     toc: true
     toc_depth: 2
@@ -14,6 +10,10 @@ output:
     theme: cerulean
     highlight: pygments
     number_sections: true
+  github_document: 
+    toc: true
+    toc_depth: 2
+    html_preview: false
 bibliography: Sharks_0_CreateRC.bib
 knit: (function(inputFile, encoding) {
   rmarkdown::render(inputFile, encoding = encoding, output_format = "all", knit_root_dir = rprojroot::find_rstudio_root_file()) })
@@ -31,7 +31,7 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, indent = "", error = TRUE, 
 Create and set up a research compendium for the paper of DMTA on Devionan sharks using the R package `rrtools`.  
 For details on rrtools, see Ben Marwick's [GitHub repository](https://github.com/benmarwick/rrtools).  
 
-Note that this script is there only to show the steps taken to create the research compendium and is not part of the analysis per se. For this reason, the code is not evaluated (`knitr::opts_chunk$set(eval=FALSE)`).
+Note that this script is there only to show the steps taken to create the research compendium and is not part of the analysis per se. For this reason, most of the code is not evaluated (`knitr::opts_chunk$set(eval=FALSE)`).
 
 The knit directory for this script is the project directory.
 
@@ -57,9 +57,12 @@ Finally, open the RStudio project created.
 # Create the research compendium
 ## Load packages
 ```{r, eval = TRUE}
-pack_to_load <- c("grateful", "rrtools", "usethis", "renv")
-sapply(pack_to_load, library, character.only = TRUE, logical.return = TRUE) 
+library(grateful)
+library(renv)
+library(rrtools)
+library(usethis)
 ```
+
 
 ## Create compendium
 ```{r}
@@ -68,12 +71,14 @@ rrtools::use_compendium(getwd())
 A new project has opened in a new session.  
 Edit the fields "Title", "Author" and "Description" in the `DESCRIPTION` file. 
 
+
 ## Create README.Rmd file
 ```{r}
 rrtools::use_readme_rmd()
 ```
 Edit the `README.Rmd` file as needed.  
 Make sure you render (knit) it to create the `README.md` file.
+
 
 ## Create a folders 
 Create a folder 'analysis' and subfolders to contain raw data, derived data, plots, statistics and scripts. Also create a folder for the Python analysis:
@@ -86,6 +91,7 @@ dir.create("analysis/scripts", showWarnings = FALSE)
 dir.create("analysis/stats", showWarnings = FALSE)
 ```
 Note that the folders cannot be pushed to GitHub as long as they are empty.
+
 
 ## Delete file 'NAMESPACE'
 ```{r}
@@ -104,8 +110,8 @@ After the creation of this research compendium, I have moved the raw, input data
 
 
 # After running the analyses
-## Packages
-I have run this command to add the dependencies to the DESCRIPTION file.
+## DESCRIPTION
+Run this command to add the dependencies to the DESCRIPTION file.
 ```{r}
 rrtools::add_dependencies_to_description()
 ```
@@ -134,7 +140,7 @@ sessionInfo()
 # Cite R packages used
 
 ```{r, echo = FALSE, eval = TRUE}
-pkgs_cite <- cite_packages(pkgs = c(pack_to_load, "base"), output = "table", include.RStudio = TRUE, 
+pkgs_cite <- cite_packages(pkgs = "Session", omit = NULL, output = "table", include.RStudio = TRUE, 
                            out.dir = "analysis/scripts", bib.file = "Sharks_0_CreateRC")
 knitr::kable(pkgs_cite)
 ```
