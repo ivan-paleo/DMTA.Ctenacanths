@@ -15,7 +15,7 @@ Please cite this compendium as:
 \> Greif M, Calandra I, Lautenschlager S, Kaiser T & Klug C (2023).
 Compendium of R code and data for *Feeding behaviour and diet in
 Devonian ctenacanth chondrichthyans using tooth wear and Finite Element
-analysis*. Accessed 12 Dec 2023. Online at <https://doi.org/xxx/xxx>
+analysis*. Accessed 14 déc. 2023. Online at <https://doi.org/xxx/xxx>
 
 # Contents
 
@@ -95,6 +95,12 @@ Here are direct links to display the files directly in your browser:
 - [Sharks_1_Import.html](http://htmlpreview.github.io/?https://github.com/ivan-paleo/DMTA.Ctenacanths/blob/main/analysis/scripts/Sharks_1_Import.html)  
 - [Sharks_2_Summary-stats.html](http://htmlpreview.github.io/?https://github.com/ivan-paleo/DMTA.Ctenacanths/blob/main/analysis/scripts/Sharks_2_Summary-stats.html)  
 - [Sharks_3_Plots.html](http://htmlpreview.github.io/?https://github.com/ivan-paleo/DMTA.Ctenacanths/blob/main/analysis/scripts/Sharks_3_Plots.html)
+
+The [renv.lock](/renv.lock) file is the lockfile describing the state of
+the R project’s library. It is associated to the [activation
+script](/renv/activate.R) and the R project’s library. All these files
+have been created using the package
+[renv](https://rstudio.github.io/renv/index.html).
 
 See the section [Contributions](#contributions) for details on the
 [CONDUCT.md](/CONDUCT.md) and [CONTRIBUTING.md](CONTRIBUTING.md) files.
