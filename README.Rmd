@@ -13,7 +13,7 @@ repo <- basename(getwd())
 
 # DMTA.Ctenacanths
 This repository contains the data and code for our paper:  
-> `r Authors` (submitted). *`r Title`*. Name of journal: TBA. <https://doi.org/xxx/xxx>
+> `r Authors` (to be submitted). *`r Title`*. Name of journal: TBA. <https://doi.org/xxx/xxx>
 
 
 # How to cite

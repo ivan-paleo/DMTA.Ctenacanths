@@ -1,7 +1,7 @@
 Create Research Compendium - DMTA on Devionan sharks
 ================
 Ivan Calandra
-2023-12-14 14:49:42 CET
+2024-02-19 13:58:54 CET
 
 - [Goal of the script](#goal-of-the-script)
 - [Prerequisites](#prerequisites)
@@ -51,7 +51,7 @@ connected RStudio, Git and GitHub. For details on how to do it, check
 Before running this script, the first step is to [create a repository on
 GitHub and to download it to
 RStudio](https://happygitwithr.com/new-github-first.html). In this case,
-the repository is called “DMTA-Devo-sharks”.  
+the repository is called “DMTA.Ctenacanths”.  
 Finally, open the RStudio project created.
 
 ------------------------------------------------------------------------

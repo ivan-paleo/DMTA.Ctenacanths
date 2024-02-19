@@ -47,7 +47,7 @@ This script requires that you have a GitHub account and that you have connected 
 
 
 # Preparations
-Before running this script, the first step is to [create a repository on GitHub and to download it to RStudio](https://happygitwithr.com/new-github-first.html). In this case, the repository is called "DMTA-Devo-sharks".  
+Before running this script, the first step is to [create a repository on GitHub and to download it to RStudio](https://happygitwithr.com/new-github-first.html). In this case, the repository is called "DMTA.Ctenacanths".  
 Finally, open the RStudio project created.
 
 

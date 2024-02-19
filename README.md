@@ -4,18 +4,18 @@
 # DMTA.Ctenacanths
 
 This repository contains the data and code for our paper:  
-\> Greif M, Calandra I, Lautenschlager S, Kaiser T & Klug C (submitted).
-*Feeding behaviour and diet in Devonian ctenacanth chondrichthyans using
-tooth wear and Finite Element analysis*. Name of journal: TBA.
-<https://doi.org/xxx/xxx>
+\> Greif M, Calandra I, Lautenschlager S, Kaiser T & Klug C (to be
+submitted). *Feeding behaviour and diet in Devonian ctenacanth
+chondrichthyans using tooth wear and Finite Element analysis*. Name of
+journal: TBA. <https://doi.org/xxx/xxx>
 
 # How to cite
 
 Please cite this compendium as:  
-\> Greif M, Calandra I, Lautenschlager S, Kaiser T & Klug C (2023).
+\> Greif M, Calandra I, Lautenschlager S, Kaiser T & Klug C (2024).
 Compendium of R code and data for *Feeding behaviour and diet in
 Devonian ctenacanth chondrichthyans using tooth wear and Finite Element
-analysis*. Accessed 14 déc. 2023. Online at <https://doi.org/xxx/xxx>
+analysis*. Accessed 19 févr. 2024. Online at <https://doi.org/xxx/xxx>
 
 # Contents
 
